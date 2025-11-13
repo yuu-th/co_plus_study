@@ -1,0 +1,87 @@
+.calendar {
+  background-color: var(--color-bg-primary);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+}
+
+.weekday {
+  text-align: center;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  padding: var(--spacing-xs);
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--spacing-xs);
+}
+
+.dayCell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.day {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.day:hover {
+  transform: scale(1.1);
+}
+
+/* 活動日の色分け */
+.login {
+  background-color: var(--color-activity-login);
+  color: white;
+}
+
+.diary {
+  background-color: var(--color-activity-diary);
+  color: white;
+}
+
+.both {
+  background-color: var(--color-activity-both);
+  color: white;
+}
+
+/* モバイル対応 */
+@media (max-width: 480px) {
+  .day {
+    font-size: var(--font-size-xs);
+  }
+}

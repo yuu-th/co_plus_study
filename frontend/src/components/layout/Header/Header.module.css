@@ -1,0 +1,59 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-width);
+  right: 0;
+  height: var(--header-height);
+  background-color: var(--color-bg-primary);
+  border-bottom: 1px solid var(--color-bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-lg);
+  z-index: 90;
+  box-shadow: var(--shadow-sm);
+}
+
+.menuButton {
+  display: none;
+  background: none;
+  border: none;
+  font-size: var(--font-size-2xl);
+  color: var(--color-accent-blue);
+  cursor: pointer;
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-md);
+  transition: background-color var(--transition-base);
+}
+
+.menuButton:hover {
+  background-color: var(--color-bg-secondary);
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.userIcon {
+  font-size: var(--font-size-lg);
+  color: var(--color-accent-blue);
+}
+
+.userName {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+  .header {
+    left: 0;
+  }
+
+  .menuButton {
+    display: block;
+  }
+}

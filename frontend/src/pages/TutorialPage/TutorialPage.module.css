@@ -1,0 +1,19 @@
+.page {
+  padding: var(--spacing-xl);
+}
+
+.title {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-lg) 0;
+}
+
+.comingSoon {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: var(--spacing-2xl);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--border-radius-lg);
+}

@@ -1,0 +1,57 @@
+.container {
+  background-color: var(--color-bg-primary);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.days {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.dayItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.dayLabel {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.marker {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid var(--color-activity-none);
+  background-color: white;
+  transition: all var(--transition-base);
+}
+
+.marker.active {
+  background-color: var(--color-activity-diary);
+  border-color: var(--color-activity-diary);
+  box-shadow: 0 0 8px rgba(255, 159, 64, 0.4);
+}
+
+/* モバイル対応 */
+@media (max-width: 640px) {
+  .days {
+    gap: var(--spacing-sm);
+  }
+
+  .marker {
+    width: 32px;
+    height: 32px;
+  }
+
+  .dayLabel {
+    font-size: var(--font-size-sm);
+  }
+}

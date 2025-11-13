@@ -1,0 +1,88 @@
+/* カラースキーム定義 - docs/react_design.md に基づく */
+
+:root {
+  /* 背景・ベース */
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #E8F4F8;
+  --color-bg-tertiary: #F5FEFF;
+
+  /* テキスト */
+  --color-text-primary: #333333;
+  --color-text-secondary: #666666;
+  --color-text-light: #999999;
+
+  /* アクセント */
+  --color-accent-blue: #4DB8E8;
+  --color-accent-orange: #FF9F40;
+  --color-accent-gold: #FFD700;
+  --color-accent-silver: #C0C0C0;
+  --color-accent-bronze: #CD7F32;
+
+  /* 活動日マーカー */
+  --color-activity-login: #FFD700;
+  --color-activity-diary: #FF9F40;
+  --color-activity-both: #FF6B6B;
+  --color-activity-none: #E0E0E0;
+
+  /* バッジカラー */
+  --color-badge-gold: #FFD700;
+  --color-badge-silver: #C0C0C0;
+  --color-badge-bronze: #CD7F32;
+  --color-badge-platinum: #E5E4E2;
+
+  /* システムカラー */
+  --color-success: #4CAF50;
+  --color-warning: #FFC107;
+  --color-error: #F44336;
+  --color-info: #2196F3;
+
+  /* レイアウト */
+  --sidebar-width: 240px;
+  --header-height: 60px;
+
+  /* ブレークポイント（JS用） */
+  --breakpoint-mobile: 640px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+
+  /* シャドウ */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+
+  /* ボーダー */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-full: 9999px;
+
+  /* スペーシング */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+
+  /* フォントサイズ */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 30px;
+  --font-size-4xl: 36px;
+  --font-size-huge: 72px;
+
+  /* フォントウェイト */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* トランジション */
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 250ms ease-in-out;
+  --transition-slow: 350ms ease-in-out;
+}
