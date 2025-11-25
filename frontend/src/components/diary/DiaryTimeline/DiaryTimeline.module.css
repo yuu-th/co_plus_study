@@ -3,8 +3,6 @@
   flex-direction: column;
   gap: var(--spacing-md);
 }
-.group {
-}
 .groupTitle {
   font-weight: 600;
   margin-bottom: 4px;
