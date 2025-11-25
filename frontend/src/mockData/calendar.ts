@@ -1,7 +1,7 @@
 // カレンダー・活動記録のモックデータ
 // イメージ図に基づく: 連続ログイン953日、9月・8月・7月の活動日
 
-import type { CalendarData, ActivityDay, DayActivity, MonthData } from '../types';
+import type { ActivityDay, CalendarData, DayActivity, MonthData } from '../types';
 
 // 9月の活動日（イメージ図に基づく）
 const september2025Activities: ActivityDay[] = [

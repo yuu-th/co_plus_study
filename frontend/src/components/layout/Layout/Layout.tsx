@@ -1,9 +1,9 @@
 // Layoutコンポーネント - 全ページ共通レイアウト
 
 import { useState } from 'react';
-import Sidebar from '../Sidebar';
-import Header from '../Header';
 import { mockCurrentUser } from '../../../mockData/users';
+import Header from '../Header';
+import Sidebar from '../Sidebar';
 import styles from './Layout.module.css';
 
 interface LayoutProps {

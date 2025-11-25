@@ -1,9 +1,9 @@
 // CalendarView - カレンダータブの表示
 
+import type { CalendarData, MonthData } from '../../../types';
 import ContinuousCounter from '../ContinuousCounter';
 import MonthlyCalendar from '../MonthlyCalendar';
 import WeeklyActivity from '../WeeklyActivity';
-import type { CalendarData, MonthData } from '../../../types';
 import styles from './CalendarView.module.css';
 
 interface CalendarViewProps {

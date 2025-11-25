@@ -1,0 +1,25 @@
+.msg {
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-md, 8px);
+  max-width: 70%;
+  position: relative;
+}
+.student {
+  background: #e8f4ff;
+  align-self: flex-start;
+}
+.mentor {
+  background: #f5f0ff;
+  align-self: flex-end;
+}
+.name {
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.time {
+  font-size: 0.6rem;
+  color: #666;
+  margin-top: 4px;
+  text-align: right;
+}

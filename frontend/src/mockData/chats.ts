@@ -1,6 +1,6 @@
 // チャットのモックデータ
 
-import type { Message, ChatRoom } from '../types';
+import type { ChatRoom, Message } from '../types';
 
 export const mockMessages: Message[] = [
   {

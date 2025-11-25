@@ -1,0 +1,13 @@
+.inputBar {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+}
+.text {
+  flex: 1;
+  resize: none;
+  min-height: 60px;
+  padding: var(--spacing-sm);
+}
+.sendBtn {
+}

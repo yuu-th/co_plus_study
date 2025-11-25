@@ -9,11 +9,30 @@
   margin: 0 0 var(--spacing-lg) 0;
 }
 
-.comingSoon {
-  font-size: var(--font-size-lg);
-  color: var(--color-text-secondary);
-  text-align: center;
-  padding: var(--spacing-2xl);
-  background-color: var(--color-bg-secondary);
-  border-radius: var(--border-radius-lg);
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  flex: 1;
+}
+.side {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .side {
+    display: block;
+    width: 320px;
+    position: sticky;
+    top: var(--spacing-lg);
+  }
 }

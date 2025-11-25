@@ -2,9 +2,9 @@
 
 :root {
   /* 背景・ベース */
-  --color-bg-primary: #FFFFFF;
-  --color-bg-secondary: #E8F4F8;
-  --color-bg-tertiary: #F5FEFF;
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #e8f4f8;
+  --color-bg-tertiary: #f5feff;
 
   /* テキスト */
   --color-text-primary: #333333;
@@ -12,29 +12,34 @@
   --color-text-light: #999999;
 
   /* アクセント */
-  --color-accent-blue: #4DB8E8;
-  --color-accent-orange: #FF9F40;
-  --color-accent-gold: #FFD700;
-  --color-accent-silver: #C0C0C0;
-  --color-accent-bronze: #CD7F32;
+  --color-accent-blue: #4db8e8;
+  --color-accent-orange: #ff9f40;
+  --color-accent-gold: #ffd700;
+  --color-accent-silver: #c0c0c0;
+  --color-accent-bronze: #cd7f32;
 
   /* 活動日マーカー */
-  --color-activity-login: #FFD700;
-  --color-activity-diary: #FF9F40;
-  --color-activity-both: #FF6B6B;
-  --color-activity-none: #E0E0E0;
+  --color-activity-login: #ffd700;
+  --color-activity-diary: #ff9f40;
+  --color-activity-both: #ff6b6b;
+  --color-activity-none: #e0e0e0;
 
   /* バッジカラー */
-  --color-badge-gold: #FFD700;
-  --color-badge-silver: #C0C0C0;
-  --color-badge-bronze: #CD7F32;
-  --color-badge-platinum: #E5E4E2;
+  --color-badge-gold: #ffd700;
+  --color-badge-silver: #c0c0c0;
+  --color-badge-bronze: #cd7f32;
+  --color-badge-platinum: #e5e4e2;
 
   /* システムカラー */
-  --color-success: #4CAF50;
-  --color-warning: #FFC107;
-  --color-error: #F44336;
-  --color-info: #2196F3;
+  --color-success: #4caf50;
+  --color-warning: #ffc107;
+  --color-error: #f44336;
+  --color-info: #2196f3;
+  /* 通知カテゴリカラー */
+  --color-notification-info: #2196f3; /* 青 */
+  --color-notification-important: #f44336; /* 赤 */
+  --color-notification-event: #4caf50; /* 緑 */
+  --color-notification-achievement: #ffd700; /* 金 */
 
   /* レイアウト */
   --sidebar-width: 240px;

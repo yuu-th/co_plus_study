@@ -1,0 +1,25 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  border: 1px solid #ddd;
+  background: #f7f7f7;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+.btn:hover {
+  background: #eee;
+}
+.active {
+  background: #ffe0b3;
+  border-color: #ffc066;
+}
+.emoji {
+  font-size: 0.9rem;
+}
+.count {
+  font-weight: 600;
+}

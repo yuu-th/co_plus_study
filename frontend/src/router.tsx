@@ -2,13 +2,13 @@
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Layout from './components/layout/Layout';
-import HomePage from './pages/HomePage';
 import ArchivePage from './pages/ArchivePage';
-import DiaryPage from './pages/DiaryPage';
 import ChatPage from './pages/ChatPage';
+import DiaryPage from './pages/DiaryPage';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
 import SurveyPage from './pages/SurveyPage';
 import TutorialPage from './pages/TutorialPage';
-import LoginPage from './pages/LoginPage';
 
 const router = createBrowserRouter([
   {

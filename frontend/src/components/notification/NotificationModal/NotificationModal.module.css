@@ -1,0 +1,17 @@
+.content {
+  padding: var(--spacing-md);
+}
+.title {
+  font-weight: 600;
+  margin: 0 0 var(--spacing-sm);
+}
+.meta {
+  font-size: 0.7rem;
+  color: var(--color-text-secondary, #666);
+  margin-bottom: var(--spacing-sm);
+}
+.actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}

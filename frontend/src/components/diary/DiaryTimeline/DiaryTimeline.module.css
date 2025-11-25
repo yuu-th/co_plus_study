@@ -1,0 +1,28 @@
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+.group {
+}
+.groupTitle {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.posts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+.loadMore {
+  margin-top: var(--spacing-sm);
+  text-align: center;
+}
+.filters {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+.subjectFilter {
+  min-width: 140px;
+}

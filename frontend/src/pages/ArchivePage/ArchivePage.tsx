@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import CalendarView from '../../components/archive/CalendarView';
 import SkillView from '../../components/archive/SkillView';
-import { mockCalendarData, mockMonthlyData } from '../../mockData/calendar';
 import { mockBadges } from '../../mockData/badges';
+import { mockCalendarData, mockMonthlyData } from '../../mockData/calendar';
 import styles from './ArchivePage.module.css';
 
 type TabType = 'calendar' | 'skill';

@@ -1,0 +1,18 @@
+.wrapper {
+  text-align: center;
+  padding: var(--spacing-lg);
+  border: 1px dashed var(--color-border, #ccc);
+  border-radius: var(--border-radius-md, 8px);
+  background: var(--color-bg-secondary, #f9f9f9);
+}
+.icon {
+  font-size: 2rem;
+  margin-bottom: var(--spacing-sm);
+}
+.message {
+  margin: 0 0 var(--spacing-sm);
+  color: var(--color-text-secondary, #666);
+}
+.actionBtn {
+  margin-top: var(--spacing-sm);
+}

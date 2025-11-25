@@ -1,7 +1,7 @@
 // SkillView - スキル（バッジ）タブの表示
 
-import BadgeCard from '../BadgeCard';
 import type { Badge } from '../../../types';
+import BadgeCard from '../BadgeCard';
 import styles from './SkillView.module.css';
 
 interface SkillViewProps {

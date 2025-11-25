@@ -1,7 +1,7 @@
 // Sidebarコンポーネント
 
+import { FaArchive, FaBook, FaClipboardList, FaComments, FaHome } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
-import { FaHome, FaBook, FaComments, FaArchive, FaClipboardList } from 'react-icons/fa';
 import styles from './Sidebar.module.css';
 
 interface NavItem {
