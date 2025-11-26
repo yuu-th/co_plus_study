@@ -1,6 +1,7 @@
 // ルーティング設定
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import ErrorBoundary from './components/common/ErrorBoundary';
 import Layout from './components/layout/Layout';
 import ArchivePage from './pages/ArchivePage';
 import ChatPage from './pages/ChatPage';
@@ -16,28 +17,34 @@ const router = createBrowserRouter([
     element: <LoginPage />,
   },
   {
-    path: '/',
-    element: <Layout><HomePage /></Layout>,
-  },
-  {
-    path: '/archive',
-    element: <Layout><ArchivePage /></Layout>,
-  },
-  {
-    path: '/diary',
-    element: <Layout><DiaryPage /></Layout>,
-  },
-  {
-    path: '/chat',
-    element: <Layout><ChatPage /></Layout>,
-  },
-  {
-    path: '/survey',
-    element: <Layout><SurveyPage /></Layout>,
-  },
-  {
-    path: '/tutorial',
-    element: <Layout><TutorialPage /></Layout>,
+    element: <Layout />,
+    errorElement: <ErrorBoundary />,
+    children: [
+      {
+        path: '/',
+        element: <HomePage />,
+      },
+      {
+        path: '/archive',
+        element: <ArchivePage />,
+      },
+      {
+        path: '/diary',
+        element: <DiaryPage />,
+      },
+      {
+        path: '/chat',
+        element: <ChatPage />,
+      },
+      {
+        path: '/survey',
+        element: <SurveyPage />,
+      },
+      {
+        path: '/tutorial',
+        element: <TutorialPage />,
+      },
+    ],
   },
 ]);
 
