@@ -1,16 +1,13 @@
 // Layoutコンポーネント - 全ページ共通レイアウト
 
 import { useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import { mockCurrentUser } from '../../../mockData/users';
 import Header from '../Header';
 import Sidebar from '../Sidebar';
 import styles from './Layout.module.css';
 
-import { Outlet } from 'react-router-dom';
-
-interface LayoutProps {}
-
-const Layout = ({}: LayoutProps) => {
+const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handleMenuClick = () => {
