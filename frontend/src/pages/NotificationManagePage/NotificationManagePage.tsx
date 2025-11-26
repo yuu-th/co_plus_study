@@ -1,8 +1,8 @@
-import MentorLayout from '../../../components/layout/MentorLayout';
-import NotificationEditor from '../../../components/mentor/NotificationEditor';
-import NotificationList from '../../../components/notification/NotificationList';
-import { useNotifications } from '../../../hooks/useNotifications';
-import type { NotificationDraft } from '../../../types';
+import MentorLayout from '../../components/layout/MentorLayout';
+import NotificationEditor from '../../components/mentor/NotificationEditor';
+import NotificationList from '../../components/notification/NotificationList';
+import { useNotifications } from '../../hooks/useNotifications';
+import type { NotificationDraft } from '../../types';
 import styles from './NotificationManagePage.module.css';
 
 const NotificationManagePage = () => {
@@ -32,7 +32,7 @@ const NotificationManagePage = () => {
 
         <section className={styles.listSection}>
           <h2 className={styles.sectionTitle}>配信済み一覧</h2>
-          <NotificationList notifications={notifications} />
+          <NotificationList notifications={notifications} onOpen={() => {}} />
         </section>
       </div>
     </MentorLayout>

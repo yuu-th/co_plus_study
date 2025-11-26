@@ -1,0 +1,82 @@
+.statsContainer {
+  display: flex;
+  gap: var(--spacing-lg);
+  background-color: var(--color-bg-secondary);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-md);
+}
+
+.continuousDays {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-bg-tertiary);
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: var(--border-radius-md);
+  min-width: 120px;
+}
+
+.daysValue {
+  font-size: var(--font-size-xxl);
+  font-weight: bold;
+  color: var(--color-accent-orange);
+}
+
+.daysLabel {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.subjectBreakdown {
+  flex-grow: 1;
+}
+
+.breakdownTitle {
+  margin: 0 0 var(--spacing-md) 0;
+  font-size: var(--font-size-md);
+  color: var(--color-text-primary);
+}
+
+.subjectList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.subjectItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+}
+
+.subjectName {
+  width: 60px;
+  text-align: right;
+  color: var(--color-text-secondary);
+}
+
+.barContainer {
+  flex-grow: 1;
+  background-color: var(--color-bg-tertiary);
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+  height: 20px;
+}
+
+.bar {
+  height: 100%;
+  background-color: var(--color-accent-blue);
+  border-radius: var(--border-radius-sm);
+}
+
+.subjectHours {
+  width: 40px;
+  text-align: left;
+  font-weight: bold;
+  color: var(--color-text-primary);
+}
