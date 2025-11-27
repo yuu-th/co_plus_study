@@ -1,12 +1,12 @@
 // @see specs/features/mentor.md
 
 import { Link } from 'react-router-dom';
+import Button from '../../components/common/Button';
+import DiaryPostCard from '../../components/diary/DiaryPostCard';
 import MentorLayout from '../../components/layout/MentorLayout';
 import StudentCard from '../../components/mentor/StudentCard';
-import DiaryPostCard from '../../components/diary/DiaryPostCard';
-import Button from '../../components/common/Button';
-import { mockStudents } from '../../mockData/mentors';
 import { mockDiaryPosts } from '../../mockData/diaries';
+import { mockStudents } from '../../mockData/mentors';
 import styles from './MentorDashboardPage.module.css';
 
 const MentorDashboardPage = () => {

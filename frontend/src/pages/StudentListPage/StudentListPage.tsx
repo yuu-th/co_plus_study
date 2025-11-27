@@ -1,8 +1,8 @@
 // @see specs/features/mentor.md (section 5)
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import MentorLayout from '../../components/layout/MentorLayout';
 import Card from '../../components/common/Card';
+import MentorLayout from '../../components/layout/MentorLayout';
 import { mockStudents } from '../../mockData/mentors';
 import type { StudentSummary } from '../../types';
 import styles from './StudentListPage.module.css';

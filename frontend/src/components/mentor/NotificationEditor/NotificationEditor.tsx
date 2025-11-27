@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import type { NotificationDraft, NotificationCategory, Notification } from '../../../types';
 import NotificationCard from '../../../components/notification/NotificationCard';
+import type { Notification, NotificationCategory, NotificationDraft } from '../../../types';
 import styles from './NotificationEditor.module.css';
 
 interface NotificationEditorProps {

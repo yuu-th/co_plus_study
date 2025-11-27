@@ -1,10 +1,10 @@
 // @see specs/features/mentor.md (section 5)
 
 import { Link, useParams } from 'react-router-dom';
-import { mockStudentDetails } from '../../mockData/mentors';
 import DiaryPostCard from '../../components/diary/DiaryPostCard';
 import MentorLayout from '../../components/layout/MentorLayout';
 import StudentStats from '../../components/mentor/StudentStats';
+import { mockStudentDetails } from '../../mockData/mentors';
 import styles from './StudentDetailPage.module.css';
 
 const getInitials = (name: string) => {
