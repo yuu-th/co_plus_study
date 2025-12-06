@@ -1,7 +1,7 @@
 // @see specs/features/survey.md
 // QuestionItem - アンケート質問項目
 
-import type { Answer, Question } from '../../types/survey';
+import type { Answer, Question } from '../../../types/survey';
 import StarRating from '../StarRating';
 import styles from './QuestionItem.module.css';
 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { DiaryFormData, DiaryPost, Reaction } from '@/shared/types';
 import { hmToMinutes, minutesToHM, minutesToJapanese } from '@/shared/utils/formatTime';
-import { mockSubjects } from '../../mockData/diaries';
+import { mockSubjects } from '../../../mockData/diaries';
 import styles from './DiaryPostForm.module.css';
 
 interface DiaryPostFormProps {

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import type { Answer, Survey, SurveyResponse } from '../../types/survey';
+import type { Answer, Survey, SurveyResponse } from '../../../types/survey';
 import QuestionItem from '../QuestionItem';
 import styles from './SurveyForm.module.css';
 
