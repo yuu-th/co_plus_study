@@ -1,0 +1,41 @@
+.inputBar {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+}
+
+.text {
+    flex: 1;
+    resize: none;
+    min-height: 60px;
+    padding: var(--spacing-sm);
+    border: 1px solid var(--color-bg-secondary);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-primary);
+}
+
+.text::placeholder {
+    color: var(--color-text-light);
+}
+
+.sendBtn {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background-color: var(--color-accent-blue);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: background-color var(--transition-base);
+}
+
+.sendBtn:hover:not(:disabled) {
+    background-color: var(--color-accent-orange);
+}
+
+.sendBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

@@ -1,0 +1,24 @@
+.badge {
+    position: relative;
+    background: none;
+    border: none;
+    font-size: var(--font-size-xl);
+    cursor: pointer;
+    padding: var(--spacing-sm);
+}
+
+.count {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: var(--color-error);
+    color: white;
+    border-radius: var(--border-radius-full);
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+}

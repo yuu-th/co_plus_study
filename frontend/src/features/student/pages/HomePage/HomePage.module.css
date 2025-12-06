@@ -1,0 +1,95 @@
+.page {
+    padding: var(--spacing-xl);
+}
+
+.title {
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-accent-blue);
+    margin: 0 0 var(--spacing-sm) 0;
+    text-align: center;
+}
+
+.subtitle {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-2xl) 0;
+    text-align: center;
+}
+
+/* チュートリアルバナー */
+.tutorialBanner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    background: var(--color-accent-blue-light);
+    border: 2px solid var(--color-accent-blue);
+    border-radius: var(--border-radius-lg);
+    margin-bottom: var(--spacing-2xl);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.tutorialContent {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.tutorialIcon {
+    font-size: var(--font-size-3xl);
+}
+
+.tutorialText {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.tutorialText strong {
+    color: var(--color-accent-blue);
+    font-size: var(--font-size-lg);
+}
+
+.tutorialText p {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-xl);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.description {
+    margin: 0 0 var(--spacing-lg) 0;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+/* モバイル対応 */
+@media (max-width: 640px) {
+    .title {
+        font-size: var(--font-size-3xl);
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tutorialBanner {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .tutorialContent {
+        flex-direction: column;
+    }
+}

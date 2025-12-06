@@ -1,0 +1,18 @@
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-md);
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-bg-secondary);
+    border-radius: var(--border-radius-md);
+    height: 400px;
+    overflow-y: auto;
+}
+
+.empty {
+    text-align: center;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    padding: var(--spacing-xl);
+}

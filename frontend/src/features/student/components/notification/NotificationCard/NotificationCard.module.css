@@ -1,0 +1,64 @@
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-md);
+    border: 1px solid var(--color-bg-secondary);
+    border-radius: var(--border-radius-md);
+    background: var(--color-bg-primary);
+    cursor: pointer;
+    position: relative;
+    transition: background-color var(--transition-fast);
+}
+
+.card:hover {
+    background-color: var(--color-bg-secondary);
+}
+
+.badge {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    position: absolute;
+    top: var(--spacing-md);
+    left: var(--spacing-md);
+}
+
+.info {
+    background-color: var(--color-accent-blue);
+}
+
+.important {
+    background-color: var(--color-error);
+}
+
+.event {
+    background-color: var(--color-accent-orange);
+}
+
+.achievement {
+    background-color: var(--color-success);
+}
+
+.title {
+    margin: 0 0 0 var(--spacing-lg);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+}
+
+.messageSnippet {
+    margin: 0 0 0 var(--spacing-lg);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.unreadDot {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    width: 8px;
+    height: 8px;
+    background-color: var(--color-accent-blue);
+    border-radius: 50%;
+}

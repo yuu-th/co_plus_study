@@ -1,0 +1,101 @@
+.header {
+    position: fixed;
+    top: 0;
+    left: var(--sidebar-width);
+    right: 0;
+    height: var(--header-height);
+    background-color: var(--color-bg-primary);
+    border-bottom: 1px solid var(--color-bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--spacing-lg);
+    z-index: 90;
+    box-shadow: var(--shadow-sm);
+}
+
+.leftSection {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.rightSection {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.menuButton {
+    display: none;
+    background: none;
+    border: none;
+    font-size: var(--font-size-2xl);
+    color: var(--color-accent-blue);
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-md);
+    transition: background-color var(--transition-base);
+}
+
+.menuButton:hover {
+    background-color: var(--color-bg-secondary);
+}
+
+.logoButton {
+    background: none;
+    border: none;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-accent-blue);
+    cursor: pointer;
+    transition: opacity var(--transition-base);
+    padding: var(--spacing-sm);
+}
+
+.logoButton:hover {
+    opacity: 0.8;
+}
+
+.userButton {
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+    color: var(--color-text-primary);
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-md);
+    transition: background-color var(--transition-base);
+}
+
+.userButton:hover {
+    background-color: var(--color-bg-secondary);
+}
+
+.userIcon {
+    font-size: var(--font-size-lg);
+    color: var(--color-accent-blue);
+}
+
+.userName {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+    .header {
+        left: 0;
+    }
+
+    .menuButton {
+        display: block;
+    }
+
+    .logoButton {
+        font-size: var(--font-size-lg);
+    }
+}
