@@ -1,4 +1,4 @@
-// ArchivePage - ARCHIVEページ（カレンダー/スキルタブ）
+// ArchivePage - 実績ページ（カレンダー/スキルタブ）
 
 import { useState } from 'react';
 import CalendarView from '../../components/archive/CalendarView';
@@ -15,7 +15,7 @@ const ArchivePage = () => {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <h1 className={styles.title}>ARCHIVE</h1>
+        <h1 className={styles.title}>実績</h1>
         <div className={styles.tabs}>
           <button
             className={`${styles.tab} ${activeTab === 'calendar' ? styles.active : ''}`}

@@ -1,3 +1,7 @@
+---
+agent: agent
+---
+
 # サブエージェント プロンプト
 
 > **使い方**: このファイルと、実行するタスクファイル（`project/backlog/todo/*.md` or `doing/*.md`）をAIに渡す。

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { mockCurrentUser } from '../../../mockData/users';
+import { TutorialProvider } from '../../tutorial/TutorialProvider';
 import Header from '../Header';
 import Sidebar from '../Sidebar';
 import styles from './Layout.module.css';
@@ -19,13 +20,15 @@ const Layout = () => {
   };
 
   return (
-    <div className={styles.layout}>
-      <Sidebar isOpen={isSidebarOpen} onClose={handleSidebarClose} />
-      <div className={styles.mainWrapper}>
-        <Header onMenuClick={handleMenuClick} userName={mockCurrentUser.name} />
-        <main className={styles.main}><Outlet /></main>
+    <TutorialProvider>
+      <div className={styles.layout}>
+        <Sidebar isOpen={isSidebarOpen} onClose={handleSidebarClose} />
+        <div className={styles.mainWrapper}>
+          <Header onMenuClick={handleMenuClick} userName={mockCurrentUser.name} />
+          <main className={styles.main}><Outlet /></main>
+        </div>
       </div>
-    </div>
+    </TutorialProvider>
   );
 };
 

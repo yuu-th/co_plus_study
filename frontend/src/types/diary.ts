@@ -1,26 +1,51 @@
-// 学習日報 (Phase 2) 型定義
-// 既存の DiaryEntry 系は新仕様へ統合されたため削除し、DiaryPost/Reaction ベースに刷新。
+// @see specs/features/diary.md
 
-/** 絵文字リアクション種別 */
+/**
+ * 絵文字リアクション種別
+ * @see specs/features/diary.md
+ */
 export type ReactionType = '👍' | '❤️' | '🎉' | '👏' | '🔥';
 
-/** リアクション単位 */
+/**
+ * ユーザーからの単一リアクション情報
+ * @see specs/features/diary.md
+ */
 export interface Reaction {
+  /** リアクションタイプ */
   type: ReactionType;
-  count: number; // 表示用集計カウント
-  userIds: string[]; // リアクションしたメンター等のユーザーID
+  /** 表示用集計カウント */
+  count: number;
+  /** リアクションしたユーザーID配列 */
+  userIds: string[];
+  /** メンター側のリアクション判定 */
+  isMentorReaction?: boolean;
 }
 
-/** SNS風日報投稿 */
+/**
+ * 学習日報投稿
+ * @see specs/features/diary.md
+ */
 export interface DiaryPost {
+  /** 投稿の一意識別子 */
   id: string;
+  /** 投稿者のユーザーID */
   userId: string;
-  userName: string; // 表示用（生徒名）
-  subject: string; // 教科
-  duration: number; // 分
-  content: string; // 本文 (<=500文字想定)
-  timestamp: string; // ISO8601 (例: 2025-09-29T14:30:00Z)
-  reactions: Reaction[]; // リアクション配列
+  /** 投稿者の表示名（生徒名） */
+  userName: string;
+  /** 教科 */
+  subject: string;
+  /** 学習時間（分単位） */
+  duration: number;
+  /** 学習内容（最大500文字） */
+  content: string;
+  /** 投稿日時（ISO8601） */
+  timestamp: string;
+  /**
+   * リアクション配列
+   * ※ UI表示: ユーザー側は reactions 非表示、代わりに◎表示
+   * メンター側のみ reactions 操作可能
+   */
+  reactions: Reaction[];
 }
 
 /** 日付単位でグループ化された投稿集合 */

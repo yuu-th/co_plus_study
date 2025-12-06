@@ -1,0 +1,48 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 998;
+  pointer-events: none;
+}
+
+.fullOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  pointer-events: all;
+}
+
+.maskedOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  pointer-events: all;
+}
+
+.highlightBox {
+  position: fixed;
+  border: 3px solid var(--color-accent-orange);
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 0 0 4px rgba(255, 159, 64, 0.3), 0 0 20px rgba(255, 159, 64, 0.4);
+  animation: pulse 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 4px rgba(255, 159, 64, 0.3), 0 0 20px rgba(255, 159, 64, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(255, 159, 64, 0.2), 0 0 30px rgba(255, 159, 64, 0.5);
+  }
+}

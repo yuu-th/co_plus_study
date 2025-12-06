@@ -64,12 +64,11 @@ shared/*.md          ← 「どう作るか」（葉）
 {project-root}/
 │
 ├── .github/
-│   └── copilot-instructions.md    # AI向け指示書（参照リンク集）
-│
-├── .prompts/                       # ★ AIエージェント用プロンプト
-│   ├── README.md                  # 使い方ガイド
-│   ├── orchestrator.md            # オーケストレーター用（タスク分解）
-│   └── subagent.md                # サブエージェント用（タスク実行）
+│   ├── copilot-instructions.md    # AI向け指示書（参照リンク集）
+│   └── prompts/                       # ★ AIエージェント用プロンプト
+│       ├── README.md                  # 使い方ガイド
+│       ├── orchestrator.prompt.md            # オーケストレーター用（タスク分解）
+│       └── subagent.prompt.md                # サブエージェント用（タスク実行）
 │
 ├── specs/                          # ★ 仕様の唯一の源
 │   ├── overview.md                # ★ システム全体像（最重要）
@@ -535,8 +534,8 @@ const Card: React.FC<CardProps> = () => {};
 
 | エージェント | 役割 | 渡すファイル |
 |-------------|------|-------------|
-| **オーケストレーター** | タスク分解・計画 | `.prompts/orchestrator.md` |
-| **サブエージェント** | タスク実行 | `.prompts/subagent.md` + タスクファイル |
+| **オーケストレーター** | タスク分解・計画 | `.github/prompts/orchestrator.prompt.md` |
+| **サブエージェント** | タスク実行 | `.github/prompts/subagent.prompt.md` + タスクファイル |
 
 **重要な分離原則:**
 - オーケストレーターは **計画のみ** 行い、コードを書かない
@@ -573,7 +572,7 @@ feature-page.md      (depends_on: [feature-mock, feature-card])
 
 ---
 
-## 4.3 `.prompts/README.md`
+## 4.3 `.github/prompts/README.md`
 
 ```markdown
 # プロンプトファイル
@@ -584,20 +583,20 @@ feature-page.md      (depends_on: [feature-mock, feature-card])
 
 | ファイル | 用途 | 渡す対象 |
 |----------|------|----------|
-| `orchestrator.md` | タスク分解・計画 | 計画担当AI |
-| `subagent.md` | タスク実行 | 実装担当AI |
+| `orchestrator.prompt.md` | タスク分解・計画 | 計画担当AI |
+| `subagent.prompt.md` | タスク実行 | 実装担当AI |
 
 ## 使い方
 
 ### オーケストレーター（タスク分解）
 
-1. `orchestrator.md` をAIに渡す
+1. `orchestrator.prompt.md` をAIに渡す
 2. 実行したいタスクを伝える
 3. AIがタスクを分解し、`project/backlog/todo/*.md` を生成
 
 ### サブエージェント（タスク実行）
 
-1. `subagent.md` + タスクファイル（`project/backlog/todo/*.md`）をAIに渡す
+1. `subagent.prompt.md` + タスクファイル（`project/backlog/todo/*.md`）をAIに渡す
 2. AIがタスクを実行
 3. 完了報告を受け取る
 
@@ -607,13 +606,13 @@ feature-page.md      (depends_on: [feature-mock, feature-card])
 [ユーザー]
     │
     ▼ 依頼
-[orchestrator.md を渡す]
+[orchestrator.prompt.md を渡す]
     │
     ▼ タスク分解・依存関係特定
 [project/backlog/todo/*.md が生成される]
     │
     ▼ 実行可能タスクを doing/ に移動
-[subagent.md + タスクファイル を渡す] ×並列
+[subagent.prompt.md + タスクファイル を渡す] ×並列
     │
     ▼ 実装
 [完了したタスクを done/ に移動]
@@ -624,7 +623,7 @@ feature-page.md      (depends_on: [feature-mock, feature-card])
 
 ---
 
-## 4.4 `.prompts/orchestrator.md`
+## 4.4 `.github/prompts/orchestrator.prompt.md`
 
 ```markdown
 # オーケストレーター プロンプト
@@ -804,7 +803,7 @@ created_at: {YYYY-MM-DD}
 ## タスク実行の手順（人間向け）
 
 1. 「今すぐ実行可能なタスク」を `doing/` に移動
-2. 各タスクファイルを **サブエージェント** に渡す（`.prompts/subagent.md` + タスクファイル）
+2. 各タスクファイルを **サブエージェント** に渡す（`.github/prompts/subagent.prompt.md` + タスクファイル）
 3. 完了したタスクを `done/` に移動
 4. 新たに「実行可能」になったタスクを確認し、繰り返す
 
@@ -815,7 +814,7 @@ created_at: {YYYY-MM-DD}
 
 ---
 
-## 4.5 `.prompts/subagent.md`
+## 4.5 `.github/prompts/subagent.prompt.md`
 
 ```markdown
 # サブエージェント プロンプト
@@ -954,7 +953,7 @@ created_at: {YYYY-MM-DD}
 
 **大きな機能や複数タスクがある場合**
 
-1. `.prompts/orchestrator.md` をAIに渡す
+1. `.github/prompts/orchestrator.prompt.md` をAIに渡す
 2. 実装したい機能を依頼
 3. オーケストレーターがタスクを分解し、`todo/` にファイルを生成
 4. 生成されたタスクをサブエージェントに渡して実行
@@ -963,7 +962,7 @@ created_at: {YYYY-MM-DD}
 
 **単発タスクの場合**
 
-1. `.prompts/subagent.md` + `todo/` 内のタスクファイルをAIに渡す
+1. `.github/prompts/subagent.prompt.md` + `todo/` 内のタスクファイルをAIに渡す
 2. AIがタスクを実行
 
 ---
@@ -1036,14 +1035,14 @@ todo/mentor-card.md     depends_on: [mentor-types] → 実行可能
 ユーザー依頼
     ↓
 ┌─────────────────────────────────────┐
-│ .prompts/orchestrator.md をAIに渡す │
+│ .github/prompts/orchestrator.prompt.md をAIに渡す │
 │ → タスク分解・依存関係特定          │
 │ → todo/ にタスクファイル生成        │
 └─────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────┐
 │ 実行可能タスクを doing/ に移動      │
-│ → .prompts/subagent.md + タスクを   │
+│ → .github/prompts/subagent.prompt.md + タスクを   │
 │   サブAIに渡す                      │
 │ → サブAIが実行・報告                │
 └─────────────────────────────────────┘
@@ -1075,8 +1074,8 @@ mentor-page.md       # mentor機能, ページ
 
 | ファイル | 用途 |
 |----------|------|
-| `.prompts/orchestrator.md` | オーケストレーターへの指示書 |
-| `.prompts/subagent.md` | サブエージェントへの指示書 |
+| `.github/prompts/orchestrator.prompt.md` | オーケストレーターへの指示書 |
+| `.github/prompts/subagent.prompt.md` | サブエージェントへの指示書 |
 | `specs/overview.md` | システム全体像（全タスク共通の必読） |
 | `specs/shared/conventions.md` | コーディング規約（全タスク共通の必読） |
 ```
@@ -1323,10 +1322,10 @@ YYYY-MM-DD
 ```
 1. specs/features/{機能名}.md を作成（仕様を書く）
 2. specs/overview.md の機能一覧に追加
-3. .prompts/orchestrator.md をAIに渡し、機能を依頼
+3. .github/prompts/orchestrator.prompt.md をAIに渡し、機能を依頼
 4. オーケストレーターが project/backlog/todo/ にタスクファイルを生成
 5. 実行可能なタスク（depends_on 解決済み）を doing/ に移動
-6. .prompts/subagent.md + タスクファイルをAIに渡して実行
+6. .github/prompts/subagent.prompt.md + タスクファイルをAIに渡して実行
 7. 完了したタスクを done/ に移動
 8. 新たに実行可能になったタスクを確認し繰り返す
 9. 全タスク完了後、changelog.md に記録
@@ -1380,9 +1379,9 @@ YYYY-MM-DD
 ### 必須ファイル
 
 - [ ] `.github/copilot-instructions.md` - プロジェクト固有の情報を記入
-- [ ] `.prompts/README.md` - そのまま使用
-- [ ] `.prompts/orchestrator.md` - そのまま使用
-- [ ] `.prompts/subagent.md` - そのまま使用
+- [ ] `.github/prompts/README.md` - そのまま使用
+- [ ] `.github/prompts/orchestrator.prompt.md` - そのまま使用
+- [ ] `.github/prompts/subagent.prompt.md` - そのまま使用
 - [ ] `specs/overview.md` - **★最重要** システム全体像を詳細に記述
 - [ ] `specs/README.md` - そのまま使用
 - [ ] `specs/shared/conventions.md` - プロジェクト固有のルールを記入
@@ -1471,6 +1470,6 @@ AIは前のセッションの文脈を覚えていません。毎回「最初に
 |------|----------|
 | 2025-11-26 | Wave方式を廃止、depends_on（依存関係）ベースに全面移行 |
 | 2025-11-26 | AIエージェント運用システム（オーケストレーター/サブエージェント）を追加 |
-| 2025-11-26 | .prompts/ ディレクトリ構成を追加 |
+| 2025-11-26 | .github/prompts/ ディレクトリ構成を追加 |
 | 2025-11-25 | overview.md の概念を追加 |
 | 2025-11-25 | 初版作成 |

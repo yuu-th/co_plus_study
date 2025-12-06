@@ -14,6 +14,18 @@
   box-shadow: var(--shadow-sm);
 }
 
+.leftSection {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
 .menuButton {
   display: none;
   background: none;
@@ -30,10 +42,36 @@
   background-color: var(--color-bg-secondary);
 }
 
-.userInfo {
+.logoButton {
+  background: none;
+  border: none;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-accent-blue);
+  cursor: pointer;
+  transition: opacity var(--transition-base);
+  padding: var(--spacing-sm);
+}
+
+.logoButton:hover {
+  opacity: 0.8;
+}
+
+.userButton {
+  background: none;
+  border: none;
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+  cursor: pointer;
+  color: var(--color-text-primary);
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-md);
+  transition: background-color var(--transition-base);
+}
+
+.userButton:hover {
+  background-color: var(--color-bg-secondary);
 }
 
 .userIcon {
@@ -55,5 +93,9 @@
 
   .menuButton {
     display: block;
+  }
+
+  .logoButton {
+    font-size: var(--font-size-lg);
   }
 }

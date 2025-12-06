@@ -20,22 +20,30 @@
 .weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: var(--spacing-xs);
+  gap: 2px;
   margin-bottom: var(--spacing-sm);
 }
 
 .weekday {
   text-align: center;
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-secondary);
-  padding: var(--spacing-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  padding: var(--spacing-sm);
+}
+
+.sundayHeader {
+  color: #d32f2f;
+}
+
+.saturdayHeader {
+  color: #1976d2;
 }
 
 .days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: var(--spacing-xs);
+  gap: 2px;
 }
 
 .dayCell {
@@ -43,6 +51,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 40px;
 }
 
 .day {
@@ -51,37 +60,52 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: var(--border-radius-sm);
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-  transition: all var(--transition-fast);
+  font-weight: var(--font-weight-bold);
+  transition: transform var(--transition-fast);
   cursor: pointer;
 }
 
 .day:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
-/* 活動日の色分け */
-.login {
-  background-color: var(--color-activity-login);
-  color: white;
+/* 活動なし: グレー */
+.inactive {
+  background-color: #e0e0e0;
+  color: #999999;
 }
 
-.diary {
-  background-color: var(--color-activity-diary);
-  color: white;
+/* 活動あり: 黄色 */
+.active {
+  background-color: #ffd54f;
+  color: var(--color-text-primary);
 }
 
-.both {
-  background-color: var(--color-activity-both);
-  color: white;
+/* 日曜日: 赤字 */
+.sunday {
+  color: #d32f2f;
+}
+
+/* 土曜日: 青字 */
+.saturday {
+  color: #1976d2;
+}
+
+/* 活動日かつ日曜・土曜の場合は背景色優先 */
+.active.sunday,
+.active.saturday {
+  color: var(--color-text-primary);
 }
 
 /* モバイル対応 */
 @media (max-width: 480px) {
   .day {
     font-size: var(--font-size-xs);
+  }
+
+  .dayCell {
+    min-height: 36px;
   }
 }

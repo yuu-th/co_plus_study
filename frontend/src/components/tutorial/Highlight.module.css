@@ -1,0 +1,55 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 999;
+}
+
+.overlayPart {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.highlightBox {
+  position: absolute;
+  border: 3px solid var(--color-accent-blue);
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 0 0 4px rgba(77, 184, 232, 0.3);
+  animation: highlightPulse 2s ease-in-out infinite;
+}
+
+@keyframes highlightPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 4px rgba(77, 184, 232, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(77, 184, 232, 0.2);
+  }
+}
+
+.tooltip {
+  position: absolute;
+  background-color: var(--color-text-primary);
+  color: var(--color-bg-primary);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  max-width: 280px;
+  box-shadow: var(--shadow-md);
+  pointer-events: auto;
+  z-index: 1000;
+}
+
+.tooltip::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: var(--spacing-md);
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid var(--color-text-primary);
+}

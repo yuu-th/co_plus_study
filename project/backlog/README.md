@@ -13,7 +13,7 @@
 
 **大きな機能や複数タスクがある場合**
 
-1. `.prompts/orchestrator.md` をAIに渡す
+1. `.github/prompts/orchestrator.prompt.md` をAIに渡す
 2. 実装したい機能を依頼
 3. オーケストレーターがタスクを分解し、`todo/` にファイルを生成
 4. 生成されたタスクをサブエージェントに渡して実行
@@ -22,7 +22,7 @@
 
 **単発タスクの場合**
 
-1. `.prompts/subagent.md` + `todo/` 内のタスクファイルをAIに渡す
+1. `.github/prompts/subagent.prompt.md` + `todo/` 内のタスクファイルをAIに渡す
 2. AIがタスクを実行
 
 ---
@@ -99,14 +99,14 @@ todo/mentor-card.md     depends_on: [mentor-types] → 実行可能
 ユーザー依頼
     ↓
 ┌─────────────────────────────────────┐
-│ .prompts/orchestrator.md をAIに渡す │
+│ .github/prompts/orchestrator.prompt.md をAIに渡す │
 │ → タスク分解・依存関係特定          │
 │ → todo/ にタスクファイル生成        │
 └─────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────┐
 │ 実行可能タスクを doing/ に移動      │
-│ → .prompts/subagent.md + タスクを   │
+│ → .github/prompts/subagent.prompt.md + タスクを   │
 │   サブAIに渡す                      │
 │ → サブAIが実行・報告                │
 └─────────────────────────────────────┘
@@ -168,7 +168,7 @@ mentor-page.md       # mentor機能, ページ
 
 | ファイル | 用途 |
 |----------|------|
-| `.prompts/orchestrator.md` | オーケストレーターへの指示書 |
-| `.prompts/subagent.md` | サブエージェントへの指示書 |
+| `.github/prompts/orchestrator.prompt.md` | オーケストレーターへの指示書 |
+| `.github/prompts/subagent.prompt.md` | サブエージェントへの指示書 |
 | `specs/overview.md` | システム全体像（全タスク共通の必読） |
 | `specs/shared/conventions.md` | コーディング規約（全タスク共通の必読） |

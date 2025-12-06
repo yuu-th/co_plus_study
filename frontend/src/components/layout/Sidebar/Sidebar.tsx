@@ -9,6 +9,7 @@ interface NavItem {
   label: string;
   icon: React.ReactNode;
   path: string;
+  tutorialId?: string; // チュートリアル用のdata属性
 }
 
 const navItems: NavItem[] = [
@@ -23,18 +24,21 @@ const navItems: NavItem[] = [
     label: '学習日報',
     icon: <FaBook />,
     path: '/diary',
+    tutorialId: 'nav-diary',
   },
   {
     id: 'chat',
     label: '相談',
     icon: <FaComments />,
     path: '/chat',
+    tutorialId: 'nav-chat',
   },
   {
     id: 'archive',
     label: 'ARCHIVE',
     icon: <FaArchive />,
     path: '/archive',
+    tutorialId: 'nav-archive',
   },
   {
     id: 'survey',
@@ -68,6 +72,7 @@ const Sidebar = ({ isOpen = true, onClose }: SidebarProps) => {
                 location.pathname === item.path ? styles.active : ''
               }`}
               onClick={onClose}
+              {...(item.tutorialId && { 'data-tutorial': item.tutorialId })}
             >
               <span className={styles.icon}>{item.icon}</span>
               <span className={styles.label}>{item.label}</span>
