@@ -1,0 +1,75 @@
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.medal {
+    position: relative;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-md);
+}
+
+.ribbon {
+    position: absolute;
+    bottom: -10px;
+    width: 40%;
+    height: 60%;
+    clip-path: polygon(0 0, 100% 0, 100% 80%, 50% 100%, 0 80%);
+}
+
+/* Sizes */
+.small .medal {
+    width: 40px;
+    height: 40px;
+}
+
+.medium .medal {
+    width: 60px;
+    height: 60px;
+}
+
+.large .medal {
+    width: 80px;
+    height: 80px;
+}
+
+/* Types - 金銀銅プラチナ */
+.gold .medal {
+    background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
+    border: 3px solid #daa520;
+}
+
+.gold .ribbon {
+    background: linear-gradient(180deg, #ffd700 0%, #daa520 100%);
+}
+
+.silver .medal {
+    background: linear-gradient(135deg, #e8e8e8 0%, #a8a8a8 100%);
+    border: 3px solid #909090;
+}
+
+.silver .ribbon {
+    background: linear-gradient(180deg, #c0c0c0 0%, #909090 100%);
+}
+
+.bronze .medal {
+    background: linear-gradient(135deg, #cd7f32 0%, #8b4513 100%);
+    border: 3px solid #a0522d;
+}
+
+.bronze .ribbon {
+    background: linear-gradient(180deg, #cd7f32 0%, #8b4513 100%);
+}
+
+.platinum .medal {
+    background: linear-gradient(135deg, #e5e4e2 0%, #b0b0b0 100%);
+    border: 3px solid #a0a0a0;
+}
+
+.platinum .ribbon {
+    background: linear-gradient(180deg, #e5e4e2 0%, #b0b0b0 100%);
+}
