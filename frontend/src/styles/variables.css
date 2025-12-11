@@ -34,12 +34,17 @@
   --color-success: #4caf50;
   --color-warning: #ffc107;
   --color-error: #f44336;
+  --color-error-bg: #ffebee;
   --color-info: #2196f3;
   /* 通知カテゴリカラー */
-  --color-notification-info: #2196f3; /* 青 */
-  --color-notification-important: #f44336; /* 赤 */
-  --color-notification-event: #4caf50; /* 緑 */
-  --color-notification-achievement: #ffd700; /* 金 */
+  --color-notification-info: #2196f3;
+  /* 青 */
+  --color-notification-important: #f44336;
+  /* 赤 */
+  --color-notification-event: #4caf50;
+  /* 緑 */
+  --color-notification-achievement: #ffd700;
+  /* 金 */
 
   /* レイアウト */
   --sidebar-width: 240px;

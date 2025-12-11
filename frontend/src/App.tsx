@@ -1,4 +1,4 @@
-import ErrorBoundary from './components/common/ErrorBoundary';
+import ErrorBoundary from '@/shared/components/ErrorBoundary';
 import Router from './router';
 import './styles/global.css';
 

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 // @see specs/features/tutorial.md
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
