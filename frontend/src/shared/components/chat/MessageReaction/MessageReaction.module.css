@@ -1,0 +1,37 @@
+.container {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+    margin-top: var(--spacing-xs);
+}
+
+.reaction {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-full);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.reaction:hover {
+    background-color: var(--color-bg-hover);
+    transform: scale(1.05);
+}
+
+.reaction.active {
+    background-color: var(--color-accent-blue-light);
+    border-color: var(--color-accent-blue);
+}
+
+.emoji {
+    font-size: 16px;
+}
+
+.count {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+}

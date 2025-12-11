@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { DiaryFormData, DiaryPost, Reaction } from '@/shared/types';
+import type { DiaryFormData, DiaryPost, Reaction, Subject } from '@/shared/types';
 import DurationInput from '@/shared/components/DurationInput';
 import { mockSubjects } from '../../../mockData/diaries';
 import styles from './DiaryPostForm.module.css';
@@ -30,7 +30,7 @@ const DiaryPostForm = ({ onAdd }: DiaryPostFormProps) => {
     };
 
     const handleSubjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setForm(prev => ({ ...prev, subject: e.target.value }));
+        setForm(prev => ({ ...prev, subject: e.target.value as Subject }));
     };
 
     const handleDurationChange = (minutes: number) => {

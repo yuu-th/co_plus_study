@@ -1,7 +1,5 @@
-// @see specs/features/chat.md
-// ChatInput - メンター用チャット入力
-
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { FaCamera } from 'react-icons/fa';
 import type { Message } from '@/shared/types';
 import styles from './ChatInput.module.css';
 
@@ -12,11 +10,28 @@ interface ChatInputProps {
 
 const ChatInput = ({ onSend, studentName = '' }: ChatInputProps) => {
     const [text, setText] = useState('');
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const maxLen = 300;
+
+    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                setSelectedImage(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+        if (e.target) {
+            e.target.value = '';
+        }
+    };
 
     const handleSubmit = () => {
         const content = text.trim();
-        if (!content) return;
+        if (!content && !selectedImage) return;
+
         const now = new Date();
         onSend({
             id: `msg-${now.getTime()}`,
@@ -24,10 +39,13 @@ const ChatInput = ({ onSend, studentName = '' }: ChatInputProps) => {
             senderName: '高専 花子',
             senderRole: 'mentor',
             content,
+            imageUrl: selectedImage || undefined,
+            type: selectedImage ? 'image' : 'text',
             timestamp: now.toISOString(),
             isRead: false,
         });
         setText('');
+        setSelectedImage(null);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -39,15 +57,51 @@ const ChatInput = ({ onSend, studentName = '' }: ChatInputProps) => {
 
     return (
         <div className={styles.inputBar}>
-            <textarea
-                className={styles.text}
-                value={text}
-                onChange={e => setText(e.target.value.slice(0, maxLen))}
-                onKeyDown={handleKeyDown}
-                placeholder={studentName ? `${studentName}さんへのメッセージを入力` : '回答を入力 (Enterで送信 / Shift+Enterで改行)'}
-                aria-label="回答テキスト"
-            />
-            <button type="button" onClick={handleSubmit} disabled={!text.trim()} className={styles.sendBtn}>送信</button>
+            {selectedImage && (
+                <div className={styles.imagePreview}>
+                    <img src={selectedImage} alt="プレビュー" />
+                    <button
+                        onClick={() => setSelectedImage(null)}
+                        className={styles.removeBtn}
+                        aria-label="画像を削除"
+                    >
+                        ✕
+                    </button>
+                </div>
+            )}
+            <div className={styles.inputRow}>
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept="image/*"
+                    onChange={handleImageSelect}
+                    style={{ display: 'none' }}
+                />
+                <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className={styles.imageBtn}
+                    aria-label="画像を選択"
+                >
+                    <FaCamera />
+                </button>
+                <textarea
+                    className={styles.text}
+                    value={text}
+                    onChange={e => setText(e.target.value.slice(0, maxLen))}
+                    onKeyDown={handleKeyDown}
+                    placeholder={studentName ? `${studentName}さんへのメッセージを入力` : '回答を入力 (Enterで送信 / Shift+Enterで改行)'}
+                    aria-label="回答テキスト"
+                />
+                <button
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={!text.trim() && !selectedImage}
+                    className={styles.sendBtn}
+                >
+                    送信
+                </button>
+            </div>
         </div>
     );
 };

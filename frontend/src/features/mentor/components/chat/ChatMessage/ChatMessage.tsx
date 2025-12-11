@@ -1,13 +1,15 @@
-// @see specs/features/chat.md
-// ChatMessage - チャットメッセージ表示
-
+import { useState } from 'react';
 import { FaUser } from 'react-icons/fa';
 import type { Message } from '@/shared/types';
+import MessageReaction from '@/shared/components/chat/MessageReaction';
+import ReactionPicker from '@/shared/components/chat/ReactionPicker';
 import styles from './ChatMessage.module.css';
 
 interface ChatMessageProps {
     message: Message;
     isOwn: boolean;
+    currentUserId?: string;
+    onReactionToggle?: (messageId: string, emoji: string) => void;
 }
 
 const formatTime = (iso: string) => {
@@ -15,9 +17,18 @@ const formatTime = (iso: string) => {
     return d.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
 };
 
-const ChatMessage = ({ message, isOwn }: ChatMessageProps) => {
+const ChatMessage = ({ message, isOwn, currentUserId, onReactionToggle }: ChatMessageProps) => {
+    const [showImageModal, setShowImageModal] = useState(false);
+    const [showPicker, setShowPicker] = useState(false);
+
     const containerClass = `${styles.container} ${isOwn ? styles.ownContainer : styles.otherContainer}`;
     const messageClass = isOwn ? styles.ownMessage : styles.otherMessage;
+
+    const handleReactionSelect = (emoji: string) => {
+        if (onReactionToggle) {
+            onReactionToggle(message.id, emoji);
+        }
+    };
 
     return (
         <div className={containerClass} aria-label={`メッセージ ${message.senderName}`}>
@@ -44,8 +55,46 @@ const ChatMessage = ({ message, isOwn }: ChatMessageProps) => {
                     <span className={styles.timestamp}>{formatTime(message.timestamp)}</span>
                 </div>
                 <div className={messageClass}>
-                    {message.content}
+                    {message.imageUrl && (
+                        <img
+                            src={message.imageUrl}
+                            alt="送信画像"
+                            className={styles.messageImage}
+                            onClick={() => setShowImageModal(true)}
+                        />
+                    )}
+                    {message.content && <p>{message.content}</p>}
                 </div>
+
+                {/* リアクション追加ボタン */}
+                {onReactionToggle && (
+                    <button
+                        className={styles.addReactionBtn}
+                        onClick={() => setShowPicker(true)}
+                        aria-label="リアクションを追加"
+                    >
+                        ➕
+                    </button>
+                )}
+
+                {/* リアクション一覧 */}
+                {message.reactions && message.reactions.length > 0 && (
+                    <MessageReaction
+                        reactions={message.reactions}
+                        currentUserId={currentUserId}
+                        onToggle={handleReactionSelect}
+                    />
+                )}
+
+                {/* リアクションピッカー */}
+                {showPicker && (
+                    <div style={{ position: 'relative', zIndex: 100 }}>
+                        <ReactionPicker
+                            onSelect={handleReactionSelect}
+                            onClose={() => setShowPicker(false)}
+                        />
+                    </div>
+                )}
             </div>
 
             {isOwn && (
@@ -61,6 +110,12 @@ const ChatMessage = ({ message, isOwn }: ChatMessageProps) => {
                             <FaUser />
                         </div>
                     )}
+                </div>
+            )}
+
+            {showImageModal && message.imageUrl && (
+                <div className={styles.imageModal} onClick={() => setShowImageModal(false)}>
+                    <img src={message.imageUrl} alt="拡大画像" />
                 </div>
             )}
         </div>

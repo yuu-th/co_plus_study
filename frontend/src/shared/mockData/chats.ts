@@ -47,6 +47,9 @@ export const mockMessages: Message[] = [
         content: '1の中に1/2は2つ入りますよね。つまり1 ÷ 1/2 = 2です。これを計算式で表すと、1 × 2/1 = 2 となります。',
         timestamp: '2025-09-29T10:26:00Z',
         isRead: true,
+        reactions: [
+            { emoji: '👍', userIds: ['1'] }
+        ]
     },
     {
         id: 'msg-6',
@@ -56,6 +59,11 @@ export const mockMessages: Message[] = [
         content: 'なるほど！分かってきました。ありがとうございます！',
         timestamp: '2025-09-29T10:30:00Z',
         isRead: false,
+        imageUrl: 'https://placehold.jp/300x200.png?text=Thank+You',
+        type: 'image',
+        reactions: [
+            { emoji: '🎉', userIds: ['mentor-1'] }
+        ]
     },
 ];
 

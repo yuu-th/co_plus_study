@@ -1,6 +1,6 @@
 // ChatPage - 相談チャットページ
 import { useState, useMemo } from 'react';
-import type { Message, User } from '@/shared/types';
+import type { Message, User, MessageReaction as MessageReactionType } from '@/shared/types';
 import { mockMessages } from '@/shared/mockData/chats';
 import { mockMentor } from '@/shared/mockData/users';
 import ChatHeader from '../../components/chat/ChatHeader';
@@ -10,6 +10,7 @@ import styles from './ChatPage.module.css';
 
 const ChatPage = () => {
     const [messages, setMessages] = useState<Message[]>(mockMessages);
+    const currentUserId = '1';
 
     // メンター情報取得(モック)
     const mentor: User = mockMentor;
@@ -38,11 +39,51 @@ const ChatPage = () => {
         setMessages(prev => [...prev, msg]);
     };
 
+    const handleReactionToggle = (messageId: string, emoji: string) => {
+        setMessages(prev => prev.map(msg => {
+            if (msg.id !== messageId) return msg;
+
+            const reactions = msg.reactions || [];
+            const existingReaction = reactions.find(r => r.emoji === emoji);
+            let newReactions: MessageReactionType[];
+
+            if (existingReaction) {
+                // 既にリアクションがある場合
+                if (existingReaction.userIds.includes(currentUserId)) {
+                    // 自分のリアクションを削除
+                    const newUserIds = existingReaction.userIds.filter(id => id !== currentUserId);
+                    if (newUserIds.length === 0) {
+                        // 誰もリアクションしていなければ削除
+                        newReactions = reactions.filter(r => r.emoji !== emoji);
+                    } else {
+                        newReactions = reactions.map(r =>
+                            r.emoji === emoji ? { ...r, userIds: newUserIds } : r
+                        );
+                    }
+                } else {
+                    // 自分を追加
+                    newReactions = reactions.map(r =>
+                        r.emoji === emoji ? { ...r, userIds: [...r.userIds, currentUserId] } : r
+                    );
+                }
+            } else {
+                // 新しいリアクションを追加
+                newReactions = [...reactions, { emoji, userIds: [currentUserId] }];
+            }
+
+            return { ...msg, reactions: newReactions };
+        }));
+    };
+
     return (
         <div className={styles.page}>
             <h1 className={styles.title}>相談</h1>
             <ChatHeader mentorName={mentorDisplayName} studentName={studentName} />
-            <MessageList messages={displayMessages} />
+            <MessageList
+                messages={displayMessages}
+                currentUserId={currentUserId}
+                onReactionToggle={handleReactionToggle}
+            />
             <ChatInput onSend={handleSend} />
         </div>
     );

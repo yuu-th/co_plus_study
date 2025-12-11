@@ -89,6 +89,47 @@ const ChatPage = () => {
         }));
     };
 
+    const handleReactionToggle = (messageId: string, emoji: string) => {
+        if (!selectedStudentId) return;
+        const currentUserId = 'mentor-1';
+
+        setStudentMessages((prev) => {
+            const targetMessages = prev[selectedStudentId] ?? [];
+            const updatedMessages = targetMessages.map(msg => {
+                if (msg.id !== messageId) return msg;
+
+                const reactions = msg.reactions || [];
+                const existingReaction = reactions.find(r => r.emoji === emoji);
+                let newReactions: import('@/shared/types').MessageReaction[];
+
+                if (existingReaction) {
+                    if (existingReaction.userIds.includes(currentUserId)) {
+                        const newUserIds = existingReaction.userIds.filter(id => id !== currentUserId);
+                        if (newUserIds.length === 0) {
+                            newReactions = reactions.filter(r => r.emoji !== emoji);
+                        } else {
+                            newReactions = reactions.map(r =>
+                                r.emoji === emoji ? { ...r, userIds: newUserIds } : r
+                            );
+                        }
+                    } else {
+                        newReactions = reactions.map(r =>
+                            r.emoji === emoji ? { ...r, userIds: [...r.userIds, currentUserId] } : r
+                        );
+                    }
+                } else {
+                    newReactions = [...reactions, { emoji, userIds: [currentUserId] }];
+                }
+                return { ...msg, reactions: newReactions };
+            });
+
+            return {
+                ...prev,
+                [selectedStudentId]: updatedMessages
+            };
+        });
+    };
+
     return (
         <div className={styles.page}>
             <div className={styles.sidebar}>
@@ -106,7 +147,11 @@ const ChatPage = () => {
                             <span className={styles.status}>オンライン</span>
                         </div>
                         <div className={styles.messageContainer}>
-                            <MessageList messages={messages} currentUserId="mentor-1" />
+                            <MessageList
+                                messages={messages}
+                                currentUserId="mentor-1"
+                                onReactionToggle={handleReactionToggle}
+                            />
                         </div>
                         <ChatInput onSend={handleSend} studentName={currentStudent.name} />
                     </>
