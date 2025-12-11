@@ -1,73 +1,28 @@
 .container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--spacing-md);
-}
-
-.starGroup {
-    display: flex;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-xs);
 }
 
 .star {
     background: none;
     border: none;
+    font-size: 40px;
+    /* As per specs */
+    line-height: 1;
+    color: var(--color-text-secondary);
     cursor: pointer;
-    font-size: 2rem;
-    padding: var(--spacing-xs);
-    transition: color var(--transition-fast), transform var(--transition-fast);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 48px;
-    min-height: 48px;
+    transition: color 0.2s;
+    padding: 0;
 }
 
-.star:hover:not(:disabled) {
-    transform: scale(1.15);
-}
-
-.star:active:not(:disabled) {
-    transform: scale(0.95);
-}
-
-.star:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
-.star:focus {
-    outline: 2px solid var(--color-accent-blue);
-    outline-offset: 2px;
-    border-radius: var(--border-radius-sm);
-}
-
-/* 未選択: グレー */
-.empty {
-    color: #cccccc;
-}
-
-/* 選択済み: 金色 */
-.filled {
+.star.active {
     color: var(--color-badge-gold);
 }
 
-.label {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
-    margin: 0;
+.star:hover:not(.readOnly) {
+    transform: scale(1.1);
 }
 
-/* モバイル: さらに大きく */
-@media (max-width: 600px) {
-    .star {
-        font-size: 2.5rem;
-        min-width: 52px;
-        min-height: 52px;
-    }
-
-    .starGroup {
-        gap: var(--spacing-xs);
-    }
+.readOnly {
+    cursor: default;
 }

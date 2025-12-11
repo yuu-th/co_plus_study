@@ -7,6 +7,7 @@ export const mockCurrentUser: User = {
     name: '田中太郎',
     role: 'student',
     email: 'tanaka@example.com',
+    grade: '中学2年',
 };
 
 export const mockMentor: User = {
@@ -14,6 +15,7 @@ export const mockMentor: User = {
     name: '高専 花子',
     role: 'mentor',
     email: 'hanako@example.com',
+    gender: 'female',
 };
 
 export const mockUsers: User[] = [
@@ -28,5 +30,6 @@ export const mockUsers: User[] = [
         id: 'mentor-2',
         name: '先輩 太郎',
         role: 'mentor',
+        gender: 'male',
     },
 ];

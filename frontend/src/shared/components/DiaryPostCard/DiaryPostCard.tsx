@@ -9,6 +9,8 @@ interface DiaryPostCardProps {
     currentUserId?: string;
     /** リアクションが更新されたとき外部へ通知 */
     onReactionsChange?: (postId: string, reactions: Reaction[]) => void;
+    /** 表示モード: 生徒用(◎マーク) or メンター用(リアクションボタン) */
+    viewMode?: 'student' | 'mentor';
 }
 
 const subjectColorMap: Record<string, string> = {
@@ -27,7 +29,7 @@ const formatTime = (iso: string) => {
 
 const reactionTypes: ReactionType[] = ['👍', '❤️', '🎉', '👏', '🔥'];
 
-const DiaryPostCard = ({ post, currentUserId, onReactionsChange }: DiaryPostCardProps) => {
+const DiaryPostCard = ({ post, currentUserId, onReactionsChange, viewMode = 'student' }: DiaryPostCardProps) => {
     const color = subjectColorMap[post.subject] || subjectColorMap['その他'];
     const [reactions, setReactions] = useState<Reaction[]>(post.reactions);
 
@@ -65,16 +67,26 @@ const DiaryPostCard = ({ post, currentUserId, onReactionsChange }: DiaryPostCard
             <div className={styles.content}>
                 <p>{post.content}</p>
                 <div className={styles.meta}>{post.duration}分 / {post.userName}</div>
-                <div className={styles.reactionBar} aria-label="リアクション操作">
-                    {reactionTypes.map(rt => (
-                        <ReactionButton
-                            key={rt}
-                            type={rt}
-                            count={getCount(rt)}
-                            isActive={isActive(rt)}
-                            onToggle={() => toggleReaction(rt)}
-                        />
-                    ))}
+                <div className={styles.reactionArea}>
+                    {viewMode === 'student' ? (
+                        // 生徒用: ◎マーク
+                        <div className={styles.achievementMark} aria-label="投稿完了">
+                            ◎
+                        </div>
+                    ) : (
+                        // メンター用: リアクションボタン
+                        <div className={styles.reactionBar} aria-label="リアクション操作">
+                            {reactionTypes.map(rt => (
+                                <ReactionButton
+                                    key={rt}
+                                    type={rt}
+                                    count={getCount(rt)}
+                                    isActive={isActive(rt)}
+                                    onToggle={() => toggleReaction(rt)}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </article>

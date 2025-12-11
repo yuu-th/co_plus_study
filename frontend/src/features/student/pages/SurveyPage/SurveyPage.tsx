@@ -1,6 +1,6 @@
 // SurveyPage - アンケートページ
 import { useState } from 'react';
-import type { Survey, SurveyResponse } from '../../types/survey';
+import type { Survey, SurveyResponse } from '@/shared/types';
 import SurveyForm from '../../components/survey/SurveyForm';
 import { mockSurveys } from '../../mockData/surveys';
 import styles from './SurveyPage.module.css';

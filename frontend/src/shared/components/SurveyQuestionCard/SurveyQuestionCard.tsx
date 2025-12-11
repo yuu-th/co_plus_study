@@ -1,8 +1,8 @@
 // @see specs/features/survey.md
 // QuestionItem - アンケート質問項目
 
-import type { Answer, Question } from '../../../types/survey';
-import StarRating from '../StarRating';
+import type { Answer, Question } from '@/shared/types';
+import RatingInput from '../StarRating';
 import styles from './QuestionItem.module.css';
 
 interface QuestionItemProps {
@@ -10,9 +10,10 @@ interface QuestionItemProps {
     value: string | string[] | number | undefined;
     onChange: (answer: Answer) => void;
     disabled?: boolean;
+    error?: string;
 }
 
-const QuestionItem = ({ question, value, onChange, disabled = false }: QuestionItemProps) => {
+const QuestionItem = ({ question, value, onChange, disabled = false, error }: QuestionItemProps) => {
     const handleSingle = (e: React.ChangeEvent<HTMLSelectElement>) => {
         onChange({ questionId: question.id, value: e.target.value });
     };
@@ -33,7 +34,7 @@ const QuestionItem = ({ question, value, onChange, disabled = false }: QuestionI
     };
 
     return (
-        <div className={styles.question} aria-label={`質問 ${question.text}`}>
+        <div id={`question-${question.id}`} className={styles.question} aria-label={`質問 ${question.text}`}>
             <div className={styles.title}>
                 {question.text}
                 {question.required && <span className={styles.required}> *</span>}
@@ -88,12 +89,21 @@ const QuestionItem = ({ question, value, onChange, disabled = false }: QuestionI
 
             {question.type === 'rating' && (
                 <div className={styles.ratingContainer}>
-                    <StarRating
+                    <RatingInput
                         value={typeof value === 'number' ? value : null}
                         onChange={handleRating}
                         disabled={disabled}
+                        style={question.ratingStyle}
                     />
                 </div>
+            )}
+
+            {error && (
+                <p className={styles.error} role="alert">{error}</p>
+            )}
+
+            {!error && value && (
+                <p className={styles.completed}>✓ 回答済み</p>
             )}
         </div>
     );

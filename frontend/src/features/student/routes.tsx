@@ -9,6 +9,7 @@ import ArchivePage from './pages/ArchivePage';
 import DiaryPage from './pages/DiaryPage';
 import ChatPage from './pages/ChatPage';
 import SurveyPage from './pages/SurveyPage';
+import NotificationPage from './pages/NotificationPage';
 import TutorialPage from './pages/TutorialPage';
 
 export const studentRoutes: RouteObject[] = [
@@ -21,6 +22,7 @@ export const studentRoutes: RouteObject[] = [
             { path: '/diary', element: <DiaryPage /> },
             { path: '/chat', element: <ChatPage /> },
             { path: '/survey', element: <SurveyPage /> },
+            { path: '/notifications', element: <NotificationPage /> },
             { path: '/tutorial', element: <TutorialPage /> },
         ],
     },

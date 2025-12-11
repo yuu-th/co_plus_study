@@ -1,17 +1,19 @@
 // @see specs/features/survey.md
-// StarRating - 星評価コンポーネント
+// RatingInput - 評価入力コンポーネント（星/数値）
 
 import { useState } from 'react';
 import { FaStar } from 'react-icons/fa';
-import styles from './StarRating.module.css';
+import type { RatingStyle } from '@/shared/types';
+import styles from './RatingInput.module.css';
 
-interface StarRatingProps {
+interface RatingInputProps {
     value: number | null;
     onChange: (value: number) => void;
+    style?: RatingStyle;
     disabled?: boolean;
 }
 
-const StarRating = ({ value, onChange, disabled = false }: StarRatingProps) => {
+const RatingInput = ({ value, onChange, style = 'emoji', disabled = false }: RatingInputProps) => {
     const [hoverValue, setHoverValue] = useState<number | null>(null);
 
     const displayValue = hoverValue ?? value ?? 0;
@@ -32,6 +34,30 @@ const StarRating = ({ value, onChange, disabled = false }: StarRatingProps) => {
         setHoverValue(null);
     };
 
+    if (style === 'numeric') {
+        return (
+            <div className={styles.container}>
+                <div className={styles.numericGroup} role="radiogroup" aria-label="評価">
+                    {[1, 2, 3, 4, 5].map((rating) => (
+                        <button
+                            key={rating}
+                            type="button"
+                            className={`${styles.numericBtn} ${rating === value ? styles.numericSelected : ''}`}
+                            onClick={() => handleClick(rating)}
+                            aria-label={`${rating}点を選択`}
+                            aria-checked={rating === value}
+                            role="radio"
+                            disabled={disabled}
+                        >
+                            {rating}
+                        </button>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    // Default: emoji (star)
     return (
         <div className={styles.container}>
             <div className={styles.starGroup} role="radiogroup" aria-label="評価">
@@ -59,4 +85,4 @@ const StarRating = ({ value, onChange, disabled = false }: StarRatingProps) => {
     );
 };
 
-export default StarRating;
+export default RatingInput;

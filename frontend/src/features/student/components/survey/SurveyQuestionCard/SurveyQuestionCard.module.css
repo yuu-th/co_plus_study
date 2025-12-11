@@ -1,0 +1,78 @@
+.card {
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+.header {
+    margin-bottom: var(--spacing-md);
+}
+
+.questionText {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-primary);
+    display: flex;
+    align-items: center;
+}
+
+.required {
+    color: var(--color-error);
+    margin-left: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+}
+
+.inputArea {
+    margin-bottom: var(--spacing-sm);
+}
+
+.error {
+    color: var(--color-error);
+    font-size: var(--font-size-sm);
+    margin-top: var(--spacing-xs);
+}
+
+.completed {
+    color: var(--color-success);
+    font-size: var(--font-size-sm);
+    margin-top: var(--spacing-xs);
+}
+
+/* Input Specific Styles */
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.radioLabel,
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+    padding: var(--spacing-xs) 0;
+}
+
+.radio,
+.checkbox {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--color-primary);
+}
+
+.textarea {
+    width: 100%;
+    padding: var(--spacing-sm);
+    border: 1px solid var(--color-border-medium);
+    border-radius: var(--border-radius-sm);
+    resize: vertical;
+    font-family: inherit;
+}
+
+.textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px var(--color-primary-light);
+}

@@ -48,9 +48,24 @@
     gap: 4px;
 }
 
+.reactionArea {
+    margin-top: var(--spacing-sm);
+}
+
+.achievementMark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    font-size: 40px;
+    color: var(--color-badge-gold);
+    font-weight: var(--font-weight-bold);
+    user-select: none;
+}
+
 .reactionBar {
     display: flex;
-    gap: 4px;
-    margin-top: 6px;
+    gap: var(--spacing-xs);
     flex-wrap: wrap;
 }

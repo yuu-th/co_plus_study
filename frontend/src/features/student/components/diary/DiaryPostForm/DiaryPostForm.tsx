@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { DiaryFormData, DiaryPost, Reaction } from '@/shared/types';
-import { hmToMinutes, minutesToHM, minutesToJapanese } from '@/shared/utils/formatTime';
+import DurationInput from '@/shared/components/DurationInput';
 import { mockSubjects } from '../../../mockData/diaries';
 import styles from './DiaryPostForm.module.css';
 
@@ -13,16 +13,14 @@ const MAX_CONTENT = 500;
 
 const DiaryPostForm = ({ onAdd }: DiaryPostFormProps) => {
     const [form, setForm] = useState<DiaryFormData>(INITIAL);
-    const [timeInput, setTimeInput] = useState<string>(minutesToHM(INITIAL.duration));
     const [errors, setErrors] = useState<string[]>([]);
 
     const validate = (): boolean => {
         const errs: string[] = [];
         if (!form.subject) errs.push('教科を選択してください');
 
-        const minutes = hmToMinutes(timeInput);
-        if (minutes === null || minutes < 1 || minutes > 59999) {
-            errs.push('学習時間は 0:01～999:59 で入力してください');
+        if (form.duration < 1 || form.duration > 59999) {
+            errs.push('学習時間は1分～999時間59分で入力してください');
         }
 
         if (!form.content.trim()) errs.push('内容を入力してください');
@@ -35,8 +33,8 @@ const DiaryPostForm = ({ onAdd }: DiaryPostFormProps) => {
         setForm(prev => ({ ...prev, subject: e.target.value }));
     };
 
-    const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTimeInput(e.target.value);
+    const handleDurationChange = (minutes: number) => {
+        setForm(prev => ({ ...prev, duration: minutes }));
     };
 
     const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -47,26 +45,20 @@ const DiaryPostForm = ({ onAdd }: DiaryPostFormProps) => {
         e.preventDefault();
         if (!validate()) return;
 
-        const minutes = hmToMinutes(timeInput);
-        if (minutes === null) return;
-
         const now = new Date();
         const newPost: DiaryPost = {
             id: `temp-${now.getTime()}`,
             userId: '1',
             userName: '田中太郎',
             subject: form.subject,
-            duration: minutes,
+            duration: form.duration,
             content: form.content.trim(),
             timestamp: now.toISOString(),
             reactions: [] as Reaction[],
         };
         onAdd(newPost);
         setForm(INITIAL);
-        setTimeInput(minutesToHM(INITIAL.duration));
     };
-
-    const displayMinutes = hmToMinutes(timeInput);
 
     return (
         <form
@@ -86,23 +78,10 @@ const DiaryPostForm = ({ onAdd }: DiaryPostFormProps) => {
                 >
                     {mockSubjects.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
-                <div className={styles.timeInputGroup}>
-                    <input
-                        type="text"
-                        value={timeInput}
-                        onChange={handleTimeChange}
-                        placeholder="0:30"
-                        className={styles.timeInput}
-                        aria-label="学習時間（h:mm形式）"
-                        pattern="^[0-9]{1,3}:[0-5][0-9]$"
-                        required
-                    />
-                    <span className={styles.timeDisplay}>
-                        {displayMinutes !== null && displayMinutes > 0
-                            ? minutesToJapanese(displayMinutes)
-                            : ''}
-                    </span>
-                </div>
+                <DurationInput
+                    value={form.duration}
+                    onChange={handleDurationChange}
+                />
             </div>
             <textarea
                 name="content"

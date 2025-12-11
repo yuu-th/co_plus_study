@@ -16,6 +16,12 @@ const DashboardPage = () => {
         <div className={styles.container}>
             <header className={styles.header}>
                 <h1 className={styles.title}>ダッシュボード</h1>
+                <Link to="/mentor/surveys/new" style={{ marginRight: 'var(--spacing-sm)' }}>
+                    <Button variant="outline">新規アンケートを作成</Button>
+                </Link>
+                <Link to="/mentor/notifications" style={{ marginRight: 'var(--spacing-sm)' }}>
+                    <Button variant="outline">お知らせ一覧</Button>
+                </Link>
                 <Link to="/mentor/notifications/new">
                     <Button variant="primary">新規お知らせを作成</Button>
                 </Link>
@@ -36,7 +42,7 @@ const DashboardPage = () => {
                 <h2 className={styles.sectionTitle}>最近の日報</h2>
                 <div className={styles.diaryTimeline}>
                     {recentPosts.map((post) => (
-                        <DiaryPostCard post={post} key={post.id} />
+                        <DiaryPostCard post={post} key={post.id} viewMode="mentor" />
                     ))}
                 </div>
             </section>

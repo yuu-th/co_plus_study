@@ -1,6 +1,6 @@
 // Sidebarコンポーネント - 学生向け
 
-import { FaArchive, FaBook, FaClipboardList, FaComments, FaHome } from 'react-icons/fa';
+import { FaArchive, FaBell, FaBook, FaClipboardList, FaComments, FaHome } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './Sidebar.module.css';
 
@@ -45,6 +45,13 @@ const navItems: NavItem[] = [
         label: 'アンケート',
         icon: <FaClipboardList />,
         path: '/survey',
+        tutorialId: 'nav-survey',
+    },
+    {
+        id: 'notification',
+        label: 'お知らせ',
+        icon: <FaBell />,
+        path: '/notifications',
     },
 ];
 

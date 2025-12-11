@@ -6,6 +6,8 @@ export interface User {
     role: 'student' | 'mentor' | 'admin';
     avatarUrl?: string;
     email?: string;
+    gender?: 'male' | 'female';
+    grade?: string;
 }
 
 export interface LoginCredentials {

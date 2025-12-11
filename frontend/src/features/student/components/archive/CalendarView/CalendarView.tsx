@@ -15,7 +15,11 @@ const CalendarView = ({ calendarData, monthlyData }: CalendarViewProps) => {
     return (
         <div className={styles.container}>
             <div className={styles.leftSection}>
-                <ContinuousCounter days={calendarData.continuousDays} />
+                <ContinuousCounter
+                    days={calendarData.continuousDays}
+                    longestStreak={calendarData.longestStreak}
+                    totalDays={calendarData.totalDays}
+                />
                 <div className={styles.weeklySection}>
                     <WeeklyActivity week={calendarData.weeklyActivity} />
                 </div>

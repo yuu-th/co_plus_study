@@ -1,4 +1,4 @@
-import type { Question as SurveyQuestion, Answer as SurveyAnswer } from '../types/survey';
+import type { Question as SurveyQuestion, Answer as SurveyAnswer } from '@/shared/types';
 
 const getAnsweredQuestionIds = (answers: SurveyAnswer[]): Set<string> => {
     return new Set(

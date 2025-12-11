@@ -5,7 +5,7 @@ import { useState, useMemo } from 'react';
 import type { Message } from '@/shared/types';
 import { mockMessages } from '@/shared/mockData/chats';
 import { mockStudents } from '../../mockData/mentors';
-import MentorChatHeader from '../../components/chat/MentorChatHeader';
+import StudentChatSwitcher from '../../components/StudentChatSwitcher';
 import MessageList from '../../components/chat/MessageList';
 import ChatInput from '../../components/chat/ChatInput';
 import styles from './ChatPage.module.css';
@@ -48,21 +48,41 @@ const mockStudentMessages: Record<string, Message[]> = {
 };
 
 const ChatPage = () => {
-    const [selectedStudentId, setSelectedStudentId] = useState(mockStudents[0]?.id ?? '');
+    const [selectedStudentId, setSelectedStudentId] = useState<string | null>(mockStudents[0]?.id ?? null);
     const [studentMessages, setStudentMessages] = useState<Record<string, Message[]>>(mockStudentMessages);
+
+    // 担当生徒とチャット情報
+    const studentChats = useMemo(() => {
+        return mockStudents.map((student) => {
+            const msgs = studentMessages[student.id] ?? [];
+            const lastMsg = msgs[msgs.length - 1];
+            // 未読数は簡易的にランダム（本来はMessageのisReadを集計）
+            // タスク仕様に合わせてランダムを使用しつつ、既存ロジックも尊重
+            return {
+                student: {
+                    ...student,
+                    role: 'student' as const, // StudentSummary -> User conversion partial
+                    email: '', // dummy
+                },
+                unreadCount: Math.floor(Math.random() * 5),
+                lastMessageTime: lastMsg?.timestamp ?? new Date().toISOString(),
+            };
+        });
+    }, [studentMessages]);
 
     const currentStudent = useMemo(
         () => mockStudents.find((s) => s.id === selectedStudentId) ?? null,
         [selectedStudentId]
     );
 
-    const messages = studentMessages[selectedStudentId] ?? [];
+    const messages = selectedStudentId ? (studentMessages[selectedStudentId] ?? []) : [];
 
     const handleSelectStudent = (studentId: string) => {
         setSelectedStudentId(studentId);
     };
 
     const handleSend = (msg: Message) => {
+        if (!selectedStudentId) return;
         setStudentMessages((prev) => ({
             ...prev,
             [selectedStudentId]: [...(prev[selectedStudentId] ?? []), msg],
@@ -71,14 +91,31 @@ const ChatPage = () => {
 
     return (
         <div className={styles.page}>
-            <h1 className={styles.title}>相談チャット</h1>
-            <MentorChatHeader
-                currentStudent={currentStudent}
-                students={mockStudents}
-                onSelectStudent={handleSelectStudent}
-            />
-            <MessageList messages={messages} currentUserId="mentor-1" />
-            <ChatInput onSend={handleSend} studentName={currentStudent?.name} />
+            <div className={styles.sidebar}>
+                <StudentChatSwitcher
+                    students={studentChats}
+                    selectedStudentId={selectedStudentId}
+                    onSelectStudent={handleSelectStudent}
+                />
+            </div>
+            <div className={styles.chatArea}>
+                {selectedStudentId && currentStudent ? (
+                    <>
+                        <div className={styles.chatHeader}>
+                            <h2 className={styles.studentName}>{currentStudent.name}</h2>
+                            <span className={styles.status}>オンライン</span>
+                        </div>
+                        <div className={styles.messageContainer}>
+                            <MessageList messages={messages} currentUserId="mentor-1" />
+                        </div>
+                        <ChatInput onSend={handleSend} studentName={currentStudent.name} />
+                    </>
+                ) : (
+                    <div className={styles.placeholder}>
+                        左側から生徒を選択してください
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

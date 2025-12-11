@@ -1,9 +1,9 @@
 // 学習日報モック (SNS風)
 // @see specs/features/diary.md
 
-import type { DiaryPost, ReactionType } from '@/shared/types';
+import type { DiaryPost, ReactionType, Subject } from '@/shared/types';
 
-const subjects = ['国語', '数学', '理科', '社会', '英語', 'その他'];
+const subjects: Subject[] = ['国語', '数学', '理科', '社会', '英語', 'その他'];
 const reactionTypes: ReactionType[] = ['👍', '❤️', '🎉', '👏', '🔥'];
 
 const pick = <T,>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];

@@ -60,12 +60,30 @@
     font-size: var(--font-size-sm);
 }
 
+/* 2カラムレイアウト */
+.layout {
+    display: flex;
+    gap: var(--spacing-xl);
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: flex-start;
+}
+
+.main {
+    flex: 1;
+    min-width: 0;
+    /* フレックスアイテムの縮小を許可 */
+}
+
+.side {
+    width: 300px;
+    flex-shrink: 0;
+}
+
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: var(--spacing-xl);
-    max-width: 1200px;
-    margin: 0 auto;
 }
 
 .description {
@@ -75,6 +93,16 @@
 }
 
 /* モバイル対応 */
+@media (max-width: 960px) {
+    .layout {
+        flex-direction: column;
+    }
+
+    .side {
+        width: 100%;
+    }
+}
+
 @media (max-width: 640px) {
     .title {
         font-size: var(--font-size-3xl);

@@ -6,9 +6,11 @@ import styles from './ContinuousCounter.module.css';
 interface ContinuousCounterProps {
     days: number;
     label?: string;
+    longestStreak?: number;
+    totalDays?: number;
 }
 
-const ContinuousCounter = ({ days, label = '連続ログイン' }: ContinuousCounterProps) => {
+const ContinuousCounter = ({ days, label = '連続ログイン', longestStreak, totalDays }: ContinuousCounterProps) => {
     const [displayDays, setDisplayDays] = useState(0);
 
     // カウントアップアニメーション
@@ -35,11 +37,33 @@ const ContinuousCounter = ({ days, label = '連続ログイン' }: ContinuousCou
 
     return (
         <div className={styles.container}>
-            <h2 className={styles.label}>{label}</h2>
-            <div className={styles.counter}>
-                <span className={styles.number}>{displayDays}</span>
-                <span className={styles.unit}>日</span>
+            <div className={styles.mainStat}>
+                <h2 className={styles.label}>{label}</h2>
+                <div className={styles.counter}>
+                    <span className={styles.number}>{displayDays}</span>
+                    <span className={styles.unit}>日</span>
+                </div>
             </div>
+
+            {(longestStreak !== undefined || totalDays !== undefined) && (
+                <div className={styles.subStats}>
+                    {longestStreak !== undefined && (
+                        <div className={styles.subStatItem}>
+                            <span className={styles.subLabel}>最長</span>
+                            <span className={styles.subValue}>{longestStreak}日</span>
+                        </div>
+                    )}
+                    {longestStreak !== undefined && totalDays !== undefined && (
+                        <div className={styles.separator} />
+                    )}
+                    {totalDays !== undefined && (
+                        <div className={styles.subStatItem}>
+                            <span className={styles.subLabel}>累計</span>
+                            <span className={styles.subValue}>{totalDays}日</span>
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 };

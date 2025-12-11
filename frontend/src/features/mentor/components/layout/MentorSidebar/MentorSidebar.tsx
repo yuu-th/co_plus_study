@@ -2,7 +2,7 @@
 // @see specs/features/mentor.md
 
 import type { MouseEventHandler } from 'react';
-import { FaBell, FaComments, FaHome, FaUsers } from 'react-icons/fa';
+import { FaBell, FaComments, FaHome, FaPoll, FaUsers } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './MentorSidebar.module.css';
 
@@ -17,6 +17,7 @@ const navItems: NavItem[] = [
     { id: 'dashboard', label: 'ダッシュボード', path: '/mentor/dashboard', icon: <FaHome /> },
     { id: 'students', label: '生徒一覧', path: '/mentor/students', icon: <FaUsers /> },
     { id: 'notifications', label: 'お知らせ管理', path: '/mentor/notifications', icon: <FaBell /> },
+    { id: 'surveys', label: 'アンケート作成', path: '/mentor/surveys/new', icon: <FaPoll /> },
     { id: 'chat', label: 'チャット', path: '/mentor/chat', icon: <FaComments /> },
 ];
 

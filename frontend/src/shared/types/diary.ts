@@ -1,6 +1,12 @@
 // @see specs/features/diary.md
 
 /**
+ * 教科
+ * @see specs/features/diary.md
+ */
+export type Subject = '国語' | '数学' | '理科' | '社会' | '英語' | 'その他';
+
+/**
  * 絵文字リアクション種別
  * @see specs/features/diary.md
  */
@@ -33,7 +39,7 @@ export interface DiaryPost {
     /** 投稿者の表示名（生徒名） */
     userName: string;
     /** 教科 */
-    subject: string;
+    subject: Subject;
     /** 学習時間（分単位） */
     duration: number;
     /** 学習内容（最大500文字） */
@@ -56,14 +62,14 @@ export interface GroupedDiaryPost {
 
 /** フォーム送信用データ (内部ステート) */
 export interface DiaryFormData {
-    subject: string;
+    subject: Subject;
     duration: number; // 1-999
     content: string; // <=500
 }
 
 /** 教科別集計用 (DiaryStats向け) */
 export interface SubjectDurationStat {
-    subject: string;
+    subject: Subject;
     totalMinutes: number;
 }
 

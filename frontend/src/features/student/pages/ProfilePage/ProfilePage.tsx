@@ -14,6 +14,7 @@ interface UserProfile {
     joinedAt: string;
     totalStudyHours: number;
     totalPosts: number;
+    grade?: string;
 }
 
 const ProfilePage = () => {
@@ -27,6 +28,7 @@ const ProfilePage = () => {
         joinedAt: '2024-01-15',
         totalStudyHours: 156,
         totalPosts: 42,
+        grade: '中学2年',
     };
 
     const formatDate = (dateStr: string) => {
@@ -66,6 +68,12 @@ const ProfilePage = () => {
                         <label className={styles.label}>フリガナ</label>
                         <p className={styles.value}>{user.kana}</p>
                     </div>
+                    {user.grade && (
+                        <div className={styles.field}>
+                            <label className={styles.label}>学年</label>
+                            <p className={styles.value}>{user.grade}</p>
+                        </div>
+                    )}
                     <div className={styles.field}>
                         <label className={styles.label}>参加日</label>
                         <p className={styles.value}>{formatDate(user.joinedAt)}</p>

@@ -9,19 +9,19 @@ interface SkillViewProps {
 }
 
 const SkillView = ({ badges }: SkillViewProps) => {
-    // 獲得済みバッジのみ表示
-    const earnedBadges = badges.filter(b => !!b.earnedAt);
+    // 獲得済みバッジの数をカウント
+    const earnedCount = badges.filter(b => !!b.earnedAt).length;
 
     return (
         <div className={styles.container}>
             <div className={styles.header}>
                 <h2 className={styles.title}>獲得したスキル</h2>
                 <p className={styles.count}>
-                    {earnedBadges.length} / {badges.length} 個獲得
+                    {earnedCount} / {badges.length} 個獲得
                 </p>
             </div>
             <div className={styles.badgeGrid}>
-                {earnedBadges.map((badge) => (
+                {badges.map((badge) => (
                     <BadgeCard key={badge.id} badge={badge} />
                 ))}
             </div>

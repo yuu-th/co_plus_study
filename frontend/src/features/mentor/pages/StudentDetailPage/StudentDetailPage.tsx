@@ -76,7 +76,7 @@ const StudentDetailPage = () => {
                 <h2 className={styles.timelineTitle}>日報タイムライン</h2>
                 <div className={styles.timeline}>
                     {sortedPosts.map((post) => (
-                        <DiaryPostCard key={post.id} post={post} />
+                        <DiaryPostCard key={post.id} post={post} viewMode="mentor" />
                     ))}
                 </div>
             </section>

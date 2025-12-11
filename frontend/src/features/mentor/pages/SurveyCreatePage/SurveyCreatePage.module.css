@@ -1,0 +1,203 @@
+.page {
+    padding: var(--spacing-lg);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.title {
+    margin: 0;
+    font-size: var(--font-size-xxl);
+}
+
+.actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.field {
+    margin-bottom: var(--spacing-md);
+}
+
+.label {
+    display: block;
+    font-weight: var(--font-weight-medium);
+    margin-bottom: var(--spacing-xs);
+    color: var(--color-text-primary);
+}
+
+.input,
+.textarea {
+    width: 100%;
+    padding: var(--spacing-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-base);
+}
+
+.textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.questionItem {
+    padding: var(--spacing-md);
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--border-radius-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.questionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background-color: var(--color-primary);
+    color: white;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+}
+
+.removeBtn {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background-color: var(--color-error);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-sm);
+    cursor: pointer;
+}
+
+.addButtons {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+}
+
+.previewQuestion {
+    margin-bottom: var(--spacing-md);
+    padding: var(--spacing-sm);
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--border-radius-sm);
+}
+
+.optionsArea {
+    margin-top: var(--spacing-md);
+    padding-left: var(--spacing-md);
+    padding-right: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-left: 2px solid var(--color-border);
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+}
+
+.optionRow {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+}
+
+.removeOptionBtn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-lg);
+    cursor: pointer;
+}
+
+.removeOptionBtn:hover {
+    color: var(--color-error);
+}
+
+/* Rating Styles */
+.ratingStyleSelector {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.radioLabel {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    cursor: pointer;
+}
+
+.previewBox {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background-color: white;
+    border-radius: var(--border-radius-sm);
+    margin-top: var(--spacing-sm);
+}
+
+.previewLabel {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.ratingPreview {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.ratingStars {
+    color: gold;
+    /* Fallback or explicit gold color for stars */
+    color: #fbbf24;
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+}
+
+.ratingNumber {
+    display: inline-flex;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    font-weight: 500;
+    background-color: white;
+}
+
+.helpText {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    margin-top: 4px;
+}

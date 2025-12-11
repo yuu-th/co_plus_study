@@ -1,7 +1,7 @@
 // アンケートモックデータ
 // @see specs/features/survey.md
 
-import type { Survey, SurveyResponse } from '../types/survey';
+import type { Survey, SurveyResponse } from '@/shared/types';
 
 export const mockSurveys: Survey[] = [
     {

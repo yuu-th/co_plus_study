@@ -46,7 +46,7 @@ const NotificationBell = ({ count, notifications = [], onMarkRead }: Notificatio
 
     const handleViewAll = () => {
         setIsOpen(false);
-        navigate('/');
+        navigate('/notifications');
     };
 
     const formatTime = (createdAt: string) => {
