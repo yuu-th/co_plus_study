@@ -10,7 +10,7 @@ export type QuestionType = 'single' | 'multiple' | 'text' | 'rating' | 'color';
  * 星評価の表示方式
  * @see specs/features/survey.md
  */
-export type RatingStyle = 'numeric' | 'emoji';
+export type RatingStyle = 'numeric' | 'emoji' | 'star' | 'number';
 
 /**
  * カラー選択用の選択肢
@@ -55,25 +55,31 @@ export type SurveyStatus = 'draft' | 'scheduled' | 'active' | 'closed';
 /**
  * スケジュール & 配信対象付きアンケート
  * @see specs/features/survey.md
+ * @see ADR-005: surveys テーブル
  */
 export interface Survey {
-    /** 一意識別子 */
+    /** 一意識別子 - DB: id */
     id: string;
-    /** アンケートタイトル */
+    /** アンケートタイトル - DB: title */
     title: string;
-    /** 説明文 */
+    /** 説明文 - DB: description */
     description?: string;
-    /** 質問配列 */
+    /** 質問配列 - DB: questions (JSONB) */
     questions: Question[];
-    /** 公開開始日時（ISO8601） */
+    /** 公開開始日時（ISO8601）- DB: release_date */
     releaseDate?: string;
-    /** 締切日時（ISO8601） */
+    /** 締切日時（ISO8601）- DB: due_date */
     dueDate?: string;
-    /** 対象グループ */
+    /** 対象グループ（Phase 1ではスコープ外） */
     targetGroups?: string[];
-    /** ステータス */
+    /** ステータス - DB: status */
     status: SurveyStatus;
-    /** 過去アンケートアーカイブフラグ */
+    /** 作成者ID（メンターまたは管理者）- DB: created_by */
+    createdBy?: string;
+    /** 
+     * 過去アンケートアーカイブフラグ（UI専用）
+     * DBには保存しない。status='closed' で代替可能
+     */
     archived?: boolean;
 }
 
@@ -90,15 +96,18 @@ export interface Answer {
 
 /**
  * アンケート回答
+ * @see ADR-005: survey_responses テーブル
  */
 export interface SurveyResponse {
-    /** 対象アンケートID */
+    /** 回答ID - DB: id */
+    id?: string;
+    /** 対象アンケートID - DB: survey_id */
     surveyId: string;
-    /** 回答者ユーザーID */
+    /** 回答者ユーザーID - DB: user_id */
     userId: string;
-    /** 回答配列 */
+    /** 回答配列 - DB: answers (JSONB) */
     answers: Answer[];
-    /** 提出日時（ISO8601） */
+    /** 提出日時（ISO8601）- DB: submitted_at */
     submittedAt: string;
 }
 

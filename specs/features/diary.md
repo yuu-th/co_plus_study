@@ -1,6 +1,6 @@
 # 学習日報機能
 
-> 最終更新: 2025-12-04
+> 最終更新: 2025-12-25
 > ステータス: 実装完了
 
 ## 1. 概要
@@ -17,18 +17,23 @@ SNS風タイムラインで学習記録を投稿・閲覧する機能。1日に�
 
 ## 3. データ構造
 
-### DiaryPost
+> **SSoT**: `project/decisions/005-backend-integration-preparation.md`
+>
+> 関連テーブル: `diary_posts`, `diary_reactions`
+> 型定義: `frontend/src/shared/types/diary.ts`
 
-| フィールド | 型 | 必須 | 説明 |
-|-----------|-----|------|------|
-| id | string | ✓ | 一意識別子 |
-| userId | string | ✓ | 投稿者のユーザーID |
-| userName | string | ✓ | 投稿者の表示名 |
-| subject | Subject | ✓ | 教科 |
-| duration | number | ✓ | 学習時間（分）1-59999 |
-| content | string | ✓ | 学習内容（最大500文字） |
-| timestamp | ISO8601 | ✓ | 投稿日時 |
-| reactions | Reaction[] | | リアクション配列（メンター専用） |
+### DiaryPost（ADR-005参照）
+
+| フィールド | DB | 説明 |
+|-----------|-----|------|
+| `id` | diary_posts.id | 一意識別子 |
+| `userId` | diary_posts.user_id | 投稿者ID |
+| `userName` | profiles.display_name (JOIN) | 投稿者名 |
+| `subject` | diary_posts.subject | 教科（subject_type enum） |
+| `duration` | diary_posts.duration_minutes | 学習時間（分） |
+| `content` | diary_posts.content | 学習内容（最大500文字） |
+| `timestamp` | diary_posts.created_at | 投稿日時 |
+| `reactions` | diary_reactions (集約) | リアクション配列 |
 
 ### Subject（教科）
 
@@ -36,47 +41,40 @@ SNS風タイムラインで学習記録を投稿・閲覧する機能。1日に�
 type Subject = '国語' | '数学' | '理科' | '社会' | '英語' | 'その他';
 ```
 
-※「算数」は小学生向けの呼称だが、システム内では「数学」で統一する。UIで必要に応じて「算数/数学」と表記可能。
-
-### Duration（勉強時間）
-
-#### 入力形式
-- 入力UI: 時間と分を別々のフィールドで入力
-- 時間: 0〜999（整数）
-- 分: 0〜59（整数）
-
-#### 表示形式
-- 「X時間YY分」形式で表示
-- 例: 「1時間30分」「2時間05分」「0時間45分」「120時間00分」
-
-#### データ保存
-- 内部的には分単位の整数で保存
-- 例: 1時間30分 → 90（分）
-
-#### バリデーション
-- 最小: 1分
-- 最大: 59999分（999時間59分）
-
-### Reaction
-
-| フィールド | 型 | 説明 |
-|-----------|-----|------|
-| type | ReactionType | 絵文字タイプ |
-| count | number | リアクション数 |
-| userIds | string[] | 押したユーザーID配列 |
-
 ### ReactionType
 
 ```typescript
 type ReactionType = '👍' | '❤️' | '🎉' | '👏' | '🔥';
 ```
 
-### GroupedDiaryPost
+※ chat.md の ReactionEmoji と統一
 
-| フィールド | 型 | 説明 |
-|-----------|-----|------|
-| dateLabel | string | "今日" / "昨日" / "○月○日" |
-| posts | DiaryPost[] | その日の投稿配列 |
+### Duration（勉強時間）
+
+- **入力UI**: 時間と分を別々のフィールドで入力
+- **データ保存**: 分単位の整数で保存（例: 1時間30分 → 90分）
+- **表示形式**: 「X時間YY分」形式
+- **バリデーション**: 1分〜59999分
+
+## 4. CRUDフロー
+
+### 生徒側
+
+| 操作 | 画面 | 説明 |
+|------|------|------|
+| **Create** | DiaryPage（DiaryPostForm） | 新規日報投稿 |
+| **Read** | DiaryPage（DiaryTimeline） | 投稿一覧取得（フィルター/ページング対応） |
+| **Update** | DiaryPage（DiaryEditModal） | 自分の投稿を編集 |
+| **Delete** | DiaryPage | 自分の投稿を削除 |
+
+### メンター側
+
+| 操作 | 画面 | 説明 |
+|------|------|------|
+| **Read** | StudentDetailPage | 担当生徒の日報一覧取得 |
+| **Update** | StudentDetailPage | リアクション追加/削除 |
+
+## 5. フィルター機能
 
 ### DiaryFilter
 

@@ -6,9 +6,10 @@ interface MessageListProps {
     messages: Message[];
     currentUserId?: string;
     onReactionToggle?: (messageId: string, emoji: string) => void;
+    onDelete?: (messageId: string) => void;
 }
 
-const MessageList = ({ messages, currentUserId = '1', onReactionToggle }: MessageListProps) => {
+const MessageList = ({ messages, currentUserId = '1', onReactionToggle, onDelete }: MessageListProps) => {
     return (
         <div className={styles.list} aria-label="メッセージ一覧">
             {messages.length === 0 && (
@@ -21,6 +22,7 @@ const MessageList = ({ messages, currentUserId = '1', onReactionToggle }: Messag
                     isOwn={m.senderId === currentUserId}
                     currentUserId={currentUserId}
                     onReactionToggle={onReactionToggle}
+                    onDelete={onDelete}
                 />
             ))}
         </div>

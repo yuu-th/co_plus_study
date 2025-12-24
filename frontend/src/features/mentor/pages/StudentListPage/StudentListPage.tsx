@@ -4,7 +4,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
-import { mockStudents } from '../../mockData/mentors';
+import { useAuth, useMentorStudents, convertStudentSummaryFromDB } from '@/lib';
 import type { StudentSummary } from '../../types';
 import styles from './StudentListPage.module.css';
 
@@ -14,7 +14,7 @@ const sortStudents = (students: StudentSummary[], key: SortKey): StudentSummary[
     return [...students].sort((a, b) => {
         switch (key) {
             case 'name':
-                return a.name.localeCompare(b.name, 'ja');
+                return a.displayName.localeCompare(b.displayName, 'ja');
             case 'lastActivity':
                 return new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime();
             case 'totalHours':
@@ -27,19 +27,39 @@ const sortStudents = (students: StudentSummary[], key: SortKey): StudentSummary[
 
 const StudentListPage = () => {
     const navigate = useNavigate();
+    const { user } = useAuth();
+    const { data: studentsData, isLoading } = useMentorStudents(user?.id);
+    
     const [searchTerm, setSearchTerm] = useState('');
     const [sortKey, setSortKey] = useState<SortKey>('name');
 
+    // DBデータをフロントエンド型に変換
+    const students = useMemo(() => {
+        if (!studentsData) return [];
+        return studentsData.map(convertStudentSummaryFromDB);
+    }, [studentsData]);
+
     const filteredAndSortedStudents = useMemo(() => {
-        const filtered = mockStudents.filter(student =>
-            student.name.toLowerCase().includes(searchTerm.toLowerCase())
+        const filtered = students.filter(student =>
+            student.displayName.toLowerCase().includes(searchTerm.toLowerCase())
         );
         return sortStudents(filtered, sortKey);
-    }, [searchTerm, sortKey]);
+    }, [students, searchTerm, sortKey]);
 
     const handleCardClick = (studentId: string) => {
         navigate(`/mentor/students/${studentId}`);
     };
+
+    if (isLoading) {
+        return (
+            <div className={styles.page}>
+                <header className={styles.header}>
+                    <h1 className={styles.title}>生徒一覧</h1>
+                </header>
+                <div className={styles.loading}>読み込み中...</div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.page}>
@@ -74,8 +94,8 @@ const StudentListPage = () => {
                         >
                             <div onClick={() => handleCardClick(student.id)}>
                                 <div className={styles.cardHeader}>
-                                    <img src={student.avatarUrl || 'https://placehold.jp/150x150.png?text=No+Image'} alt={student.name} className={styles.avatar} />
-                                    <h2 className={styles.studentName}>{student.name}</h2>
+                                    <img src={student.avatarUrl || 'https://placehold.jp/150x150.png?text=No+Image'} alt={student.displayName} className={styles.avatar} />
+                                    <h2 className={styles.studentName}>{student.displayName}</h2>
                                 </div>
                                 <div className={styles.cardBody}>
                                     <p>総学習時間: {student.totalHours}h</p>

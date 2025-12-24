@@ -103,15 +103,17 @@
 
 ---
 
-## 4. 技術制約
+## 4. 技術スタック
 
-### 4.1 現フェーズの制約
+### 4.1 現フェーズ
 
-| 制約 | 理由 |
+| 項目 | 内容 |
 |------|------|
-| フロントエンドのみ | Phase 1はUIプロトタイプ |
-| バックエンド連携なし | モックデータで動作 |
-| 認証なし | ログイン機能は後フェーズ |
+| フェーズ | バックエンド連携準備中 |
+| バックエンド | Supabase（PostgreSQL + Auth + Realtime） |
+| 認証方式 | 匿名認証 → OAuth連携（段階的） |
+
+> 詳細: `project/decisions/005-backend-integration-preparation.md`
 
 ### 4.2 技術スタック
 
@@ -121,8 +123,9 @@
 | 言語 | TypeScript (Strict) |
 | ビルド | Vite |
 | スタイリング | CSS Modules + CSS変数 |
-| ルーティング | React Router v6 |
-| データ | モックデータ（JSON） |
+| ルーティング | React Router v7 |
+| データ取得 | React Query + Supabase Client |
+| バックエンド | Supabase (PostgreSQL + RLS) |
 
 ### 4.3 禁止事項
 
@@ -131,8 +134,6 @@
 | `any` 型 | 型安全性の確保 |
 | `React.FC` | 不要な型推論の問題 |
 | CSS値のハードコード | CSS変数で一元管理 |
-| fetch / axios | バックエンドなし |
-| localStorage / sessionStorage | データ永続化は後フェーズ |
 | 外部UIライブラリ | 学習目的、依存を減らす |
 | styled-components / Emotion / Tailwind | CSS Modulesで統一 |
 

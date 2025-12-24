@@ -1,10 +1,11 @@
 // @see specs/features/mentor.md (section 5)
 // StudentDetailPage - 生徒詳細ページ
 
+import { useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import DiaryPostCard from '@/shared/components/DiaryPostCard';
+import { useStudentDetail, useDiaryPosts, convertStudentDetailFromDB, convertDiaryPostFromDB } from '@/lib';
 import StudentStats from '../../components/students/StudentStats';
-import { mockStudentDetails } from '../../mockData/mentors';
 import styles from './StudentDetailPage.module.css';
 
 const getInitials = (name: string) => {
@@ -17,7 +18,35 @@ const getInitials = (name: string) => {
 
 const StudentDetailPage = () => {
     const { id } = useParams<{ id: string }>();
-    const student = mockStudentDetails.find((s) => s.id === id);
+    
+    // 生徒情報を取得
+    const { data: studentData, isLoading: isLoadingStudent } = useStudentDetail(id);
+    
+    // 生徒の日報を取得
+    const { data: diaryData, isLoading: isLoadingDiary } = useDiaryPosts({ userId: id });
+    
+    // データ変換
+    const student = useMemo(() => {
+        if (!studentData) return null;
+        return convertStudentDetailFromDB(studentData);
+    }, [studentData]);
+
+    const posts = useMemo(() => {
+        if (!diaryData?.pages) return [];
+        return diaryData.pages
+            .flatMap(page => page.data)
+            .map(convertDiaryPostFromDB);
+    }, [diaryData]);
+
+    const isLoading = isLoadingStudent || isLoadingDiary;
+
+    if (isLoading) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.loading}>読み込み中...</div>
+            </div>
+        );
+    }
 
     if (!student) {
         return (
@@ -32,7 +61,7 @@ const StudentDetailPage = () => {
     }
 
     // Sort posts by date, newest first
-    const sortedPosts = [...student.posts].sort(
+    const sortedPosts = [...posts].sort(
         (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
     );
 
@@ -43,17 +72,17 @@ const StudentDetailPage = () => {
                     {student.avatarUrl ? (
                         <img
                             src={student.avatarUrl}
-                            alt={student.name}
+                            alt={student.displayName}
                             className={`${styles.avatar} ${styles.large}`}
                         />
                     ) : (
                         <div
                             className={`${styles.avatar} ${styles.initialsAvatar} ${styles.large}`}
                         >
-                            <span>{getInitials(student.name)}</span>
+                            <span>{getInitials(student.displayName)}</span>
                         </div>
                     )}
-                    <h1 className={styles.studentName}>{student.name}</h1>
+                    <h1 className={styles.studentName}>{student.displayName}</h1>
                 </div>
                 <div className={styles.headerStats}>
                     <span>

@@ -1,16 +1,49 @@
 // @see specs/features/mentor.md
 // DashboardPage - メンターダッシュボード
 
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '@/shared/components/Button';
 import DiaryPostCard from '@/shared/components/DiaryPostCard';
 import StudentCard from '../../components/students/StudentCard';
-import { mockStudents } from '../../mockData/mentors';
-import { mockDiaryPosts } from '@/features/student/mockData/diaries';
+import { useAuth, useMentorStudents, useDiaryPosts, convertStudentSummaryFromDB, convertDiaryPostFromDB } from '@/lib';
 import styles from './DashboardPage.module.css';
 
 const DashboardPage = () => {
-    const recentPosts = mockDiaryPosts.slice(0, 5);
+    const { user } = useAuth();
+    
+    // 担当生徒を取得
+    const { data: studentsData, isLoading: isLoadingStudents } = useMentorStudents(user?.id);
+    
+    // 最近の日報を取得（全生徒分）
+    const { data: diaryData, isLoading: isLoadingDiary } = useDiaryPosts({ limit: 5 });
+
+    // データ変換
+    const students = useMemo(() => {
+        if (!studentsData) return [];
+        return studentsData.map(convertStudentSummaryFromDB);
+    }, [studentsData]);
+
+    const recentPosts = useMemo(() => {
+        if (!diaryData?.pages) return [];
+        return diaryData.pages
+            .flatMap(page => page.data)
+            .slice(0, 5)
+            .map(convertDiaryPostFromDB);
+    }, [diaryData]);
+
+    const isLoading = isLoadingStudents || isLoadingDiary;
+
+    if (isLoading) {
+        return (
+            <div className={styles.container}>
+                <header className={styles.header}>
+                    <h1 className={styles.title}>ダッシュボード</h1>
+                </header>
+                <div className={styles.loading}>読み込み中...</div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.container}>
@@ -29,22 +62,30 @@ const DashboardPage = () => {
 
             <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>担当生徒</h2>
-                <div className={styles.studentGrid}>
-                    {mockStudents.map((student) => (
-                        <Link to={`/mentor/students/${student.id}`} key={student.id} className={styles.studentCardLink}>
-                            <StudentCard student={student} />
-                        </Link>
-                    ))}
-                </div>
+                {students.length === 0 ? (
+                    <p className={styles.empty}>担当生徒がいません</p>
+                ) : (
+                    <div className={styles.studentGrid}>
+                        {students.map((student) => (
+                            <Link to={`/mentor/students/${student.id}`} key={student.id} className={styles.studentCardLink}>
+                                <StudentCard student={student} />
+                            </Link>
+                        ))}
+                    </div>
+                )}
             </section>
 
             <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>最近の日報</h2>
-                <div className={styles.diaryTimeline}>
-                    {recentPosts.map((post) => (
-                        <DiaryPostCard post={post} key={post.id} viewMode="mentor" />
-                    ))}
-                </div>
+                {recentPosts.length === 0 ? (
+                    <p className={styles.empty}>まだ日報がありません</p>
+                ) : (
+                    <div className={styles.diaryTimeline}>
+                        {recentPosts.map((post) => (
+                            <DiaryPostCard post={post} key={post.id} viewMode="mentor" />
+                        ))}
+                    </div>
+                )}
             </section>
         </div>
     );

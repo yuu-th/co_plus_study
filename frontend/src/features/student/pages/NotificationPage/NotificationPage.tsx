@@ -1,15 +1,32 @@
 // @see specs/features/notification.md
-import { useMemo, useState } from 'react';
+import { useMemo, useCallback } from 'react';
+import { 
+    useAuth, 
+    useNotifications, 
+    useMarkNotificationAsRead,
+    useRealtimeNotifications,
+    convertNotificationFromDB 
+} from '@/lib';
 import NotificationFilter from '../../components/notification/NotificationFilter';
 import NotificationList from '../../components/notification/NotificationList';
 import type { Notification, NotificationCategory } from '@/shared/types';
-import { mockNotifications } from '@/shared/mockData/notifications';
+import { useState } from 'react';
 import styles from './NotificationPage.module.css';
 
 const NotificationPage = () => {
-    // In a real app, this would come from a hook or API
-    const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
+    const { user } = useAuth();
+    const { data: notificationsData, isLoading } = useNotifications(user?.id);
+    const markAsReadMutation = useMarkNotificationAsRead();
     const [selectedCategory, setSelectedCategory] = useState<NotificationCategory | 'all'>('all');
+
+    // リアルタイム更新を購読
+    useRealtimeNotifications();
+
+    // DBデータをフロントエンド型に変換
+    const notifications = useMemo(() => {
+        if (!notificationsData) return [];
+        return notificationsData.map(convertNotificationFromDB);
+    }, [notificationsData]);
 
     const filteredNotifications = useMemo(() => {
         if (selectedCategory === 'all') {
@@ -18,13 +35,37 @@ const NotificationPage = () => {
         return notifications.filter(n => n.category === selectedCategory);
     }, [notifications, selectedCategory]);
 
-    const handleOpenNotification = (notification: Notification) => {
-        // Mark as read logic would go here
-        console.log('Open notification', notification);
-        setNotifications(prev =>
-            prev.map(n => n.id === notification.id ? { ...n, read: true } : n)
+    const handleOpenNotification = useCallback(async (notification: Notification) => {
+        if (!user || notification.isRead) return;
+        
+        try {
+            await markAsReadMutation.mutateAsync({
+                notificationId: notification.id,
+                userId: user.id,
+            });
+        } catch (error) {
+            console.error('既読にできませんでした:', error);
+        }
+    }, [user, markAsReadMutation]);
+
+    const handleDelete = useCallback((notificationId: string) => {
+        // TODO: 削除機能（現在はバックエンドに実装なし）
+        console.log('Delete notification:', notificationId);
+    }, []);
+
+    const handleArchive = useCallback((notificationId: string) => {
+        // TODO: アーカイブ機能
+        console.log('Archive notification:', notificationId);
+    }, []);
+
+    if (isLoading) {
+        return (
+            <div className={styles.page}>
+                <h1 className={styles.title}>お知らせ</h1>
+                <div className={styles.loading}>読み込み中...</div>
+            </div>
         );
-    };
+    }
 
     return (
         <div className={styles.page}>
@@ -38,6 +79,8 @@ const NotificationPage = () => {
             <NotificationList
                 notifications={filteredNotifications}
                 onOpen={handleOpenNotification}
+                onDelete={handleDelete}
+                onArchive={handleArchive}
             />
         </div>
     );

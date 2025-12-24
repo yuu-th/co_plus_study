@@ -29,6 +29,19 @@
   margin: 0 0 var(--spacing-xl) 0;
 }
 
+.error {
+  font-size: var(--font-size-sm);
+  color: var(--color-status-error);
+  margin: 0 0 var(--spacing-md) 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-status-error-bg);
+  border-radius: var(--border-radius-sm);
+}
+
+.actions {
+  margin: var(--spacing-lg) 0;
+}
+
 .note {
   font-size: var(--font-size-sm);
   color: var(--color-text-light);

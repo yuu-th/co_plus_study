@@ -6,9 +6,10 @@ import styles from './ChatInput.module.css';
 interface ChatInputProps {
     onSend: (message: Message) => void;
     studentName?: string;
+    isSubmitting?: boolean;
 }
 
-const ChatInput = ({ onSend, studentName = '' }: ChatInputProps) => {
+const ChatInput = ({ onSend, studentName = '', isSubmitting = false }: ChatInputProps) => {
     const [text, setText] = useState('');
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -96,10 +97,10 @@ const ChatInput = ({ onSend, studentName = '' }: ChatInputProps) => {
                 <button
                     type="button"
                     onClick={handleSubmit}
-                    disabled={!text.trim() && !selectedImage}
+                    disabled={isSubmitting || (!text.trim() && !selectedImage)}
                     className={styles.sendBtn}
                 >
-                    送信
+                    {isSubmitting ? '送信中...' : '送信'}
                 </button>
             </div>
         </div>

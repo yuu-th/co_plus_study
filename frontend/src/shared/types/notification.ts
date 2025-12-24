@@ -1,26 +1,41 @@
 // お知らせ機能 型定義
+// @see ADR-005: notifications, user_notifications テーブル
 
-/** 通知カテゴリ */
-export type NotificationCategory = 'info' | 'important' | 'event' | 'achievement';
+/** 通知カテゴリ - DB: notification_category enum */
+export type NotificationCategory = 'info' | 'event' | 'important';
 
-/** 通知優先度 */
-export type NotificationPriority = 'low' | 'normal' | 'high';
+/** 通知優先度 - DB: priority */
+export type NotificationPriority = 'low' | 'medium' | 'high';
 
-/** 通知本体 */
+/**
+ * 通知本体
+ * @see ADR-005: notifications テーブル + user_notifications テーブル
+ */
 export interface Notification {
+    /** 一意識別子 - DB: id */
     id: string;
-    title: string;
-    message: string;
+    /** カテゴリ - DB: category */
     category: NotificationCategory;
-    createdAt: string; // ISO8601
-    read: boolean; // 既読フラグ
-    targetUserIds?: string[]; // 対象ユーザー (未指定で全体)
-    expiresAt?: string; // 期限 (任意)
-    priority?: NotificationPriority; // 表示順制御用
+    /** タイトル - DB: title */
+    title: string;
+    /** 本文 - DB: content（※旧 message から変更） */
+    content: string;
+    /** 作成日時 - DB: created_at */
+    createdAt: string;
+    /** 既読フラグ - DB: user_notifications.is_read */
+    isRead: boolean;
+    /** 優先度 - DB: priority */
+    priority?: NotificationPriority;
+    /** 作成者ID - DB: created_by */
+    createdBy?: string;
+    /** アイコンURL - DB: icon_url */
+    iconUrl?: string;
+    /** 期限 - DB: expires_at */
+    expiresAt?: string;
 }
 
-/** 未読件数などの簡易メタ情報 */
+/** 未読件数などの簡易メタ情報（UI用） */
 export interface NotificationMeta {
     unreadCount: number;
-    latestCreatedAt?: string;
+    latestTimestamp?: string;
 }

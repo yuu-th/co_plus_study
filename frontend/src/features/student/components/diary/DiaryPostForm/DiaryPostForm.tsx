@@ -1,19 +1,22 @@
 import { useState } from 'react';
 import type { DiaryFormData, DiaryPost, Reaction, Subject } from '@/shared/types';
+import { useAuth } from '@/lib';
 import DurationInput from '@/shared/components/DurationInput';
 import { mockSubjects } from '../../../mockData/diaries';
 import styles from './DiaryPostForm.module.css';
 
 interface DiaryPostFormProps {
-    onAdd: (post: DiaryPost) => void;
+    onAdd: (post: DiaryPost) => void | Promise<void>;
 }
 
 const INITIAL: DiaryFormData = { subject: '国語', duration: 30, content: '' };
 const MAX_CONTENT = 500;
 
 const DiaryPostForm = ({ onAdd }: DiaryPostFormProps) => {
+    const { user, profile } = useAuth();
     const [form, setForm] = useState<DiaryFormData>(INITIAL);
     const [errors, setErrors] = useState<string[]>([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const validate = (): boolean => {
         const errs: string[] = [];
@@ -41,23 +44,31 @@ const DiaryPostForm = ({ onAdd }: DiaryPostFormProps) => {
         setForm(prev => ({ ...prev, content: e.target.value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!validate()) return;
+        if (!validate() || !user) return;
 
+        setIsSubmitting(true);
         const now = new Date();
         const newPost: DiaryPost = {
             id: `temp-${now.getTime()}`,
-            userId: '1',
-            userName: '田中太郎',
+            userId: user.id,
+            userName: profile?.display_name ?? 'ユーザー',
             subject: form.subject,
             duration: form.duration,
             content: form.content.trim(),
             timestamp: now.toISOString(),
             reactions: [] as Reaction[],
         };
-        onAdd(newPost);
-        setForm(INITIAL);
+        
+        try {
+            await onAdd(newPost);
+            setForm(INITIAL);
+        } catch (_error) {
+            setErrors(['投稿に失敗しました。もう一度お試しください。']);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -99,7 +110,9 @@ const DiaryPostForm = ({ onAdd }: DiaryPostFormProps) => {
                 </div>
             )}
             <div className={styles.actions}>
-                <button type="submit">投稿</button>
+                <button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? '投稿中...' : '投稿'}
+                </button>
             </div>
         </form>
     );

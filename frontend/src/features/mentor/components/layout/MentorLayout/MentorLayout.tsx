@@ -2,13 +2,16 @@
 // @see specs/features/mentor.md
 
 import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/lib';
 import MentorHeader from '../MentorHeader';
 import MentorSidebar from '../MentorSidebar';
 import styles from './MentorLayout.module.css';
 
 const MentorLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const { signOut } = useAuth();
+    const navigate = useNavigate();
 
     const handleMenuClick = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -18,9 +21,14 @@ const MentorLayout = () => {
         setIsSidebarOpen(false);
     };
 
+    const handleLogout = async () => {
+        await signOut();
+        navigate('/login');
+    };
+
     return (
         <div className={styles.layout}>
-            <MentorSidebar isOpen={isSidebarOpen} onClose={handleSidebarClose} />
+            <MentorSidebar isOpen={isSidebarOpen} onClose={handleSidebarClose} onLogout={handleLogout} />
             <div className={styles.mainWrapper}>
                 <MentorHeader onMenuClick={handleMenuClick} />
                 <main className={styles.mainContent}>

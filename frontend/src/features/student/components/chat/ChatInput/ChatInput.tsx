@@ -1,15 +1,18 @@
 import { useState, useRef } from 'react';
 import { FaCamera } from 'react-icons/fa';
 import type { Message } from '@/shared/types';
+import { useAuth } from '@/lib';
 import styles from './ChatInput.module.css';
 
 interface ChatInputProps {
-    onSend: (message: Message) => void;
+    onSend: (message: Message) => void | Promise<void>;
 }
 
 const ChatInput = ({ onSend }: ChatInputProps) => {
+    const { user, profile } = useAuth();
     const [text, setText] = useState('');
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [isSending, setIsSending] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const maxLen = 300;
 
@@ -28,24 +31,32 @@ const ChatInput = ({ onSend }: ChatInputProps) => {
         }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const content = text.trim();
-        if (!content && !selectedImage) return;
+        if ((!content && !selectedImage) || !user || isSending) return;
 
+        setIsSending(true);
         const now = new Date();
-        onSend({
-            id: `msg-${now.getTime()}`,
-            senderId: '1',
-            senderName: '田中太郎',
-            senderRole: 'student',
-            content,
-            imageUrl: selectedImage || undefined,
-            type: selectedImage ? 'image' : 'text',
-            timestamp: now.toISOString(),
-            isRead: false,
-        });
-        setText('');
-        setSelectedImage(null);
+        
+        try {
+            await onSend({
+                id: `msg-${now.getTime()}`,
+                senderId: user.id,
+                senderName: profile?.display_name ?? 'ユーザー',
+                senderRole: 'student',
+                content,
+                imageUrl: selectedImage || undefined,
+                type: selectedImage ? 'image' : 'text',
+                timestamp: now.toISOString(),
+                isRead: false,
+            });
+            setText('');
+            setSelectedImage(null);
+        } catch (error) {
+            console.error('送信に失敗しました:', error);
+        } finally {
+            setIsSending(false);
+        }
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -97,10 +108,10 @@ const ChatInput = ({ onSend }: ChatInputProps) => {
                 <button
                     type="button"
                     onClick={handleSubmit}
-                    disabled={!text.trim() && !selectedImage}
+                    disabled={isSending || (!text.trim() && !selectedImage)}
                     className={styles.sendBtn}
                 >
-                    送信
+                    {isSending ? '送信中...' : '送信'}
                 </button>
             </div>
         </div>

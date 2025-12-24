@@ -24,27 +24,40 @@
 
 ## 3. データ構造
 
-### Message
+> **SSoT**: `project/decisions/005-backend-integration-preparation.md`
+>
+> 関連テーブル: `chat_rooms`, `messages`, `message_reactions`
+> 型定義: `frontend/src/shared/types/chat.ts`
 
-| フィールド | 型 | 必須 | 説明 |
-|-----------|-----|------|------|
-| id | string | ✓ | 一意識別子 |
-| senderId | string | ✓ | 送信者ID |
-| senderName | string | ✓ | 送信者名 |
-| senderRole | 'student' \| 'mentor' | ✓ | 役割 |
-| type | 'text' \| 'image' | ✓ | メッセージタイプ |
-| content | string | ✓ | テキスト本文（最大500文字）またはキャプション |
-| imageUrl | string \| null | | 画像URL（type='image'時） |
-| timestamp | ISO8601 | ✓ | 送信日時 |
-| isRead | boolean | ✓ | 既読フラグ |
-| reactions | MessageReaction[] | | リアクション配列 |
+### Message（ADR-005参照）
 
-### MessageReaction
-
-| フィールド | 型 | 説明 |
+| フィールド | DB | 説明 |
 |-----------|-----|------|
-| emoji | ReactionEmoji | 絵文字 |
-| userIds | string[] | リアクションしたユーザーID配列 |
+| `id` | messages.id | 一意識別子 |
+| `senderId` | messages.sender_id | 送信者ID |
+| `senderName` | profiles.display_name (JOIN) | 送信者名 |
+| `senderRole` | profiles.role (JOIN) | 役割（student/mentor） |
+| `type` | messages.message_type | メッセージタイプ（text/image） |
+| `content` | messages.content | テキスト本文（最大500文字） |
+| `imageUrl` | messages.image_url | 画像URL |
+| `timestamp` | messages.created_at | 送信日時 |
+| `isRead` | messages.is_read | 既読フラグ |
+| `reactions` | message_reactions (集約) | リアクション配列 |
+
+### ChatRoom（ADR-005参照）
+
+| フィールド | DB | 説明 |
+|-----------|-----|------|
+| `id` | chat_rooms.id | チャットルームID |
+| `mentorId` | chat_rooms.mentor_id | メンターID |
+| `mentorName` | profiles.display_name (JOIN) | メンター名 |
+| `mentorDisplayName` | 動的生成 | 「おにいさん」「おねえさん」 |
+| `mentorAvatarUrl` | profiles.avatar_url (JOIN) | メンターアバター |
+| `mentorStatus` | Supabase Presence | オンライン状態 |
+| `lastSeen` | profiles.last_seen_at | 最終ログイン |
+| `studentId` | chat_rooms.student_id | 生徒ID |
+| `studentName` | profiles.display_name (JOIN) | 生徒名 |
+| `messages` | messages (取得) | メッセージ配列 |
 
 ### ReactionEmoji
 
@@ -54,23 +67,27 @@ type ReactionEmoji = '👍' | '❤️' | '🎉' | '👏' | '🔥';
 
 ※ diary.md の ReactionType と統一
 
-### ChatRoom
+## 4. CRUDフロー
 
-| フィールド | 型 | 説明 |
-|-----------|-----|------|
-| id | string | チャットルームID |
-| mentorId | string | メンターID |
-| mentorName | string | メンター名（システム名） |
-| mentorDisplayName | string | メンター表示名（例: おにいさん） |
-| mentorAvatar | string \| null | メンターのアバター画像URL |
-| mentorStatus | 'online' \| 'offline' | オンライン状態 |
-| lastSeen | ISO8601? | 最終ログイン |
-| studentId | string | 生徒ID |
-| studentName | string | 生徒の表示名 |
-| studentAvatar | string \| null | 生徒のアバター画像URL |
-| messages | Message[] | メッセージ配列 |
+### 生徒側
 
-## 4. コンポーネント
+| 操作 | 画面 | 説明 |
+|------|------|------|
+| **Create** | ChatPage | メッセージ送信（テキスト/画像） |
+| **Read** | ChatPage | メッセージ一覧取得 + Realtime購読 |
+| **Update** | ChatPage | リアクション追加/削除 |
+| **Delete** | ChatPage | 自分のメッセージ削除 |
+
+### メンター側
+
+| 操作 | 画面 | 説明 |
+|------|------|------|
+| **Create** | ChatPage | メッセージ送信 |
+| **Read** | ChatPage | 全担当生徒のチャット取得 + 生徒切替 |
+| **Update** | ChatPage | リアクション追加/削除 |
+| **Delete** | ChatPage | メッセージ削除 |
+
+## 5. コンポーネント
 
 | 名前 | 責務 | 配置 |
 |------|------|------|

@@ -1,0 +1,145 @@
+.page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: var(--spacing-xl) var(--spacing-lg);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.title {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    margin: 0;
+}
+
+.subtitle {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-top: 4px;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.emptyCard {
+    text-align: center;
+    padding: var(--spacing-xxl);
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--border-radius-lg);
+    border: 2px dashed var(--color-border);
+}
+
+.empty {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-lg);
+}
+
+.card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.surveyItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-xl);
+}
+
+.surveyInfo {
+    flex: 1;
+}
+
+.itemHeader {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.surveyTitle {
+    margin: 0 0 var(--spacing-xs) 0;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+}
+
+.surveyDescription {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+}
+
+/* Status Badges */
+.status {
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+}
+
+.draft {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-secondary);
+}
+
+.active {
+    background-color: #dcfce7;
+    color: #16a34a;
+}
+
+.closed {
+    background-color: #f1f5f9;
+    color: #64748b;
+}
+
+.questionCount {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    background-color: rgba(var(--color-primary-rgb), 0.1);
+    padding: 1px 8px;
+    border-radius: 10px;
+}
+
+.date {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    margin-left: auto;
+}
+
+.actions {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.deleteBtn {
+    color: var(--color-error) !important;
+}
+
+@media (max-width: 768px) {
+    .surveyItem {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+    }
+
+    .actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}

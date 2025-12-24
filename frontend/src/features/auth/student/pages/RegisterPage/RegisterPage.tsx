@@ -1,43 +1,60 @@
 // @see specs/features/home.md
 // RegisterPage - アカウント登録画面
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/lib';
 import Button from '@/shared/components/Button';
 import styles from './RegisterPage.module.css';
 
 interface RegistrationForm {
-    name: string;
-    kana: string;
+    displayName: string;
+    nameKana: string;
     grade: string;
 }
 
 const GRADES = [
-    '小1', '小2', '小3', '小4', '小5', '小6',
-    '中1', '中2', '中3',
+    '小学1年', '小学2年', '小学3年', '小学4年', '小学5年', '小学6年',
+    '中学1年', '中学2年', '中学3年',
 ];
 
 const RegisterPage = () => {
     const navigate = useNavigate();
+    const { updateProfile, isAuthenticated, isLoading, profile } = useAuth();
     const [form, setForm] = useState<RegistrationForm>({
-        name: '',
-        kana: '',
-        grade: '小1',
+        displayName: '',
+        nameKana: '',
+        grade: '小学1年',
     });
     const [errors, setErrors] = useState<string[]>([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // 未認証ならログインへ
+    useEffect(() => {
+        if (!isLoading && !isAuthenticated) {
+            navigate('/login');
+        }
+    }, [isLoading, isAuthenticated, navigate]);
+
+    // 既にプロフィール設定済みならホームへ
+    useEffect(() => {
+        if (!isLoading && profile?.display_name) {
+            navigate('/');
+        }
+    }, [isLoading, profile, navigate]);
 
     const validate = (): boolean => {
         const errs: string[] = [];
 
-        if (!form.name.trim()) {
+        if (!form.displayName.trim()) {
             errs.push('ユーザー名を入力してください');
-        } else if (form.name.length > 20) {
+        } else if (form.displayName.length > 20) {
             errs.push('ユーザー名は20文字以内です');
         }
 
-        if (!form.kana.trim()) {
+        if (!form.nameKana.trim()) {
             errs.push('フリガナを入力してください');
-        } else if (!/^[ぁ-んァ-ヴー\s]+$/.test(form.kana)) {
+        } else if (!/^[ぁ-んァ-ヴー\s]+$/.test(form.nameKana)) {
             errs.push('フリガナはひらがなまたはカタカナで入力してください');
         }
 
@@ -50,14 +67,43 @@ const RegisterPage = () => {
         setForm(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validate()) return;
 
-        // モックデータに登録（実装時はバックエンドへ）
-        // ここでは単にホームへ遷移
-        navigate('/');
+        setIsSubmitting(true);
+        setErrors([]);
+
+        try {
+            const { error } = await updateProfile({
+                display_name: form.displayName.trim(),
+                name_kana: form.nameKana.trim(),
+                grade: form.grade,
+            });
+
+            if (error) {
+                setErrors(['登録に失敗しました。もう一度お試しください。']);
+                console.error('Profile update error:', error);
+            } else {
+                navigate('/');
+            }
+        } catch (err) {
+            setErrors(['予期しないエラーが発生しました。']);
+            console.error('Unexpected error:', err);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
+
+    if (isLoading) {
+        return (
+            <div className={styles.page}>
+                <div className={styles.container}>
+                    <p>読み込み中...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.page}>
@@ -67,14 +113,14 @@ const RegisterPage = () => {
 
                 <form className={styles.form} onSubmit={handleSubmit}>
                     <div className={styles.field}>
-                        <label htmlFor="name" className={styles.label}>
+                        <label htmlFor="displayName" className={styles.label}>
                             ユーザー名 <span className={styles.required}>*</span>
                         </label>
                         <input
-                            id="name"
-                            name="name"
+                            id="displayName"
+                            name="displayName"
                             type="text"
-                            value={form.name}
+                            value={form.displayName}
                             onChange={handleChange}
                             className={styles.input}
                             placeholder="やまだ たろう"
@@ -85,14 +131,14 @@ const RegisterPage = () => {
                     </div>
 
                     <div className={styles.field}>
-                        <label htmlFor="kana" className={styles.label}>
+                        <label htmlFor="nameKana" className={styles.label}>
                             フリガナ <span className={styles.required}>*</span>
                         </label>
                         <input
-                            id="kana"
-                            name="kana"
+                            id="nameKana"
+                            name="nameKana"
                             type="text"
-                            value={form.kana}
+                            value={form.nameKana}
                             onChange={handleChange}
                             className={styles.input}
                             placeholder="ヤマダ タロウ"
@@ -127,8 +173,8 @@ const RegisterPage = () => {
                     )}
 
                     <div className={styles.actions}>
-                        <Button type="submit" variant="primary">
-                            登録する
+                        <Button type="submit" variant="primary" disabled={isSubmitting}>
+                            {isSubmitting ? '登録中...' : '登録する'}
                         </Button>
                     </div>
                 </form>

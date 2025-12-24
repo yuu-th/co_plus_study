@@ -13,10 +13,9 @@ interface NotificationListProps {
 
 const categories: { value: '' | Notification['category']; label: string }[] = [
     { value: '', label: 'すべて' },
-    { value: 'info', label: '情報' },
-    { value: 'important', label: '重要' },
+    { value: 'info', label: 'お知らせ' },
     { value: 'event', label: 'イベント' },
-    { value: 'achievement', label: '達成' },
+    { value: 'important', label: '重要' },
 ];
 
 const NotificationList = ({ notifications, onOpen }: NotificationListProps) => {
@@ -24,7 +23,7 @@ const NotificationList = ({ notifications, onOpen }: NotificationListProps) => {
     const [showUnreadOnly, setShowUnreadOnly] = useState(false);
     const filtered = notifications.filter(n => {
         if (category && n.category !== category) return false;
-        if (showUnreadOnly && n.read) return false;
+        if (showUnreadOnly && n.isRead) return false;
         return true;
     });
 

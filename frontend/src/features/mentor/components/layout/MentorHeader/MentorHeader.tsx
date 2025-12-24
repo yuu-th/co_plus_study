@@ -1,7 +1,8 @@
 // @see specs/features/mentor.md
-// MentorHeader for mentor layout
+// MentorHeader for mentor layout - displays mentor profile info
 
-import { FaBars } from 'react-icons/fa';
+import { FaBars, FaSignOutAlt } from 'react-icons/fa';
+import { useAuth } from '@/lib';
 import styles from './MentorHeader.module.css';
 
 interface MentorHeaderProps {
@@ -9,6 +10,15 @@ interface MentorHeaderProps {
 }
 
 const MentorHeader = ({ onMenuClick }: MentorHeaderProps) => {
+    const { profile } = useAuth();
+
+    const displayName = profile?.display_name ?? 'メンター';
+    const avatarUrl = profile?.avatar_url;
+    const gender = profile?.gender;
+
+    // Generate display name from gender (おにいさん/おねえさん)
+    const genderDisplayName = gender === 'male' ? 'おにいさん' : 'おねえさん';
+
     return (
         <header className={styles.header}>
             <button
@@ -19,6 +29,31 @@ const MentorHeader = ({ onMenuClick }: MentorHeaderProps) => {
                 <FaBars />
             </button>
             <span className={styles.modeLabel}>メンターモード</span>
+
+            <div className={styles.spacer} />
+
+            <div className={styles.profile}>
+                <div className={styles.avatar}>
+                    {avatarUrl ? (
+                        <img src={avatarUrl} alt={displayName} />
+                    ) : (
+                        <span className={styles.avatarInitial}>
+                            {displayName.charAt(0)}
+                        </span>
+                    )}
+                </div>
+                <div className={styles.profileInfo}>
+                    <span className={styles.profileName}>{displayName}</span>
+                    <span className={styles.profileRole}>{genderDisplayName}</span>
+                </div>
+                <button
+                    className={styles.logoutButton}
+                    aria-label="ログアウト"
+                    title="ログアウト"
+                >
+                    <FaSignOutAlt />
+                </button>
+            </div>
         </header>
     );
 };

@@ -3,32 +3,34 @@
 
 import { Link } from 'react-router-dom';
 import Button from '@/shared/components/Button';
+import type { User } from '@/shared/types';
 import { useTutorialContext } from '../../components/tutorial/TutorialProvider';
 import styles from './ProfilePage.module.css';
 
-interface UserProfile {
-    id: string;
-    name: string;
-    kana: string;
-    avatarUrl?: string;
-    joinedAt: string;
+/**
+ * プロフィール表示用の拡張型
+ * @see shared/types/user.ts User
+ */
+interface ProfileWithStats extends User {
+    /** 総学習時間（時間単位、クエリで集計） */
     totalStudyHours: number;
+    /** 総投稿数（クエリで集計） */
     totalPosts: number;
-    grade?: string;
 }
 
 const ProfilePage = () => {
     const { state, startTutorial, resetTutorial } = useTutorialContext();
 
-    const user: UserProfile = {
+    const user: ProfileWithStats = {
         id: '1',
-        name: '田中太郎',
-        kana: 'たなかたろう',
+        displayName: '田中太郎',
+        nameKana: 'たなかたろう',
+        role: 'student',
         avatarUrl: undefined,
-        joinedAt: '2024-01-15',
+        createdAt: '2024-01-15',
+        grade: '中学2年',
         totalStudyHours: 156,
         totalPosts: 42,
-        grade: '中学2年',
     };
 
     const formatDate = (dateStr: string) => {
@@ -46,15 +48,20 @@ const ProfilePage = () => {
 
     return (
         <div className={styles.page}>
-            <h1 className={styles.title}>プロフィール</h1>
+            <div className={styles.header}>
+                <h1 className={styles.title}>プロフィール</h1>
+                <Link to="/profile/edit">
+                    <Button variant="outline" size="small">編集</Button>
+                </Link>
+            </div>
 
             <div className={styles.profileCard}>
                 <div className={styles.avatarWrapper}>
                     {user.avatarUrl ? (
-                        <img src={user.avatarUrl} alt={user.name} className={styles.avatar} />
+                        <img src={user.avatarUrl} alt={user.displayName} className={styles.avatar} />
                     ) : (
                         <div className={styles.avatarPlaceholder}>
-                            {user.name.charAt(0)}
+                            {user.displayName.charAt(0)}
                         </div>
                     )}
                 </div>
@@ -62,11 +69,11 @@ const ProfilePage = () => {
                 <div className={styles.info}>
                     <div className={styles.field}>
                         <label className={styles.label}>名前</label>
-                        <p className={styles.value}>{user.name}</p>
+                        <p className={styles.value}>{user.displayName}</p>
                     </div>
                     <div className={styles.field}>
                         <label className={styles.label}>フリガナ</label>
-                        <p className={styles.value}>{user.kana}</p>
+                        <p className={styles.value}>{user.nameKana}</p>
                     </div>
                     {user.grade && (
                         <div className={styles.field}>
@@ -76,7 +83,7 @@ const ProfilePage = () => {
                     )}
                     <div className={styles.field}>
                         <label className={styles.label}>参加日</label>
-                        <p className={styles.value}>{formatDate(user.joinedAt)}</p>
+                        <p className={styles.value}>{formatDate(user.createdAt!)}</p>
                     </div>
                 </div>
             </div>

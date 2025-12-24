@@ -1,13 +1,14 @@
 // @see specs/features/mentor.md
 // Mentor feature mock data
 
-import type { StudentSummary, StudentDetail } from '../types';
+import type { Mentor, StudentSummary, StudentDetail } from '../types';
 import { mockDiaryPosts } from '@/features/student/mockData/diaries';
 
 export const mockStudents: StudentSummary[] = [
     {
         id: 'student-1',
-        name: '鈴木 一郎',
+        displayName: '鈴木 一郎',
+        nameKana: 'すずきいちろう',
         avatarUrl: 'https://placehold.jp/150x150.png?text=S.I',
         totalPosts: 12,
         totalHours: 25.5,
@@ -15,14 +16,16 @@ export const mockStudents: StudentSummary[] = [
     },
     {
         id: 'student-2',
-        name: '佐藤 花子',
+        displayName: '佐藤 花子',
+        nameKana: 'さとうはなこ',
         totalPosts: 5,
         totalHours: 8,
         lastActivity: '2025-11-24T18:30:00Z',
     },
     {
         id: 'student-3',
-        name: '高橋 健太',
+        displayName: '高橋 健太',
+        nameKana: 'たかはしけんた',
         avatarUrl: 'https://placehold.jp/150x150.png?text=K.T',
         totalPosts: 28,
         totalHours: 42.0,
@@ -30,7 +33,8 @@ export const mockStudents: StudentSummary[] = [
     },
     {
         id: 'student-4',
-        name: '田中 美咲',
+        displayName: '田中 美咲',
+        nameKana: 'たなかみさき',
         totalPosts: 0,
         totalHours: 0,
         lastActivity: '2025-10-01T09:00:00Z',
@@ -65,3 +69,19 @@ export const mockStudentDetails: StudentDetail[] = [
         },
     },
 ];
+
+// 現在ログイン中のメンター（将来的にはauth stateから取得）
+export const mockCurrentMentor: Mentor = {
+    id: 'mentor-1',
+    displayName: '高専 花子',
+    nameKana: 'こうせんはなこ',
+    avatarUrl: undefined,
+    gender: 'female',
+    specialties: [
+        { id: 'sp-1', name: '数学' },
+        { id: 'sp-2', name: 'プログラミング' },
+    ],
+    introduction: '一緒に楽しく学習しましょう！',
+    status: 'active',
+    createdAt: '2024-01-01T00:00:00.000Z',
+};

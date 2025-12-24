@@ -10,8 +10,6 @@
 
 .picker {
     position: absolute;
-    top: 100%;
-    left: 0;
     background-color: var(--color-bg-primary);
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius-md);

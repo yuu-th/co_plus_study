@@ -10,8 +10,8 @@ interface NotificationCardProps {
 }
 
 const NotificationCard = ({ notification, onOpen }: NotificationCardProps) => {
-    const { category, title, message, read } = notification;
-    const snippet = message.slice(0, 48) + (message.length > 48 ? '…' : '');
+    const { category, title, content, isRead } = notification;
+    const snippet = content.slice(0, 48) + (content.length > 48 ? '…' : '');
     return (
         <article
             className={styles.card}
@@ -22,7 +22,7 @@ const NotificationCard = ({ notification, onOpen }: NotificationCardProps) => {
             <div className={`${styles.badge} ${styles[category]}`} aria-hidden="true" />
             <h3 className={styles.title}>{title}</h3>
             <p id={`ntf-${notification.id}-snippet`} className={styles.messageSnippet}>{snippet}</p>
-            {!read && <span className={styles.unreadDot} aria-label="未読" />}
+            {!isRead && <span className={styles.unreadDot} aria-label="未読" />}
         </article>
     );
 };

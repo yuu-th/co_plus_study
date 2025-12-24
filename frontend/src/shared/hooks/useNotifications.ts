@@ -5,21 +5,20 @@ import type { Notification } from '@/shared/types';
 export const useNotifications = () => {
     const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
 
-    const unreadCount = useMemo(() => notifications.filter(n => !n.read).length, [notifications]);
+    const unreadCount = useMemo(() => notifications.filter(n => !n.isRead).length, [notifications]);
 
     const markAsRead = useCallback((id: string) => {
-        setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+        setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
     }, []);
 
     const markAllAsRead = useCallback(() => {
-        setNotifications(prev => prev.map(n => n.read ? n : { ...n, read: true }));
+        setNotifications(prev => prev.map(n => n.isRead ? n : { ...n, isRead: true }));
     }, []);
 
-    const addNotification = useCallback((partial: Omit<Notification, 'id' | 'createdAt' | 'read'> & { read?: boolean }) => {
+    const addNotification = useCallback((partial: Omit<Notification, 'id' | 'isRead'> & { isRead?: boolean }) => {
         const newN: Notification = {
             id: `ntf-${Date.now()}`,
-            createdAt: new Date().toISOString(),
-            read: false,
+            isRead: false,
             ...partial,
         };
         setNotifications(prev => [newN, ...prev]);

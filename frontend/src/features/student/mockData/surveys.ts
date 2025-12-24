@@ -1,5 +1,6 @@
 // アンケートモックデータ
 // @see specs/features/survey.md
+// @see ADR-005: surveys, survey_responses テーブル
 
 import type { Survey, SurveyResponse } from '@/shared/types';
 
@@ -17,6 +18,7 @@ export const mockSurveys: Survey[] = [
         dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
         targetGroups: ['students'],
         status: 'active',
+        createdBy: 'mentor-1',
     },
     {
         id: 'survey-2',
@@ -30,11 +32,13 @@ export const mockSurveys: Survey[] = [
         dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
         targetGroups: ['students'],
         status: 'scheduled',
+        createdBy: 'mentor-1',
     },
 ];
 
 export const mockSurveyResponses: SurveyResponse[] = [
     {
+        id: 'resp-1',
         surveyId: 'survey-1',
         userId: '1',
         answers: [

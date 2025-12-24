@@ -29,18 +29,18 @@ interface StudentCardProps {
 }
 
 const StudentCard = ({ student, onClick }: StudentCardProps) => {
-    const { name, avatarUrl, lastActivity, totalHours, totalPosts } = student;
+    const { displayName, avatarUrl, lastActivity, totalHours, totalPosts } = student;
 
     return (
         <div onClick={onClick} className={styles.card}>
             <div className={styles.avatar}>
                 {avatarUrl ? (
-                    <img src={avatarUrl} alt={name} />
+                    <img src={avatarUrl} alt={displayName} />
                 ) : (
-                    <span className={styles.initials}>{getInitials(name)}</span>
+                    <span className={styles.initials}>{getInitials(displayName)}</span>
                 )}
             </div>
-            <h3 className={styles.name}>{name}</h3>
+            <h3 className={styles.name}>{displayName}</h3>
             <div className={styles.stats}>
                 <div className={styles.statItem}>
                     <span className={styles.statLabel}>最終活動日</span>

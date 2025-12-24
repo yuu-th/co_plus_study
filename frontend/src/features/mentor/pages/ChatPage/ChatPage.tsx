@@ -1,163 +1,189 @@
 // ChatPage - メンター専用チャットページ
 // @see specs/features/chat.md
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import type { Message } from '@/shared/types';
-import { mockMessages } from '@/shared/mockData/chats';
-import { mockStudents } from '../../mockData/mentors';
+import { 
+    useAuth, 
+    useChatRooms, 
+    useMessages, 
+    useRealtimeMessages,
+    useSendMessage,
+    useAddMessageReaction,
+    useRemoveMessageReaction,
+    convertMessageFromDB
+} from '@/lib';
 import StudentChatSwitcher from '../../components/StudentChatSwitcher';
 import MessageList from '../../components/chat/MessageList';
 import ChatInput from '../../components/chat/ChatInput';
 import styles from './ChatPage.module.css';
 
-// studentId別のメッセージをシミュレート
-const mockStudentMessages: Record<string, Message[]> = {
-    'student-1': mockMessages,
-    'student-2': [
-        {
-            id: 'msg-s2-1',
-            senderId: 'student-2',
-            senderName: '佐藤 花子',
-            senderRole: 'student',
-            content: '英語の勉強方法について相談したいです。',
-            timestamp: '2025-11-24T14:00:00Z',
-            isRead: true,
-        },
-        {
-            id: 'msg-s2-2',
-            senderId: 'mentor-1',
-            senderName: '高専 花子',
-            senderRole: 'mentor',
-            content: '英語の勉強方法ですね。どんなことで困っていますか？',
-            timestamp: '2025-11-24T14:10:00Z',
-            isRead: true,
-        },
-    ],
-    'student-3': [
-        {
-            id: 'msg-s3-1',
-            senderId: 'student-3',
-            senderName: '高橋 健太',
-            senderRole: 'student',
-            content: 'プログラミングに興味があります！',
-            timestamp: '2025-11-25T09:00:00Z',
-            isRead: false,
-        },
-    ],
-    'student-4': [],
-};
-
 const ChatPage = () => {
-    const [selectedStudentId, setSelectedStudentId] = useState<string | null>(mockStudents[0]?.id ?? null);
-    const [studentMessages, setStudentMessages] = useState<Record<string, Message[]>>(mockStudentMessages);
+    const { user } = useAuth();
+    const currentUserId = user?.id ?? '';
 
-    // 担当生徒とチャット情報
+    // メンターのチャットルームを取得
+    const { data: chatRoomsData, isLoading: isLoadingRooms } = useChatRooms(currentUserId);
+
+    const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
+
+    // チャットルームと生徒情報を整形
     const studentChats = useMemo(() => {
-        return mockStudents.map((student) => {
-            const msgs = studentMessages[student.id] ?? [];
-            const lastMsg = msgs[msgs.length - 1];
-            // 未読数は簡易的にランダム（本来はMessageのisReadを集計）
-            // タスク仕様に合わせてランダムを使用しつつ、既存ロジックも尊重
+        if (!chatRoomsData) return [];
+        return chatRoomsData.map(room => {
+            // roomには student情報が含まれていると仮定
+            const student = (room as unknown as { student: { id: string; display_name: string; avatar_url?: string } }).student;
             return {
+                roomId: room.id,
                 student: {
-                    ...student,
-                    role: 'student' as const, // StudentSummary -> User conversion partial
-                    email: '', // dummy
+                    id: student?.id ?? room.student_id,
+                    displayName: student?.display_name ?? '生徒',
+                    avatarUrl: student?.avatar_url,
+                    role: 'student' as const,
+                    email: '',
+                    totalPosts: 0,
+                    totalHours: 0,
+                    lastActivity: room.created_at ?? new Date().toISOString(),
                 },
-                unreadCount: Math.floor(Math.random() * 5),
-                lastMessageTime: lastMsg?.timestamp ?? new Date().toISOString(),
+                unreadCount: 0, // TODO: 未読カウント
+                lastMessageTime: room.created_at ?? new Date().toISOString(),
             };
         });
-    }, [studentMessages]);
+    }, [chatRoomsData]);
 
-    const currentStudent = useMemo(
-        () => mockStudents.find((s) => s.id === selectedStudentId) ?? null,
-        [selectedStudentId]
-    );
+    // 選択中のルームIDを初期化
+    const effectiveRoomId = selectedRoomId ?? studentChats[0]?.roomId ?? '';
 
-    const messages = selectedStudentId ? (studentMessages[selectedStudentId] ?? []) : [];
+    // メッセージを取得
+    const { data: messagesData, isLoading: isLoadingMessages } = useMessages(effectiveRoomId);
 
-    const handleSelectStudent = (studentId: string) => {
-        setSelectedStudentId(studentId);
-    };
+    // リアルタイム更新を購読
+    useRealtimeMessages(effectiveRoomId);
 
-    const handleSend = (msg: Message) => {
-        if (!selectedStudentId) return;
-        setStudentMessages((prev) => ({
-            ...prev,
-            [selectedStudentId]: [...(prev[selectedStudentId] ?? []), msg],
-        }));
-    };
+    // Mutations
+    const sendMessage = useSendMessage();
+    const addReaction = useAddMessageReaction();
+    const removeReaction = useRemoveMessageReaction();
 
-    const handleReactionToggle = (messageId: string, emoji: string) => {
-        if (!selectedStudentId) return;
-        const currentUserId = 'mentor-1';
+    // メッセージをフロントエンド型に変換
+    const messages: Message[] = useMemo(() => {
+        if (!messagesData?.pages) return [];
+        return messagesData.pages
+            .flatMap(page => page.data)
+            .map(convertMessageFromDB);
+    }, [messagesData]);
 
-        setStudentMessages((prev) => {
-            const targetMessages = prev[selectedStudentId] ?? [];
-            const updatedMessages = targetMessages.map(msg => {
-                if (msg.id !== messageId) return msg;
+    // 現在選択中の生徒
+    const currentStudent = useMemo(() => {
+        const chat = studentChats.find(c => c.roomId === effectiveRoomId);
+        return chat?.student ?? null;
+    }, [studentChats, effectiveRoomId]);
 
-                const reactions = msg.reactions || [];
-                const existingReaction = reactions.find(r => r.emoji === emoji);
-                let newReactions: import('@/shared/types').MessageReaction[];
+    const handleSelectStudent = useCallback((studentId: string) => {
+        const chat = studentChats.find(c => c.student.id === studentId);
+        if (chat) {
+            setSelectedRoomId(chat.roomId);
+        }
+    }, [studentChats]);
 
-                if (existingReaction) {
-                    if (existingReaction.userIds.includes(currentUserId)) {
-                        const newUserIds = existingReaction.userIds.filter(id => id !== currentUserId);
-                        if (newUserIds.length === 0) {
-                            newReactions = reactions.filter(r => r.emoji !== emoji);
-                        } else {
-                            newReactions = reactions.map(r =>
-                                r.emoji === emoji ? { ...r, userIds: newUserIds } : r
-                            );
-                        }
-                    } else {
-                        newReactions = reactions.map(r =>
-                            r.emoji === emoji ? { ...r, userIds: [...r.userIds, currentUserId] } : r
-                        );
-                    }
-                } else {
-                    newReactions = [...reactions, { emoji, userIds: [currentUserId] }];
-                }
-                return { ...msg, reactions: newReactions };
+    const handleSend = useCallback(async (msg: Message) => {
+        if (!effectiveRoomId || !user) return;
+
+        try {
+            await sendMessage.mutateAsync({
+                room_id: effectiveRoomId,
+                sender_id: user.id,
+                content: msg.content,
+                message_type: msg.type === 'image' ? 'image' : 'text',
+                image_url: msg.imageUrl,
             });
+        } catch (error) {
+            console.error('メッセージ送信に失敗しました:', error);
+        }
+    }, [effectiveRoomId, user, sendMessage]);
 
-            return {
-                ...prev,
-                [selectedStudentId]: updatedMessages
-            };
-        });
-    };
+    const handleReactionToggle = useCallback(async (messageId: string, emoji: string) => {
+        if (!user) return;
+
+        const message = messages.find(m => m.id === messageId);
+        if (!message) return;
+
+        const existingReaction = message.reactions?.find(r => r.emoji === emoji);
+        const hasReacted = existingReaction?.userIds.includes(user.id);
+
+        try {
+            if (hasReacted) {
+                await removeReaction.mutateAsync({
+                    messageId,
+                    emoji,
+                    userId: user.id,
+                });
+            } else {
+                await addReaction.mutateAsync({
+                    message_id: messageId,
+                    emoji,
+                    user_id: user.id,
+                });
+            }
+        } catch (error) {
+            console.error('リアクション操作に失敗しました:', error);
+        }
+    }, [user, messages, addReaction, removeReaction]);
+
+    const handleDelete = useCallback((_messageId: string) => {
+        // TODO: メッセージ削除機能（バックエンドに実装が必要）
+        console.log('Delete message:', _messageId);
+    }, []);
+
+    const isLoading = isLoadingRooms;
+
+    if (isLoading) {
+        return (
+            <div className={styles.page}>
+                <div className={styles.loading}>読み込み中...</div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.page}>
             <div className={styles.sidebar}>
                 <StudentChatSwitcher
                     students={studentChats}
-                    selectedStudentId={selectedStudentId}
+                    selectedStudentId={currentStudent?.id ?? null}
                     onSelectStudent={handleSelectStudent}
                 />
             </div>
             <div className={styles.chatArea}>
-                {selectedStudentId && currentStudent ? (
+                {effectiveRoomId && currentStudent ? (
                     <>
                         <div className={styles.chatHeader}>
-                            <h2 className={styles.studentName}>{currentStudent.name}</h2>
+                            <h2 className={styles.studentName}>{currentStudent.displayName}</h2>
                             <span className={styles.status}>オンライン</span>
                         </div>
                         <div className={styles.messageContainer}>
-                            <MessageList
-                                messages={messages}
-                                currentUserId="mentor-1"
-                                onReactionToggle={handleReactionToggle}
-                            />
+                            {isLoadingMessages ? (
+                                <div className={styles.loading}>メッセージを読み込み中...</div>
+                            ) : (
+                                <MessageList
+                                    messages={messages}
+                                    currentUserId={currentUserId}
+                                    onReactionToggle={handleReactionToggle}
+                                    onDelete={handleDelete}
+                                />
+                            )}
                         </div>
-                        <ChatInput onSend={handleSend} studentName={currentStudent.name} />
+                        <ChatInput 
+                            onSend={handleSend} 
+                            studentName={currentStudent.displayName}
+                            isSubmitting={sendMessage.isPending}
+                        />
                     </>
                 ) : (
                     <div className={styles.placeholder}>
-                        左側から生徒を選択してください
+                        {studentChats.length === 0 
+                            ? '担当生徒がいません' 
+                            : '左側から生徒を選択してください'}
                     </div>
                 )}
             </div>

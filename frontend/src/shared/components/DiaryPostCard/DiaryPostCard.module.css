@@ -69,3 +69,33 @@
     gap: var(--spacing-xs);
     flex-wrap: wrap;
 }
+
+/* 編集・削除ボタン */
+.actions {
+    display: flex;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-sm);
+}
+
+.editButton,
+.deleteButton {
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    border: 1px solid var(--color-border, #ddd);
+    background: white;
+    border-radius: var(--border-radius-sm, 4px);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.editButton:hover {
+    background: var(--color-bg-hover, #f5f5f5);
+    border-color: var(--color-primary, #3b82f6);
+    color: var(--color-primary, #3b82f6);
+}
+
+.deleteButton:hover {
+    background: #fee;
+    border-color: var(--color-danger, #ef4444);
+    color: var(--color-danger, #ef4444);
+}

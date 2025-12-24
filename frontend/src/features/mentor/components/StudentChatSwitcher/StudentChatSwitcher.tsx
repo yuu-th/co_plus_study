@@ -31,7 +31,7 @@ const StudentChatSwitcher = ({
                         onClick={() => onSelectStudent(student.id)}
                     >
                         <div className={styles.info}>
-                            <span className={styles.name}>{student.name}</span>
+                            <span className={styles.name}>{student.displayName}</span>
                             <span className={styles.time}>
                                 {new Date(lastMessageTime).toLocaleTimeString('ja-JP', {
                                     hour: '2-digit',

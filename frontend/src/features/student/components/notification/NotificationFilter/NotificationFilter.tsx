@@ -8,13 +8,11 @@ interface NotificationFilterProps {
 }
 
 const NotificationFilter = ({ selectedCategory, onCategoryChange }: NotificationFilterProps) => {
-    // Map UI labels to existing internal types
-    // all -> '' (or 'all' in state), system -> 'important' (approx), event -> 'event', announcement -> 'info'
     const categories: Array<{ value: NotificationCategory | 'all'; label: string }> = [
         { value: 'all', label: 'すべて' },
-        { value: 'important', label: 'システム' }, // Mapping 'system' requirement to 'important' type
+        { value: 'info', label: 'お知らせ' },
         { value: 'event', label: 'イベント' },
-        { value: 'info', label: 'お知らせ' }, // Mapping 'announcement' requirement to 'info' type
+        { value: 'important', label: '重要' },
     ];
 
     return (

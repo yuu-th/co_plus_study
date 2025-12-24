@@ -10,14 +10,14 @@ interface NotificationModalProps {
 
 const NotificationModal = ({ notification, onClose, onMarkRead }: NotificationModalProps) => {
     if (!notification) return null;
-    const { id, title, message, createdAt, read, category } = notification;
+    const { id, title, content, createdAt, isRead, category } = notification;
     return (
         <Modal isOpen={!!notification} onClose={onClose} title={title} size="medium">
             <div className={styles.content}>
                 <div className={styles.meta}>カテゴリ: {category} / 作成: {new Date(createdAt).toLocaleString('ja-JP')}</div>
-                <p>{message}</p>
+                <p>{content}</p>
                 <div className={styles.actions}>
-                    {!read && (
+                    {!isRead && (
                         <button type="button" onClick={() => onMarkRead(id)}>既読にする</button>
                     )}
                     <button type="button" onClick={onClose}>閉じる</button>

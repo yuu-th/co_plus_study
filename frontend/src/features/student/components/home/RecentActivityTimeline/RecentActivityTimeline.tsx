@@ -1,13 +1,13 @@
-import { Link } from 'react-router-dom';
-import type { Activity } from '@/features/student/mockData/activities';
+import type { Activity } from '@/lib';
 import styles from './RecentActivityTimeline.module.css';
 
 interface RecentActivityTimelineProps {
     activities: Activity[];
     maxItems?: number;
+    isLoading?: boolean;
 }
 
-const RecentActivityTimeline = ({ activities, maxItems = 10 }: RecentActivityTimelineProps) => {
+const RecentActivityTimeline = ({ activities, maxItems = 10, isLoading = false }: RecentActivityTimelineProps) => {
     const displayActivities = activities.slice(0, maxItems);
 
     const getIcon = (type: Activity['type']) => {
@@ -15,7 +15,6 @@ const RecentActivityTimeline = ({ activities, maxItems = 10 }: RecentActivityTim
             diary: '📝',
             badge: '🏆',
             chat: '💬',
-            survey: '📋',
         };
         return icons[type];
     };
@@ -36,23 +35,24 @@ const RecentActivityTimeline = ({ activities, maxItems = 10 }: RecentActivityTim
     return (
         <div className={styles.container}>
             <h3 className={styles.title}>最近の活動</h3>
-            <ul className={styles.timeline}>
-                {displayActivities.map((activity) => (
-                    <li key={activity.id} className={styles.item}>
-                        <div className={styles.icon}>{getIcon(activity.type)}</div>
-                        <div className={styles.content}>
-                            <p className={styles.activityTitle}>{activity.title}</p>
-                            <p className={styles.description}>{activity.description}</p>
-                            <span className={styles.time}>{formatTime(activity.timestamp)}</span>
-                        </div>
-                        {activity.link && (
-                            <Link to={activity.link} className={styles.link}>
-                                →
-                            </Link>
-                        )}
-                    </li>
-                ))}
-            </ul>
+            {isLoading ? (
+                <div className={styles.loading}>読み込み中...</div>
+            ) : displayActivities.length === 0 ? (
+                <div className={styles.empty}>まだ活動がありません</div>
+            ) : (
+                <ul className={styles.timeline}>
+                    {displayActivities.map((activity) => (
+                        <li key={activity.id} className={styles.item}>
+                            <div className={styles.icon}>{getIcon(activity.type)}</div>
+                            <div className={styles.content}>
+                                <p className={styles.activityTitle}>{activity.title}</p>
+                                <p className={styles.description}>{activity.description}</p>
+                                <span className={styles.time}>{formatTime(activity.timestamp)}</span>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     );
 };

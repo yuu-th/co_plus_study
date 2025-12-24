@@ -26,6 +26,14 @@
     display: none;
 }
 
+.loading,
+.loadingMore {
+    display: flex;
+    justify-content: center;
+    padding: var(--spacing-lg);
+    color: var(--color-text-secondary);
+}
+
 @media (min-width: 1024px) {
     .layout {
         flex-direction: row;

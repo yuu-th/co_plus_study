@@ -1,6 +1,6 @@
 // Sidebarコンポーネント - 学生向け
 
-import { FaArchive, FaBell, FaBook, FaClipboardList, FaComments, FaHome } from 'react-icons/fa';
+import { FaArchive, FaBell, FaBook, FaClipboardList, FaComments, FaHome, FaSignOutAlt } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './Sidebar.module.css';
 
@@ -58,9 +58,10 @@ const navItems: NavItem[] = [
 interface SidebarProps {
     isOpen?: boolean;
     onClose?: () => void;
+    onLogout?: () => void;
 }
 
-const Sidebar = ({ isOpen = true, onClose }: SidebarProps) => {
+const Sidebar = ({ isOpen = true, onClose, onLogout }: SidebarProps) => {
     const location = useLocation();
 
     return (
@@ -85,6 +86,14 @@ const Sidebar = ({ isOpen = true, onClose }: SidebarProps) => {
                         </Link>
                     ))}
                 </nav>
+                {onLogout && (
+                    <div className={styles.footer}>
+                        <button className={styles.logoutButton} onClick={onLogout}>
+                            <span className={styles.icon}><FaSignOutAlt /></span>
+                            <span className={styles.label}>ログアウト</span>
+                        </button>
+                    </div>
+                )}
             </aside>
         </>
     );

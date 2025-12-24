@@ -3,9 +3,10 @@ import styles from './ReactionPicker.module.css';
 interface ReactionPickerProps {
     onSelect: (emoji: string) => void;
     onClose: () => void;
+    className?: string;
 }
 
-const ReactionPicker = ({ onSelect, onClose }: ReactionPickerProps) => {
+const ReactionPicker = ({ onSelect, onClose, className = '' }: ReactionPickerProps) => {
     const emojis = ['👍', '❤️', '😊', '🎉', '👏', '🔥'];
 
     const handleSelect = (emoji: string) => {
@@ -19,7 +20,7 @@ const ReactionPicker = ({ onSelect, onClose }: ReactionPickerProps) => {
                 e.stopPropagation();
                 onClose();
             }} />
-            <div className={styles.picker} onClick={(e) => e.stopPropagation()}>
+            <div className={`${styles.picker} ${className}`} onClick={(e) => e.stopPropagation()}>
                 {emojis.map((emoji) => (
                     <button
                         key={emoji}

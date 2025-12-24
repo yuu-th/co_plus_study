@@ -1,6 +1,6 @@
 # アンケート機能
 
-> 最終更新: 2025-12-04
+> 最終更新: 2025-12-25
 > ステータス: 実装完了（基本機能）
 
 ## 1. 概要
@@ -17,36 +17,22 @@
 
 ## 3. データ構造
 
-### Survey
+> **SSoT**: `project/decisions/005-backend-integration-preparation.md`
+>
+> 関連テーブル: `surveys`, `survey_responses`
+> 型定義: `frontend/src/shared/types/survey.ts`
 
-| フィールド | 型 | 必須 | 説明 |
-|-----------|-----|------|------|
-| id | string | ✓ | 一意識別子 |
-| title | string | ✓ | アンケートタイトル |
-| description | string | | 説明文 |
-| questions | Question[] | ✓ | 質問配列 |
-| releaseDate | ISO8601 | | 公開開始日時 |
-| dueDate | ISO8601 | | 締切日時 |
-| targetGroups | string[] | | 対象グループ |
-| status | SurveyStatus | ✓ | ステータス |
+### Survey（ADR-005参照）
 
-### SurveyStatus
-
-```typescript
-type SurveyStatus = 'draft' | 'scheduled' | 'active' | 'closed';
-```
-
-### Question
-
-| フィールド | 型 | 必須 | 説明 |
-|-----------|-----|------|------|
-| id | string | ✓ | 質問ID |
-| type | QuestionType | ✓ | 質問タイプ |
-| text | string | ✓ | 質問文 |
-| required | boolean | ✓ | 必須フラグ |
-| options | string[] | | 選択肢（single/multiple用） |
-| colorOptions | ColorOption[] | | カラー選択肢（color用） |
-| ratingStyle | 'numeric' \| 'emoji' | | 評価表示方式（rating用、デフォルト: emoji） |
+| フィールド | DB | 説明 |
+|-----------|-----|------|
+| `id` | surveys.id | 一意識別子 |
+| `title` | surveys.title | アンケートタイトル |
+| `description` | surveys.description | 説明文 |
+| `questions` | surveys.questions (JSONB) | 質問配列 |
+| `releaseDate` | surveys.release_date | 公開開始日時 |
+| `dueDate` | surveys.due_date | 締切日時 |
+| `status` | surveys.status | ステータス（survey_status enum） |
 
 ### QuestionType
 
@@ -58,6 +44,29 @@ type QuestionType = 'single' | 'multiple' | 'text' | 'rating' | 'color';
 |--------|------|-----|
 | single | 単一選択 | ラジオボタン |
 | multiple | 複数選択 | チェックボックス |
+| text | 自由記述 | テキストエリア |
+| rating | 評価（1-5） | ☆アイコン |
+| color | カラー選択 | カラースウォッチ |
+
+## 4. CRUDフロー
+
+### 生徒側
+
+| 操作 | 画面 | 説明 |
+|------|------|------|
+| **Read** | SurveyPage | 配信中アンケート一覧取得 |
+| **Create** | SurveyPage | アンケート回答送信 |
+
+### メンター/運営側
+
+| 操作 | 画面 | 説明 |
+|------|------|------|
+| **Create** | SurveyCreatePage | アンケート作成 |
+| **Read** | SurveyListPage | アンケート一覧・回答統計取得 |
+| **Update** | SurveyCreatePage | アンケート編集 |
+| **Delete** | SurveyListPage | アンケート削除 |
+
+## 5. UIガイドライン
 | text | 自由記述 | テキストエリア |
 | rating | 評価（1-5） | ☆アイコン（推奨）または数字 |
 | color | カラー選択 | カラースウォッチ |

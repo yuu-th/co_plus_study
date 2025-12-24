@@ -1,11 +1,7 @@
-export interface Activity {
-    id: string;
-    type: 'diary' | 'badge' | 'chat' | 'survey';
-    title: string;
-    description: string;
-    timestamp: string;
-    link?: string;
-}
+// 活動履歴モックデータ
+// @see ADR-005: Activity はDBに保存しない（クエリで合成）
+
+import type { Activity } from '@/shared/types';
 
 export const mockActivities: Activity[] = [
     {

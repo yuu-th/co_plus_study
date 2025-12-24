@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import Button from '@/shared/components/Button';
 import Card from '@/shared/components/Card';
-import type { Survey, Question, QuestionType, RatingStyle } from '@/shared/types';
+import type { Question, QuestionType } from '@/shared/types';
+import { useAuth, useSurvey, useCreateSurvey, useUpdateSurvey, convertSurveyFromDB } from '@/lib';
 import styles from './SurveyCreatePage.module.css';
 
 const TYPE_LABELS: Record<QuestionType, string> = {
@@ -15,10 +16,35 @@ const TYPE_LABELS: Record<QuestionType, string> = {
 
 const SurveyCreatePage = () => {
     const navigate = useNavigate();
+    const { id } = useParams<{ id: string }>();
+    const isEditMode = !!id;
+    const { user } = useAuth();
+
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [questions, setQuestions] = useState<Question[]>([]);
     const [showPreview, setShowPreview] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // 既存アンケートの取得（編集モード）
+    const { data: existingData, isLoading } = useSurvey(id ?? '');
+    const createMutation = useCreateSurvey();
+    const updateMutation = useUpdateSurvey();
+
+    // DBデータをフロントエンド型に変換
+    const existingSurvey = useMemo(() => {
+        if (!existingData) return null;
+        return convertSurveyFromDB(existingData);
+    }, [existingData]);
+
+    // 編集モードの場合、既存データを読み込み
+    useEffect(() => {
+        if (isEditMode && existingSurvey) {
+            setTitle(existingSurvey.title);
+            setDescription(existingSurvey.description || '');
+            setQuestions(existingSurvey.questions);
+        }
+    }, [isEditMode, existingSurvey]);
 
     const addQuestion = (type: QuestionType) => {
         const newQuestion: Question = {
@@ -62,200 +88,287 @@ const SurveyCreatePage = () => {
         updateQuestion(qIndex, 'options', question.options.filter((_, i) => i !== oIndex));
     };
 
-    const handleSave = () => {
-        const newSurvey: Survey = {
-            id: `survey-${Date.now()}`,
-            title,
-            description,
-            questions,
-            releaseDate: new Date().toISOString(),
-            targetGroups: ['students'],
-            status: 'active',
-        };
+    const handleSave = async () => {
+        if (!title.trim()) {
+            alert('タイトルを入力してください');
+            return;
+        }
 
-        // モックデータに追加
-        console.log('新規アンケート作成:', newSurvey);
-        alert('アンケートを作成しました（モックデータに保存）');
-        navigate('/mentor/dashboard');
+        if (!user) {
+            alert('ログインが必要です');
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            if (isEditMode && id) {
+                await updateMutation.mutateAsync({
+                    id,
+                    title,
+                    description: description || null,
+                    questions,
+                    status: 'active',
+                });
+                alert('アンケートを更新しました');
+            } else {
+                await createMutation.mutateAsync({
+                    title,
+                    description: description || null,
+                    questions,
+                    release_date: new Date().toISOString(),
+                    status: 'active',
+                    created_by: user.id,
+                });
+                alert('アンケートを作成しました');
+            }
+            navigate('/mentor/surveys');
+        } catch (error) {
+            console.error('保存に失敗しました:', error);
+            alert('保存に失敗しました');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
-    const renderRatingPreview = (style?: RatingStyle) => {
-        if (style === 'numeric') {
-            return (
-                <div className={styles.ratingPreview}>
-                    {[1, 2, 3, 4, 5].map(n => (
-                        <span key={n} className={styles.ratingNumber}>{n}</span>
-                    ))}
-                </div>
-            );
-        }
+    if (isLoading && isEditMode) {
         return (
-            <div className={styles.ratingPreview}>
-                <span className={styles.ratingStars}>★★★★★</span>
+            <div className={styles.page}>
+                <div className={styles.loading}>読み込み中...</div>
             </div>
         );
-    };
+    }
 
     return (
         <div className={styles.page}>
             <div className={styles.header}>
-                <h1 className={styles.title}>アンケート作成</h1>
-                <div className={styles.actions}>
-                    <Button variant="outline" onClick={() => setShowPreview(!showPreview)}>
-                        {showPreview ? '編集に戻る' : 'プレビュー'}
+                <div className={styles.headerInfo}>
+                    <h1 className={styles.title}>
+                        {isEditMode ? 'アンケート編集' : 'アンケート作成'}
+                    </h1>
+                    <p className={styles.subtitle}>学習状況や満足度の調査に使用します</p>
+                </div>
+                <div className={styles.headerActions}>
+                    <Button variant="ghost" onClick={() => navigate('/mentor/surveys')} disabled={isSubmitting}>
+                        キャンセル
                     </Button>
-                    <Button variant="primary" onClick={handleSave} disabled={!title || questions.length === 0}>
-                        保存
+                    <Button variant="outline" onClick={() => setShowPreview(!showPreview)}>
+                        {showPreview ? '編集モード' : '詳細プレビュー'}
+                    </Button>
+                    <Button variant="primary" onClick={handleSave} className={styles.saveBtn} disabled={isSubmitting}>
+                        {isSubmitting ? '保存中...' : isEditMode ? '更新する' : 'アンケートを公開'}
                     </Button>
                 </div>
             </div>
 
-            {showPreview ? (
-                <Card title="プレビュー">
-                    <h2>{title}</h2>
-                    <p>{description}</p>
-                    {questions.map((q, i) => (
-                        <div key={i} className={styles.previewQuestion}>
-                            <p><strong>Q{i + 1} ({TYPE_LABELS[q.type]}):</strong> {q.text || '（未入力）'}</p>
-
-                            {q.type === 'rating' && (
-                                <div style={{ marginTop: '8px' }}>
-                                    {renderRatingPreview(q.ratingStyle)}
-                                    <p className={styles.helpText}>※生徒にはこのように表示されます</p>
-                                </div>
-                            )}
-
-                            {q.options && (
-                                <ul style={{ listStyle: 'disc', marginLeft: '20px' }}>
-                                    {q.options.map((o, idx) => <li key={idx}>{o}</li>)}
-                                </ul>
-                            )}
-                            <p>{q.required && '（必須）'}</p>
-                        </div>
-                    ))}
-                </Card>
-            ) : (
-                <div className={styles.form}>
-                    <Card title="基本情報">
-                        <div className={styles.field}>
-                            <label className={styles.label}>タイトル *</label>
-                            <input
-                                type="text"
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                placeholder="例: 今週の学習振り返り"
-                                className={styles.input}
-                            />
-                        </div>
-                        <div className={styles.field}>
-                            <label className={styles.label}>説明</label>
-                            <textarea
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                placeholder="アンケートの目的や回答方法を説明"
-                                className={styles.textarea}
-                            />
+            {!showPreview ? (
+                <div className={styles.editorBody}>
+                    <Card className={styles.basicInfoCard}>
+                        <h2 className={styles.sectionTitle}>基本情報</h2>
+                        <div className={styles.grid}>
+                            <div className={styles.field}>
+                                <label className={styles.label} htmlFor="title">アンケート名称 *</label>
+                                <input
+                                    id="title"
+                                    type="text"
+                                    className={styles.input}
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    placeholder="例：【重要】週次学習状況の振り返り"
+                                    required
+                                />
+                            </div>
+                            <div className={styles.field}>
+                                <label className={styles.label} htmlFor="desc">アンケートの説明</label>
+                                <textarea
+                                    id="desc"
+                                    className={styles.textarea}
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    placeholder="このアンケートの目的や回答期限などを入力してください"
+                                    rows={3}
+                                />
+                            </div>
                         </div>
                     </Card>
 
-                    <Card title="質問">
-                        {questions.map((q, i) => (
-                            <div key={i} className={styles.questionItem}>
-                                <div className={styles.questionHeader}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <span>質問 {i + 1}</span>
-                                        <span className={styles.badge}>{TYPE_LABELS[q.type]}</span>
-                                    </div>
-                                    <button onClick={() => removeQuestion(i)} className={styles.removeBtn}>
-                                        削除
-                                    </button>
-                                </div>
-                                <input
-                                    type="text"
-                                    value={q.text}
-                                    onChange={(e) => updateQuestion(i, 'text', e.target.value)}
-                                    placeholder="質問文を入力"
-                                    className={styles.input}
-                                />
+                    <div className={styles.questionsArea}>
+                        <div className={styles.sectionHeader}>
+                            <h2 className={styles.sectionTitle}>質問項目 ({questions.length})</h2>
+                        </div>
 
-                                {q.type === 'rating' && (
-                                    <div className={styles.optionsArea}>
-                                        <label className={styles.label}>評価スタイル</label>
-                                        <div className={styles.ratingStyleSelector}>
-                                            <label className={styles.radioLabel}>
-                                                <input
-                                                    type="radio"
-                                                    checked={q.ratingStyle === 'emoji' || !q.ratingStyle}
-                                                    onChange={() => updateQuestion(i, 'ratingStyle', 'emoji')}
-                                                />
-                                                星アイコン (★★★★★)
-                                            </label>
-                                            <label className={styles.radioLabel}>
-                                                <input
-                                                    type="radio"
-                                                    checked={q.ratingStyle === 'numeric'}
-                                                    onChange={() => updateQuestion(i, 'ratingStyle', 'numeric')}
-                                                />
-                                                数字選択 (1〜5)
-                                            </label>
+                        <div className={styles.questionList}>
+                            {questions.map((q, qIndex) => (
+                                <Card key={q.id} className={styles.questionCard}>
+                                    <div className={styles.questionHeader}>
+                                        <div className={styles.typeBadge}>
+                                            <span className={styles.badge}>{TYPE_LABELS[q.type]}</span>
+                                            <span className={styles.qIndex}>質問 {qIndex + 1}</span>
                                         </div>
-                                        <div className={styles.previewBox}>
-                                            <span className={styles.previewLabel}>プレビュー:</span>
-                                            {renderRatingPreview(q.ratingStyle)}
-                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeQuestion(qIndex)}
+                                            className={styles.removeBtn}
+                                            title="この質問を削除"
+                                        >
+                                            削除
+                                        </button>
                                     </div>
-                                )}
 
-                                {(q.type === 'single' || q.type === 'multiple') && q.options && (
-                                    <div className={styles.optionsArea}>
-                                        <label className={styles.label}>選択肢</label>
-                                        {q.options.map((option, oIndex) => (
-                                            <div key={oIndex} className={styles.optionRow}>
+                                    <div className={styles.questionBody}>
+                                        <div className={styles.field}>
+                                            <label className={styles.label} htmlFor={`q-text-${qIndex}`}>質問文 *</label>
+                                            <input
+                                                id={`q-text-${qIndex}`}
+                                                type="text"
+                                                className={styles.input}
+                                                value={q.text}
+                                                onChange={(e) => updateQuestion(qIndex, 'text', e.target.value)}
+                                                placeholder="具体的な質問内容を入力してください"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div className={styles.questionMeta}>
+                                            <label className={styles.checkboxLabel}>
                                                 <input
-                                                    type="text"
-                                                    value={option}
-                                                    onChange={(e) => handleOptionChange(i, oIndex, e.target.value)}
-                                                    className={styles.input}
-                                                    placeholder={`選択肢 ${oIndex + 1}`}
+                                                    type="checkbox"
+                                                    checked={q.required}
+                                                    onChange={(e) => updateQuestion(qIndex, 'required', e.target.checked)}
                                                 />
-                                                <button
-                                                    onClick={() => removeOption(i, oIndex)}
-                                                    className={styles.removeOptionBtn}
-                                                    disabled={q.options?.length === 1}
+                                                <span>必須回答にする</span>
+                                            </label>
+
+                                            {q.type === 'rating' && (
+                                                <div className={styles.ratingStyleField}>
+                                                    <label className={styles.miniLabel}>評価方式:</label>
+                                                    <select
+                                                        className={styles.smallSelect}
+                                                        value={q.ratingStyle || 'emoji'}
+                                                        onChange={(e) => updateQuestion(qIndex, 'ratingStyle', e.target.value)}
+                                                    >
+                                                        <option value="emoji">絵文字 (😞 ~ 😍)</option>
+                                                        <option value="star">スター (★)</option>
+                                                        <option value="number">数値 (1 ~ 5)</option>
+                                                    </select>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {(q.type === 'single' || q.type === 'multiple') && q.options && (
+                                            <div className={styles.optionsArea}>
+                                                <label className={styles.miniLabel}>選択肢設定</label>
+                                                <div className={styles.optionList}>
+                                                    {q.options.map((opt, oIndex) => (
+                                                        <div key={oIndex} className={styles.optionRow}>
+                                                            <div className={styles.optionDragHandle}>::</div>
+                                                            <input
+                                                                type="text"
+                                                                className={styles.optionInput}
+                                                                value={opt}
+                                                                onChange={(e) => handleOptionChange(qIndex, oIndex, e.target.value)}
+                                                            />
+                                                            {q.options!.length > 1 && (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => removeOption(qIndex, oIndex)}
+                                                                    className={styles.removeOptionBtn}
+                                                                >
+                                                                    ×
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="small"
+                                                    onClick={() => addOption(qIndex)}
+                                                    className={styles.addOptionBtn}
                                                 >
-                                                    ×
-                                                </button>
+                                                    + 選択肢を追加
+                                                </Button>
                                             </div>
-                                        ))}
-                                        <Button size="small" variant="outline" onClick={() => addOption(i)}>
-                                            選択肢を追加
-                                        </Button>
+                                        )}
                                     </div>
-                                )}
+                                </Card>
+                            ))}
+                        </div>
 
-                                <label className={styles.checkbox}>
-                                    <input
-                                        type="checkbox"
-                                        checked={q.required}
-                                        onChange={(e) => updateQuestion(i, 'required', e.target.checked)}
-                                    />
-                                    必須回答
-                                </label>
+                        <div className={styles.addQuestionBox}>
+                            <h3 className={styles.addTitle}>質問を追加する</h3>
+                            <div className={styles.addButtons}>
+                                {(Object.keys(TYPE_LABELS) as QuestionType[]).map(type => (
+                                    <Button
+                                        key={type}
+                                        variant="outline"
+                                        size="small"
+                                        onClick={() => addQuestion(type)}
+                                        className={styles.addBtn}
+                                    >
+                                        {TYPE_LABELS[type]}
+                                    </Button>
+                                ))}
                             </div>
-                        ))}
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div className={styles.previewContainer}>
+                    <Card className={styles.previewCard}>
+                        <div className={styles.previewHeader}>
+                            <span className={styles.previewBadge}>プレビューモード</span>
+                            <h2 className={styles.previewTitle}>{title || '（アンケートタイトル未設定）'}</h2>
+                            {description && <p className={styles.previewDesc}>{description}</p>}
+                        </div>
 
-                        <div className={styles.addButtons}>
-                            <Button size="small" onClick={() => addQuestion('text')}>
-                                テキスト質問を追加
-                            </Button>
-                            <Button size="small" onClick={() => addQuestion('single')}>
-                                単一選択を追加
-                            </Button>
-                            <Button size="small" onClick={() => addQuestion('multiple')}>
-                                複数選択を追加
-                            </Button>
-                            <Button size="small" onClick={() => addQuestion('rating')}>
-                                評価を追加
+                        <div className={styles.previewQuestions}>
+                            {questions.length === 0 ? (
+                                <div className={styles.emptyPreview}>
+                                    質問が追加されていません
+                                </div>
+                            ) : (
+                                questions.map((q, idx) => (
+                                    <div key={q.id} className={styles.previewQuestionItem}>
+                                        <p className={styles.previewQuestionText}>
+                                            <span className={styles.qNum}>{idx + 1}.</span> {q.text || '（質問文が未入力です）'}
+                                            {q.required && <span className={styles.requiredMark}> *</span>}
+                                        </p>
+                                        <div className={styles.previewInputArea}>
+                                            {q.type === 'text' && (
+                                                <input type="text" placeholder="回答を入力してください" disabled className={styles.previewTextInput} />
+                                            )}
+                                            {(q.type === 'single' || q.type === 'multiple') && q.options && (
+                                                <div className={styles.previewChoices}>
+                                                    {q.options.map((opt, oIdx) => (
+                                                        <div key={oIdx} className={styles.previewChoice}>
+                                                            <input type={q.type === 'single' ? 'radio' : 'checkbox'} disabled />
+                                                            <span>{opt}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            {q.type === 'rating' && (
+                                                <div className={styles.previewRating}>
+                                                    {q.ratingStyle === 'emoji' && (
+                                                        <div className={styles.ratingEmoji}>😞 😐 😊 😍</div>
+                                                    )}
+                                                    {q.ratingStyle === 'star' && (
+                                                        <div className={styles.ratingStar}>★ ★ ★ ★ ★</div>
+                                                    )}
+                                                    {q.ratingStyle === 'number' && (
+                                                        <div className={styles.ratingNumber}>1 2 3 4 5</div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                        <div className={styles.previewFooter}>
+                            <Button variant="primary" disabled className={styles.submitPreviewBtn}>
+                                回答を送信する
                             </Button>
                         </div>
                     </Card>

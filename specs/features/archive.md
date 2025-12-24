@@ -1,6 +1,6 @@
 # 実績機能
 
-> 最終更新: 2025-12-04
+> 最終更新: 2025-12-25
 > ステータス: 実装完了
 
 ## 1. 概要
@@ -19,28 +19,25 @@
 
 ## 3. データ構造
 
-### CalendarDay
+> **SSoT**: `project/decisions/005-backend-integration-preparation.md`
+>
+> 関連テーブル: `badge_definitions`, `user_badges`
+> 型定義: `frontend/src/shared/types/badge.ts`, `frontend/src/features/student/types/calendar.ts`
 
-| フィールド | 型 | 説明 |
+### Badge（ADR-005参照）
+
+| フィールド | DB | 説明 |
 |-----------|-----|------|
-| date | string | YYYY-MM-DD形式 |
-| hasActivity | boolean | 活動有無 |
-| activityType | 'login' \| 'diary' \| 'both' | 活動タイプ |
-
-### Badge
-
-| フィールド | 型 | 必須 | 説明 |
-|-----------|-----|------|------|
-| id | string | ✓ | バッジID |
-| name | string | ✓ | バッジ名 |
-| description | string | ✓ | バッジの説明 |
-| condition | string | ✓ | 獲得条件（例: 「連続7日学習」） |
-| rank | BadgeRank | ✓ | ランク |
-| category | string | ✓ | カテゴリ |
-| iconUrl | string | | アイコンURL |
-| earnedAt | ISO8601 \| null | | 獲得日時（未獲得時はnull） |
-| progress | number | ✓ | 進捗率（0-100） |
-| status | BadgeStatus | ✓ | バッジ状態 |
+| `id` | badge_definitions.id | バッジID |
+| `name` | badge_definitions.name | バッジ名 |
+| `description` | badge_definitions.description | 説明 |
+| `condition` | badge_definitions.condition_description | 獲得条件テキスト |
+| `rank` | badge_definitions.rank | ランク（badge_rank enum） |
+| `category` | badge_definitions.category | カテゴリ |
+| `iconUrl` | badge_definitions.icon_url | アイコンURL |
+| `earnedAt` | user_badges.earned_at | 獲得日時（未獲得時はnull） |
+| `progress` | 動的算出 | 進捗率（0-100） |
+| `status` | 動的算出 | バッジ状態（locked/in_progress/earned） |
 
 ### BadgeRank
 
@@ -60,13 +57,18 @@ type BadgeStatus = 'locked' | 'in_progress' | 'earned';
 | in_progress | 進行中 | 通常表示 + 進捗ゲージ |
 | earned | 獲得済み | フルカラー + 獲得日時 |
 
-### ContinuousStats
+### カレンダーデータ（クライアント動的生成）
 
-| フィールド | 型 | 説明 |
-|-----------|-----|------|
-| currentStreak | number | 現在の連続日数 |
-| longestStreak | number | 最長連続日数 |
-| totalDays | number | 累計活動日数 |
+カレンダー表示用データは `diary_posts` と `profiles.last_seen_at` から動的に生成。
+DB専用テーブルなし。
+
+## 4. CRUDフロー
+
+| 操作 | 画面 | 説明 |
+|------|------|------|
+| **Read** | ArchivePage | カレンダーデータ取得（diary_postsから集計） |
+| **Read** | ArchivePage | バッジ一覧・進捗取得 |
+
 
 ## 4. コンポーネント
 

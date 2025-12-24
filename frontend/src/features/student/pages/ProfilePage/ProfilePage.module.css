@@ -4,12 +4,18 @@
     padding: var(--spacing-lg);
 }
 
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+}
+
 .title {
     font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-bold);
     color: var(--color-text-primary);
-    margin-bottom: var(--spacing-lg);
-    text-align: center;
+    margin: 0;
 }
 
 .profileCard {

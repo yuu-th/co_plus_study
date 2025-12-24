@@ -10,20 +10,23 @@
 ```
 specs/
 ├── README.md              # このファイル
+├── overview.md            # システム概要
 ├── _templates/            # テンプレート
 │   └── feature-spec.md    # 機能仕様テンプレート
-├── shared/                # 共通仕様
+├── shared/                # 共通仕様（デザインシステム）
 │   ├── colors.md          # カラーパレット
 │   ├── typography.md      # タイポグラフィ
-│   ├── components.md      # 共通コンポーネント
+│   ├── components.md      # 基盤コンポーネント（Button, Card, Modal等）
 │   └── conventions.md     # 命名・コーディング規約
-└── features/              # 機能別仕様
+└── features/              # 機能別仕様（生徒/メンター共通）
+    ├── auth.md            # 認証・登録
+    ├── home.md            # ホーム・プロフィール
     ├── diary.md           # 学習日報
     ├── chat.md            # 相談チャット
     ├── survey.md          # アンケート
     ├── notification.md    # お知らせ
     ├── tutorial.md        # チュートリアル
-    ├── archive.md         # ARCHIVE
+    ├── archive.md         # 実績
     └── mentor.md          # メンター管理
 ```
 
@@ -57,12 +60,23 @@ export interface DiaryPost { ... }
 
 1. **概要** - 機能の目的（1-2文）
 2. **ユーザーストーリー** - 誰が何をしたいか
-3. **データ構造** - 型定義（テーブル形式）
-4. **コンポーネント** - 必要なコンポーネント一覧
-5. **画面仕様** - レイアウト・レスポンシブ対応
-6. **制約・バリデーション** - 入力制限等
-7. **関連** - 他の仕様への参照
-8. **変更履歴** - 変更の記録
+3. **データ構造** - ADR-005へのリンク + フィールドマッピング
+4. **CRUDフロー** - 生徒側/メンター側の操作一覧
+5. **コンポーネント** - 必要なコンポーネント一覧
+6. **画面仕様** - レイアウト・レスポンシブ対応
+7. **制約・バリデーション** - 入力制限等
+8. **関連** - 他の仕様への参照
+9. **変更履歴** - 変更の記録
+
+## SSoT（唯一の真実の源）方針
+
+| 種類 | SSoT |
+|------|------|
+| **データ構造・DB設計** | `project/decisions/005-backend-integration-preparation.md` |
+| **型定義実装** | `frontend/src/shared/types/*.ts` |
+| **UI/UX仕様** | `specs/features/*.md` |
+
+> specs/features/*.md にはデータ構造の詳細テーブルを記載せず、ADR-005へのリンクと簡易フィールドマッピングのみを記載すること。
 
 ## 関連
 

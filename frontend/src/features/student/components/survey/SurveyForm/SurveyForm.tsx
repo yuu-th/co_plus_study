@@ -1,14 +1,17 @@
 import { useMemo, useState } from 'react';
 import type { Answer, Survey, SurveyResponse } from '@/shared/types';
+import { useAuth } from '@/lib';
 import SurveyQuestionCard from '../SurveyQuestionCard/SurveyQuestionCard';
 import styles from './SurveyForm.module.css';
 
 interface SurveyFormProps {
     survey: Survey;
     onSubmit: (response: SurveyResponse) => void;
+    isSubmitting?: boolean;
 }
 
-const SurveyForm = ({ survey, onSubmit }: SurveyFormProps) => {
+const SurveyForm = ({ survey, onSubmit, isSubmitting = false }: SurveyFormProps) => {
+    const { user } = useAuth();
     const [answers, setAnswers] = useState<Answer[]>([]);
     const [submitted, setSubmitted] = useState(false);
 
@@ -32,7 +35,7 @@ const SurveyForm = ({ survey, onSubmit }: SurveyFormProps) => {
         // Clear error for this question
         if (errors[answer.questionId]) {
             setErrors(prev => {
-                const { [answer.questionId]: _, ...rest } = prev;
+                const { [answer.questionId]: _removed, ...rest } = prev;
                 return rest;
             });
         }
@@ -64,7 +67,7 @@ const SurveyForm = ({ survey, onSubmit }: SurveyFormProps) => {
             });
     }, [answers, survey.questions]);
 
-    const disabled = submitted || survey.status === 'scheduled' || survey.status === 'closed' || !canSubmit;
+    const disabled = submitted || isSubmitting || survey.status === 'scheduled' || survey.status === 'closed' || !canSubmit;
 
     const handleSubmit = () => {
         if (disabled) return;
@@ -87,7 +90,7 @@ const SurveyForm = ({ survey, onSubmit }: SurveyFormProps) => {
 
         const response: SurveyResponse = {
             surveyId: survey.id,
-            userId: '1',
+            userId: user?.id ?? '',
             answers,
             submittedAt: new Date().toISOString(),
         };
@@ -129,7 +132,7 @@ const SurveyForm = ({ survey, onSubmit }: SurveyFormProps) => {
                     disabled={disabled}
                     className={`${styles.submitBtn} ${disabled ? styles.disabled : ''}`}
                 >
-                    送信
+                    {isSubmitting ? '送信中...' : '送信'}
                 </button>
             </div>
             {submitted && <div role="status" aria-live="polite">送信が完了しました。ありがとうございました。</div>}

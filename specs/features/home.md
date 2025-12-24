@@ -1,7 +1,7 @@
 # ホーム画面機能
 
-> 最終更新: 2025-12-04
-> ステータス: 仕様作成中
+> 最終更新: 2025-12-25
+> ステータス: 実装完了
 
 ## 1. 概要
 
@@ -17,25 +17,18 @@
 
 ## 3. データ構造
 
-### UserProfile
+> **SSoT**: `project/decisions/005-backend-integration-preparation.md`
+>
+> 関連テーブル: `profiles`
+> 型定義: `frontend/src/shared/types/user.ts`
 
-| フィールド | 型 | 必須 | 説明 |
-|-----------|-----|------|------|
-| id | string | ✓ | 一意識別子 |
-| name | string | ✓ | ユーザー名 |
-| nameKana | string | ✓ | フリガナ |
-| avatarUrl | string \| null | | アバター画像URL |
-| grade | string | ✓ | 学年（例: 小学6年、中学2年） |
-| createdAt | ISO8601 | ✓ | 登録日時 |
-
-### RegistrationFormData
-
-| フィールド | 型 | 必須 | 説明 |
-|-----------|-----|------|------|
-| name | string | ✓ | ユーザー名（1-20文字） |
-| nameKana | string | ✓ | フリガナ（ひらがな/カタカナ） |
-| grade | string | ✓ | 学年選択 |
-| avatarUrl | string \| null | | アバター画像URL |
+主要フィールド（ADR-005参照）:
+- `id`: UUID（Supabase Auth user id）
+- `displayName`: 表示名（DB: `display_name`）
+- `nameKana`: フリガナ（DB: `name_kana`）
+- `avatarUrl`: アバター画像URL（DB: `avatar_url`）
+- `grade`: 学年（DB: `grade`）
+- `createdAt`: 登録日時（DB: `created_at`）
 
 ## 4. コンポーネント
 
@@ -168,23 +161,35 @@ const gradeOptions = [
 - 現在のページをハイライト表示
 - ホームページへのリンクをサイドバー最上部に配置
 
-## 8. 制約・バリデーション
+## 8. CRUDフロー
+
+### プロフィール
+
+| 操作 | 画面 | 説明 |
+|------|------|------|
+| **Read** | ProfilePage | プロフィール表示 |
+| **Update** | ProfileEditPage | プロフィール編集 |
+
+## 9. 制約・バリデーション
 
 | フィールド | 制約 |
 |-----------|------|
-| name | 必須、1-20文字 |
+| displayName | 必須、1-20文字 |
 | nameKana | 必須、ひらがな/カタカナのみ |
 | grade | 必須、選択肢から選ぶ |
 | avatarUrl | 任意、5MB以下、JPEG/PNG/GIF/WebP |
 
-## 9. 関連
+## 10. 関連
 
+- → specs/features/auth.md（認証・登録フロー）
 - → specs/features/notification.md（お知らせベルの未読バッジ連携）
 - → specs/features/tutorial.md（初回ログイン時のチュートリアル連携）
 - → specs/shared/colors.md（カラー定義）
+- → shared/types/activity.ts（Activity型：ホームタイムライン用）
 
-## 10. 変更履歴
+## 11. 変更履歴
 
 | 日付 | 変更内容 |
 |------|----------|
+| 2025-12-25 | CRUDフロー追加、制約フィールド名統一、関連を更新 |
 | 2025-12-04 | 初版作成: ホーム画面、プロフィール、アカウント登録仕様 |

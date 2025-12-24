@@ -3,13 +3,15 @@
 import { Link } from 'react-router-dom';
 import Button from '@/shared/components/Button';
 import Card from '@/shared/components/Card';
+import { useAuth, useRecentActivities } from '@/lib';
 import { useTutorialContext } from '../../components/tutorial/TutorialProvider';
 import RecentActivityTimeline from '../../components/home/RecentActivityTimeline';
-import { mockActivities } from '../../mockData/activities';
 import styles from './HomePage.module.css';
 
 const HomePage = () => {
     const { state, startTutorial, resetTutorial } = useTutorialContext();
+    const { profile } = useAuth();
+    const { data: activities, isLoading: isLoadingActivities } = useRecentActivities(profile?.id, 5);
 
     const handleStartTutorial = () => {
         resetTutorial();
@@ -60,7 +62,11 @@ const HomePage = () => {
                 </div>
 
                 <div className={styles.side}>
-                    <RecentActivityTimeline activities={mockActivities} maxItems={5} />
+                    <RecentActivityTimeline 
+                        activities={activities || []} 
+                        maxItems={5}
+                        isLoading={isLoadingActivities}
+                    />
                 </div>
             </div>
         </div>

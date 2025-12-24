@@ -1,13 +1,9 @@
 .list {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-md);
-    background: var(--color-bg-primary);
-    border: 1px solid var(--color-bg-secondary);
-    border-radius: var(--border-radius-md);
-    height: 400px;
-    overflow-y: auto;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    /* 親コンテナ (messageContainer) が scroll と flex: 1 を持っているため固定高さは不要 */
 }
 
 .empty {

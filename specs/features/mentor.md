@@ -1,7 +1,7 @@
 # メンター管理機能
 
-> 最終更新: 2025-11-25
-> ステータス: 未実装
+> 最終更新: 2025-12-25
+> ステータス: 実装完了
 
 ## 1. 概要
 
@@ -16,53 +16,70 @@
 
 ## 3. データ構造
 
-### StudentSummary
+> **SSoT**: `project/decisions/005-backend-integration-preparation.md`
+>
+> 関連テーブル: `profiles`, `mentor_profiles`
+> 型定義: `frontend/src/features/mentor/types/mentor.ts`
 
-| フィールド | 型 | 説明 |
+### StudentSummary（ADR-005参照）
+
+| フィールド | DB | 説明 |
 |-----------|-----|------|
-| id | string | 生徒ID |
-| name | string | 生徒名 |
-| avatarUrl | string? | アバターURL |
-| totalPosts | number | 総投稿数 |
-| totalHours | number | 総学習時間 |
-| lastActivity | ISO8601 | 最終活動日時 |
-
-### StudentDetail
-
-StudentSummaryを拡張:
-
-| フィールド | 型 | 説明 |
-|-----------|-----|------|
-| posts | DiaryPost[] | 日報配列 |
-| stats | StudentStats | 学習統計 |
-
-### StudentStats
-
-| フィールド | 型 | 説明 |
-|-----------|-----|------|
-| continuousDays | number | 連続活動日数 |
-| totalHours | number | 総学習時間 |
-| subjectBreakdown | SubjectTime[] | 教科別内訳 |
+| `id` | profiles.id | 生徒ID |
+| `displayName` | profiles.display_name | 生徒名 |
+| `avatarUrl` | profiles.avatar_url | アバターURL |
+| `totalPosts` | クエリ集計 | 総投稿数 |
+| `totalHours` | クエリ集計 | 総学習時間 |
+| `lastActivity` | クエリ | 最終活動日時 |
 
 ### NotificationDraft
 
-| フィールド | 型 | 説明 |
+| フィールド | DB | 説明 |
 |-----------|-----|------|
-| category | NotificationCategory | カテゴリ |
-| title | string | タイトル |
-| content | string | 本文 |
+| `category` | notifications.category | カテゴリ（info/event/important） |
+| `title` | notifications.title | タイトル |
+| `content` | notifications.content | 本文 |
+| `priority` | notifications.priority | 優先度（low/medium/high） |
 
-## 4. コンポーネント
+## 4. CRUDフロー
+
+### 生徒管理
+
+| 操作 | 画面 | 説明 |
+|------|------|------|
+| **Read** | StudentListPage | 担当生徒一覧を取得 |
+| **Read** | StudentDetailPage | 生徒詳細・学習統計を取得 |
+
+### お知らせ管理
+
+| 操作 | 画面 | 説明 |
+|------|------|------|
+| **Create** | NotificationManagePage | 新規お知らせ作成・配信 |
+| **Read** | NotificationListPage | 配信済みお知らせ一覧 |
+| **Update** | NotificationManagePage | 既存お知らせ編集 |
+| **Delete** | NotificationListPage | お知らせ削除 |
+
+### チャット
+
+| 操作 | 画面 | 説明 |
+|------|------|------|
+| **Create** | ChatPage | メッセージ送信 |
+| **Read** | ChatPage | 全担当生徒のチャット取得 |
+| **Update** | ChatPage | リアクション追加 |
+| **Delete** | ChatPage | メッセージ削除 |
+
+## 5. コンポーネント
 
 | 名前 | 責務 | 配置 |
 |------|------|------|
-| MentorLayout | メンター専用レイアウト | features/mentor/components/ |
-| MentorDashboard | ダッシュボード | features/mentor/components/ |
+| MentorLayout | メンター専用レイアウト | features/mentor/components/layout/ |
+| MentorSidebar | サイドバーナビゲーション | features/mentor/components/layout/ |
 | StudentList | 生徒一覧 | features/mentor/components/ |
-| StudentDetailPage | 生徒詳細 | features/mentor/components/ |
-| NotificationEditor | お知らせ作成 | features/mentor/components/ |
+| StudentDetailPage | 生徒詳細 | features/mentor/pages/ |
+| NotificationEditor | お知らせ作成 | features/mentor/components/notifications/ |
+| StudentChatSwitcher | 生徒切替チャット | features/mentor/components/ |
 
-## 5. 画面仕様
+## 6. 画面仕様
 
 ### MentorDashboard
 - **担当生徒カード**: グリッド表示、最終活動日、未読メッセージバッジ
@@ -80,46 +97,37 @@ StudentSummaryを拡張:
 - **日報タイムライン**: リアクションボタン付き
 
 ### NotificationEditor
-- カテゴリ選択
+- カテゴリ選択（info/event/important）
+- 優先度選択（low/medium/high）
 - タイトル・本文入力
 - プレビュー機能
-- 投稿 / 下書き保存ボタン
+- 投稿ボタン
 
-## 6. ルーティング
+## 7. ルーティング
 
 | パス | コンポーネント | 説明 |
 |------|---------------|------|
-| /mentor/login | MentorLoginPage | ログイン |
-| /mentor/dashboard | MentorDashboard | ダッシュボード |
+| /mentor | MentorDashboard | ダッシュボード |
 | /mentor/students | StudentListPage | 生徒一覧 |
 | /mentor/students/:id | StudentDetailPage | 生徒詳細 |
-| /mentor/notifications | NotificationManagePage | お知らせ管理 |
+| /mentor/notifications | NotificationListPage | お知らせ一覧 |
+| /mentor/notifications/create | NotificationManagePage | お知らせ作成 |
+| /mentor/notifications/:id/edit | NotificationManagePage | お知らせ編集 |
 | /mentor/chat | ChatPage | チャット（生徒切替） |
-
-## 7. レイアウト
-
-MentorLayoutはStudentLayout（通常のLayout）と分離:
-- サイドバーメニューが異なる（生徒管理、お知らせ管理など）
-- ヘッダーに「メンターモード」表示
+| /mentor/surveys | SurveyListPage | アンケート一覧 |
+| /mentor/surveys/create | SurveyCreatePage | アンケート作成 |
 
 ## 8. 関連
 
+- → ADR-005（データベース設計）
 - → specs/features/diary.md（リアクション機能）
 - → specs/features/notification.md（お知らせ配信）
 - → specs/features/chat.md（チャット機能）
 - → specs/features/survey.md（アンケート管理）
 
-## 9. 実装タスク
-
-- [ ] MentorLayout
-- [ ] MentorDashboard
-- [ ] StudentListPage
-- [ ] StudentDetailPage
-- [ ] NotificationManagePage
-- [ ] メンタールート追加
-
-## 10. 変更履歴
+## 9. 変更履歴
 
 | 日付 | 変更内容 |
 |------|----------|
+| 2025-12-25 | 抜本修正: ステータス更新、データ構造をADR-005参照に変更、CRUDフロー追加、ルーティング更新 |
 | 2025-11-25 | 初版作成 |

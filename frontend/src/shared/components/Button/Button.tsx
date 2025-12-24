@@ -9,6 +9,7 @@ interface ButtonProps {
     onClick?: () => void;
     children: React.ReactNode;
     type?: 'button' | 'submit' | 'reset';
+    className?: string;
 }
 
 const Button = ({
@@ -18,11 +19,12 @@ const Button = ({
     onClick,
     children,
     type = 'button',
+    className = '',
 }: ButtonProps) => {
     return (
         <button
             type={type}
-            className={`${styles.button} ${styles[variant]} ${styles[size]}`}
+            className={`${styles.button} ${styles[variant]} ${styles[size]} ${className}`}
             disabled={disabled}
             onClick={onClick}
         >

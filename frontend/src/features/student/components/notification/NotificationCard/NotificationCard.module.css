@@ -1,64 +1,120 @@
 .card {
     display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
+    align-items: center;
+    gap: var(--spacing-md);
     padding: var(--spacing-md);
-    border: 1px solid var(--color-bg-secondary);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
     border-radius: var(--border-radius-md);
-    background: var(--color-bg-primary);
     cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s;
     position: relative;
-    transition: background-color var(--transition-fast);
 }
 
 .card:hover {
-    background-color: var(--color-bg-secondary);
+    background-color: var(--color-bg-hover);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* 優先度スタイル (P1-6) */
+.priorityHigh {
+    border-left: 4px solid var(--color-danger, #ef4444);
+    background-color: rgba(239, 68, 68, 0.05);
+}
+
+.priorityMedium {
+    border-left: 4px solid var(--color-warning, #f59e0b);
+    background-color: rgba(245, 158, 11, 0.05);
+}
+
+.priorityLow {
+    border-left: 4px solid var(--color-info, #3b82f6);
 }
 
 .badge {
-    width: 12px;
-    height: 12px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    position: absolute;
-    top: var(--spacing-md);
-    left: var(--spacing-md);
+    flex-shrink: 0;
 }
 
-.info {
+.badge.info {
     background-color: var(--color-accent-blue);
 }
 
-.important {
-    background-color: var(--color-error);
+.badge.event {
+    background-color: var(--color-accent-green);
 }
 
-.event {
+.badge.survey {
     background-color: var(--color-accent-orange);
 }
 
-.achievement {
-    background-color: var(--color-success);
+.badge.alert {
+    background-color: var(--color-accent-red);
+}
+
+.content {
+    flex: 1;
+    min-width: 0;
 }
 
 .title {
-    margin: 0 0 0 var(--spacing-lg);
-    font-size: var(--font-size-base);
+    margin: 0 0 var(--spacing-xs) 0;
+    font-size: var(--font-size-md);
     font-weight: var(--font-weight-semibold);
     color: var(--color-text-primary);
 }
 
 .messageSnippet {
-    margin: 0 0 0 var(--spacing-lg);
+    margin: 0;
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .unreadDot {
-    position: absolute;
-    top: var(--spacing-md);
-    right: var(--spacing-md);
-    width: 8px;
-    height: 8px;
-    background-color: var(--color-accent-blue);
+    width: 10px;
+    height: 10px;
+    background-color: var(--color-primary);
     border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* アクションボタン (P1-4) */
+.actions {
+    display: flex;
+    gap: var(--spacing-xs);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.card:hover .actions {
+    opacity: 1;
+}
+
+.archiveButton,
+.deleteButton {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: var(--border-radius-sm);
+    transition: background 0.2s;
+}
+
+.archiveButton:hover {
+    background: var(--color-bg-secondary, #f5f5f5);
+}
+
+.deleteButton {
+    color: var(--color-text-secondary);
+}
+
+.deleteButton:hover {
+    background: #fee;
+    color: var(--color-danger, #ef4444);
 }

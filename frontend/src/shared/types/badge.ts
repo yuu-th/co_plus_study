@@ -37,8 +37,8 @@ export interface Badge {
     iconUrl?: string;
     /** 獲得日時（ISO8601、未獲得時はundefined） */
     earnedAt?: string;
-    /** 獲得条件（例: "連続7日学習"） */
-    condition?: string;
+    /** 獲得条件（必須）- DB: condition_description */
+    condition: string;
     /** 進捗率（0-100%） */
     progress?: number;
     /** バッジ状態 */

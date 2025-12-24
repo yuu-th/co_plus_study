@@ -38,7 +38,7 @@ const NotificationBell = ({ count, notifications = [], onMarkRead }: Notificatio
     };
 
     const handleNotificationClick = (notification: Notification) => {
-        if (onMarkRead && !notification.read) {
+        if (onMarkRead && !notification.isRead) {
             onMarkRead(notification.id);
         }
         setIsOpen(false);
@@ -97,7 +97,7 @@ const NotificationBell = ({ count, notifications = [], onMarkRead }: Notificatio
                                 <button
                                     key={notification.id}
                                     type="button"
-                                    className={`${styles.notificationItem} ${!notification.read ? styles.unread : ''}`}
+                                    className={`${styles.notificationItem} ${!notification.isRead ? styles.unread : ''}`}
                                     onClick={() => handleNotificationClick(notification)}
                                     role="menuitem"
                                 >
@@ -107,7 +107,7 @@ const NotificationBell = ({ count, notifications = [], onMarkRead }: Notificatio
                                             {formatTime(notification.createdAt)}
                                         </span>
                                     </div>
-                                    {!notification.read && <span className={styles.unreadDot} />}
+                                    {!notification.isRead && <span className={styles.unreadDot} />}
                                 </button>
                             ))
                         )}

@@ -11,6 +11,10 @@ interface DiaryPostCardProps {
     onReactionsChange?: (postId: string, reactions: Reaction[]) => void;
     /** 表示モード: 生徒用(◎マーク) or メンター用(リアクションボタン) */
     viewMode?: 'student' | 'mentor';
+    /** 編集ボタンクリック時のコールバック */
+    onEdit?: (postId: string) => void;
+    /** 削除ボタンクリック時のコールバック */
+    onDelete?: (postId: string) => void;
 }
 
 const subjectColorMap: Record<string, string> = {
@@ -29,9 +33,12 @@ const formatTime = (iso: string) => {
 
 const reactionTypes: ReactionType[] = ['👍', '❤️', '🎉', '👏', '🔥'];
 
-const DiaryPostCard = ({ post, currentUserId, onReactionsChange, viewMode = 'student' }: DiaryPostCardProps) => {
+const DiaryPostCard = ({ post, currentUserId, onReactionsChange, viewMode = 'student', onEdit, onDelete }: DiaryPostCardProps) => {
     const color = subjectColorMap[post.subject] || subjectColorMap['その他'];
     const [reactions, setReactions] = useState<Reaction[]>(post.reactions);
+
+    // 投稿者本人かどうか
+    const isOwner = currentUserId && post.userId === currentUserId;
 
     const toggleReaction = useCallback((type: ReactionType) => {
         if (!currentUserId) return; // 操作ユーザー不明なら何もしない
@@ -57,6 +64,12 @@ const DiaryPostCard = ({ post, currentUserId, onReactionsChange, viewMode = 'stu
 
     const getCount = (type: ReactionType) => reactions.find(r => r.type === type)?.count || 0;
     const isActive = (type: ReactionType) => !!reactions.find(r => r.type === type && currentUserId && r.userIds.includes(currentUserId));
+
+    const handleDelete = () => {
+        if (window.confirm('この投稿を削除してもよろしいですか？')) {
+            onDelete?.(post.id);
+        }
+    };
 
     return (
         <article className={styles.card} aria-label={`${post.subject}の学習記録`}>
@@ -88,6 +101,29 @@ const DiaryPostCard = ({ post, currentUserId, onReactionsChange, viewMode = 'stu
                         </div>
                     )}
                 </div>
+                {/* 編集・削除ボタン（投稿者本人のみ） */}
+                {isOwner && (onEdit || onDelete) && (
+                    <div className={styles.actions}>
+                        {onEdit && (
+                            <button
+                                onClick={() => onEdit(post.id)}
+                                className={styles.editButton}
+                                aria-label="投稿を編集"
+                            >
+                                編集
+                            </button>
+                        )}
+                        {onDelete && (
+                            <button
+                                onClick={handleDelete}
+                                className={styles.deleteButton}
+                                aria-label="投稿を削除"
+                            >
+                                削除
+                            </button>
+                        )}
+                    </div>
+                )}
             </div>
         </article>
     );

@@ -1,26 +1,63 @@
 // ChatPage - 相談チャットページ
-import { useState, useMemo } from 'react';
-import type { Message, User, MessageReaction as MessageReactionType } from '@/shared/types';
-import { mockMessages } from '@/shared/mockData/chats';
-import { mockMentor } from '@/shared/mockData/users';
+// @see specs/features/chat.md
+import { useMemo } from 'react';
+import type { Message } from '@/shared/types';
+import { 
+    useAuth, 
+    useChatRooms, 
+    useMessages, 
+    useRealtimeMessages,
+    useSendMessage,
+    useAddMessageReaction,
+    useRemoveMessageReaction,
+    convertMessageFromDB,
+    convertChatRoomFromDB
+} from '@/lib';
 import ChatHeader from '../../components/chat/ChatHeader';
 import ChatInput from '../../components/chat/ChatInput';
 import MessageList from '../../components/chat/MessageList';
 import styles from './ChatPage.module.css';
 
 const ChatPage = () => {
-    const [messages, setMessages] = useState<Message[]>(mockMessages);
-    const currentUserId = '1';
+    const { user, profile } = useAuth();
+    const currentUserId = user?.id ?? '';
 
-    // メンター情報取得(モック)
-    const mentor: User = mockMentor;
-    const studentName = '田中太郎';
+    // チャットルームを取得
+    const { data: chatRoomsData, isLoading: isLoadingRooms } = useChatRooms(currentUserId);
+
+    // 最初のチャットルームを使用（生徒は通常1つのルームを持つ）
+    const chatRoom = useMemo(() => {
+        if (!chatRoomsData || chatRoomsData.length === 0) return null;
+        return convertChatRoomFromDB(chatRoomsData[0]);
+    }, [chatRoomsData]);
+
+    const roomId = chatRoom?.id ?? '';
+
+    // メッセージを取得
+    const { 
+        data: messagesData, 
+        isLoading: isLoadingMessages,
+    } = useMessages(roomId);
+
+    // リアルタイム更新を購読
+    useRealtimeMessages(roomId);
+
+    // Mutations
+    const sendMessage = useSendMessage();
+    const addReaction = useAddMessageReaction();
+    const removeReaction = useRemoveMessageReaction();
+
+    // DBデータをフロントエンド型に変換
+    const messages = useMemo(() => {
+        if (!messagesData?.pages) return [];
+        return messagesData.pages.flatMap(page => 
+            page.data.map(convertMessageFromDB)
+        );
+    }, [messagesData]);
 
     // メンター表示名の変換
-    const mentorDisplayName = useMemo(() => {
-        if (mentor.role !== 'mentor') return mentor.name;
-        return mentor.gender === 'female' ? 'おねえさん' : 'おにいさん';
-    }, [mentor]);
+    const mentorDisplayName = chatRoom?.mentorDisplayName ?? 'メンター';
+    const studentName = profile?.display_name ?? 'あなた';
 
     // メッセージ内のメンター名を表示名に変換
     const displayMessages = useMemo(() => {
@@ -35,55 +72,88 @@ const ChatPage = () => {
         });
     }, [messages, mentorDisplayName]);
 
-    const handleSend = (msg: Message) => {
-        setMessages(prev => [...prev, msg]);
+    const handleSend = async (msg: Message) => {
+        if (!roomId || !user) return;
+
+        try {
+            await sendMessage.mutateAsync({
+                room_id: roomId,
+                sender_id: user.id,
+                message_type: msg.type,
+                content: msg.content || null,
+                image_url: msg.imageUrl || null,
+            });
+        } catch (error) {
+            console.error('メッセージ送信に失敗しました:', error);
+        }
     };
 
-    const handleReactionToggle = (messageId: string, emoji: string) => {
-        setMessages(prev => prev.map(msg => {
-            if (msg.id !== messageId) return msg;
+    const handleReactionToggle = async (messageId: string, emoji: string) => {
+        if (!user) return;
 
-            const reactions = msg.reactions || [];
-            const existingReaction = reactions.find(r => r.emoji === emoji);
-            let newReactions: MessageReactionType[];
+        const message = messages.find(m => m.id === messageId);
+        const existingReaction = message?.reactions?.find(r => r.emoji === emoji);
+        const hasUserReacted = existingReaction?.userIds.includes(currentUserId);
 
-            if (existingReaction) {
-                // 既にリアクションがある場合
-                if (existingReaction.userIds.includes(currentUserId)) {
-                    // 自分のリアクションを削除
-                    const newUserIds = existingReaction.userIds.filter(id => id !== currentUserId);
-                    if (newUserIds.length === 0) {
-                        // 誰もリアクションしていなければ削除
-                        newReactions = reactions.filter(r => r.emoji !== emoji);
-                    } else {
-                        newReactions = reactions.map(r =>
-                            r.emoji === emoji ? { ...r, userIds: newUserIds } : r
-                        );
-                    }
-                } else {
-                    // 自分を追加
-                    newReactions = reactions.map(r =>
-                        r.emoji === emoji ? { ...r, userIds: [...r.userIds, currentUserId] } : r
-                    );
-                }
+        try {
+            if (hasUserReacted) {
+                await removeReaction.mutateAsync({
+                    messageId,
+                    userId: currentUserId,
+                    emoji,
+                });
             } else {
-                // 新しいリアクションを追加
-                newReactions = [...reactions, { emoji, userIds: [currentUserId] }];
+                await addReaction.mutateAsync({
+                    message_id: messageId,
+                    user_id: currentUserId,
+                    emoji,
+                });
             }
-
-            return { ...msg, reactions: newReactions };
-        }));
+        } catch (error) {
+            console.error('リアクションの更新に失敗しました:', error);
+        }
     };
+
+    const handleDelete = async (messageId: string) => {
+        // TODO: メッセージ削除機能を実装
+        console.log('メッセージ削除:', messageId);
+    };
+
+    if (isLoadingRooms) {
+        return (
+            <div className={styles.page}>
+                <h1 className={styles.title}>相談</h1>
+                <div className={styles.loading}>読み込み中...</div>
+            </div>
+        );
+    }
+
+    if (!chatRoom) {
+        return (
+            <div className={styles.page}>
+                <h1 className={styles.title}>相談</h1>
+                <div className={styles.empty}>
+                    <p>チャットルームがまだ作成されていません。</p>
+                    <p>メンターが割り当てられるまでお待ちください。</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.page}>
             <h1 className={styles.title}>相談</h1>
             <ChatHeader mentorName={mentorDisplayName} studentName={studentName} />
-            <MessageList
-                messages={displayMessages}
-                currentUserId={currentUserId}
-                onReactionToggle={handleReactionToggle}
-            />
+            {isLoadingMessages ? (
+                <div className={styles.loading}>メッセージを読み込み中...</div>
+            ) : (
+                <MessageList
+                    messages={displayMessages}
+                    currentUserId={currentUserId}
+                    onReactionToggle={handleReactionToggle}
+                    onDelete={handleDelete}
+                />
+            )}
             <ChatInput onSend={handleSend} />
         </div>
     );

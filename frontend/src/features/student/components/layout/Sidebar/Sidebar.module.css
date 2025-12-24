@@ -64,6 +64,35 @@
     display: none;
 }
 
+.footer {
+    padding: var(--spacing-md);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.logoutButton {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    border-radius: var(--border-radius-sm);
+}
+
+.logoutButton:hover {
+    background-color: rgba(230, 90, 90, 0.1);
+    color: var(--color-status-error);
+}
+
+.logoutButton .icon {
+    color: inherit;
+}
+
 /* モバイル対応 */
 @media (max-width: 768px) {
     .sidebar {

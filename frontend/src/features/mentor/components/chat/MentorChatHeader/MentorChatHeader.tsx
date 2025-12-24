@@ -16,7 +16,7 @@ const MentorChatHeader = ({ currentStudent, students, onSelectStudent }: MentorC
             <div className={styles.left}>
                 <span className={styles.title}>相談チャット（メンター）</span>
                 {currentStudent && (
-                    <span className={styles.currentStudent}>現在の生徒: {currentStudent.name}</span>
+                    <span className={styles.currentStudent}>現在の生徒: {currentStudent.displayName}</span>
                 )}
             </div>
             <div className={styles.right}>
@@ -31,7 +31,7 @@ const MentorChatHeader = ({ currentStudent, students, onSelectStudent }: MentorC
                 >
                     {students.map((student) => (
                         <option key={student.id} value={student.id}>
-                            {student.name}
+                            {student.displayName}
                         </option>
                     ))}
                 </select>

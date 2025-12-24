@@ -7,9 +7,12 @@ import styles from './DiaryTimeline.module.css';
 interface DiaryTimelineProps {
     posts: DiaryPost[];
     onLoadMore?: () => void;
+    onDelete?: (postId: string) => void;
+    onEdit?: (postId: string) => void;
+    currentUserId?: string;
 }
 
-const DiaryTimeline = ({ posts, onLoadMore }: DiaryTimelineProps) => {
+const DiaryTimeline = ({ posts, onLoadMore, onDelete, onEdit, currentUserId }: DiaryTimelineProps) => {
     const [filterSubject, setFilterSubject] = useState<string>('');
     const filtered = filterSubject ? posts.filter(p => p.subject === filterSubject) : posts;
     const grouped: GroupedDiaryPost[] = groupByDate(filtered);
@@ -33,7 +36,16 @@ const DiaryTimeline = ({ posts, onLoadMore }: DiaryTimelineProps) => {
                 <section key={group.dateLabel} className={styles.group} aria-labelledby={`group-${group.dateLabel}`}>
                     <h2 id={`group-${group.dateLabel}`} className={styles.groupTitle}>{group.dateLabel}</h2>
                     <div className={styles.posts}>
-                        {group.posts.map(p => <DiaryPostCard key={p.id} post={p} viewMode="student" />)}
+                        {group.posts.map(p => (
+                            <DiaryPostCard
+                                key={p.id}
+                                post={p}
+                                viewMode="student"
+                                currentUserId={currentUserId}
+                                onDelete={onDelete}
+                                onEdit={onEdit}
+                            />
+                        ))}
                     </div>
                 </section>
             ))}
