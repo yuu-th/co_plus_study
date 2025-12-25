@@ -85,9 +85,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
     };
 
-    // Fetch profile from database (with deduplication)
+    // Fetch profile from database (with deduplication and strict timeout)
     const fetchProfile = async (userId: string): Promise<Profile | null> => {
-        // すでに同じユーザーの取得が進行中なら、そのPromiseを再利用する
         const existingPromise = profileFetchPromiseMap.current.get(userId);
         if (existingPromise) {
             console.log('[AuthProvider] fetchProfile: using existing promise for', userId);
@@ -98,22 +97,32 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         
         const fetchPromise = (async () => {
             try {
-                const { data, error } = await supabase
+                // Promise.race で 5秒のタイムアウトを実装
+                const request = supabase
                     .from('profiles')
                     .select('*')
                     .eq('id', userId)
                     .single();
+                
+                const timeout = new Promise<null>((_, reject) => 
+                    setTimeout(() => reject(new Error('FetchProfile Timeout')), 5000)
+                );
+
+                const result = await Promise.race([request, timeout]) as any;
+                
+                if (result instanceof Error) throw result;
+                const { data, error } = result;
 
                 if (error) {
                     console.error('[AuthProvider] Error fetching profile:', error);
                     return null;
                 }
+                console.log('[AuthProvider] fetchProfile: success for', userId);
                 return data as Profile;
             } catch (err) {
-                console.error('[AuthProvider] Unexpected error fetching profile:', err);
+                console.error('[AuthProvider] fetchProfile: failed or timed out for', userId, err);
                 return null;
             } finally {
-                // 完了したらマップから削除
                 profileFetchPromiseMap.current.delete(userId);
             }
         })();
@@ -130,10 +139,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUser(newUser);
 
         if (newUser) {
-            const userProfile = await fetchProfile(newUser.id);
-            if (isMounted.current) {
-                setProfile(userProfile);
-            }
+            // プロフィール取得を開始するが、この関数自体は完了を待たずに状態更新を行う
+            fetchProfile(newUser.id).then(userProfile => {
+                if (isMounted.current) {
+                    setProfile(userProfile);
+                    // プロフィールが取れたタイミングでも初期化完了を念押し
+                    resolveInitialization(`profile_fetched_${source}`);
+                }
+            });
         } else {
             setProfile(null);
         }
@@ -148,9 +161,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
         console.log('[AuthProvider] 🚀 Auth initialization started');
 
-        // セーフティタイマー
+        // 10秒の絶対セーフティタイマー
         const safetyTimeout = setTimeout(() => {
-            resolveInitialization('Safety timeout');
+            resolveInitialization('Global safety timeout');
         }, 10000);
 
         // モックモード
@@ -177,12 +190,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         // 1. 最初に現在のセッションを確認
         const initialize = async () => {
             try {
-                const { data: { session: initialSession } } = await supabase.auth.getSession();
+                console.log('[AuthProvider] initialize: calling getSession');
+                // getSession にもタイムアウトを適用
+                const sessionRequest = supabase.auth.getSession();
+                const timeout = new Promise<any>((_, reject) => 
+                    setTimeout(() => reject(new Error('GetSession Timeout')), 5000)
+                );
+                
+                const result = await Promise.race([sessionRequest, timeout]);
+                const initialSession = result?.data?.session ?? result?.session ?? null;
+                
+                console.log('[AuthProvider] initialize: getSession returned', !!initialSession);
                 setSession(initialSession);
                 await syncUserAndProfile(initialSession?.user ?? null, 'initial_get_session');
             } catch (err) {
                 console.error('[AuthProvider] Initialization error:', err);
             } finally {
+                // プロフィール取得の成否に関わらず、セッション確認が終われば初期化完了とする
                 resolveInitialization('initialization_finished');
             }
         };
@@ -196,20 +220,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 
                 setSession(newSession);
                 
-                // INITIAL_SESSION は getSession と重複するので、
-                // すでに初期化済みの場合はスキップするか、必要な場合のみ更新する
                 if (event === 'INITIAL_SESSION' && initializationResolved.current) {
-                    console.log('[AuthProvider] Skipping INITIAL_SESSION as already initialized');
                     return;
                 }
 
-                await syncUserAndProfile(newSession?.user ?? null, `event_${event}`);
+                // 同期処理を開始（await しないことでイベントループを止めない）
+                syncUserAndProfile(newSession?.user ?? null, `event_${event}`);
 
                 if (event === 'SIGNED_OUT') {
                     setProfile(null);
                 }
 
-                // 何らかのイベントが発生した時点で、初期化は完了したとみなす
+                // 認証イベントが発生した＝何らかの応答があったので初期化完了
                 resolveInitialization(`auth_event_${event}`);
             }
         );
