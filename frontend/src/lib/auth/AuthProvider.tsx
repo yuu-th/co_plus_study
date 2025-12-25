@@ -68,24 +68,51 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [profile, setProfile] = useState<Profile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     
-    // React Strict Mode対策: 初期化が1回だけ実行されるようにする
-    const isInitialized = useRef(false);
+    // 初期化フラグ
+    const isMounted = useRef(true);
+    const initializationStarted = useRef(false);
+    const initializationResolved = useRef(false);
 
     const isAuthenticated = !!user;
 
+    // 初期化完了をマークする関数
+    const resolveInitialization = (reason: string) => {
+        if (isMounted.current && !initializationResolved.current) {
+            console.log(`[AuthProvider] Resolving initialization (Reason: ${reason})`);
+            initializationResolved.current = true;
+            setIsLoading(false);
+        } else {
+            console.log(`[AuthProvider] resolveInitialization called but skipped (Reason: ${reason}, isMounted: ${isMounted.current}, alreadyResolved: ${initializationResolved.current})`);
+        }
+    };
+
     // Fetch profile from database
     const fetchProfile = async (userId: string): Promise<Profile | null> => {
+        console.log('[AuthProvider] fetchProfile started for:', userId);
+        
         try {
-            const { data, error } = await supabase
+            // タイムアウト付きのフェッチ
+            const fetchPromise = supabase
                 .from('profiles')
                 .select('*')
                 .eq('id', userId)
                 .single();
+                
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Profile fetch timeout')), 8000)
+            );
+
+            console.log('[AuthProvider] fetchProfile: awaiting supabase call...');
+            const result = await Promise.race([fetchPromise, timeoutPromise]) as any;
+            
+            if (result instanceof Error) throw result;
+            const { data, error } = result;
 
             if (error) {
                 console.error('[AuthProvider] Error fetching profile:', error);
                 return null;
             }
+            console.log('[AuthProvider] fetchProfile success:', !!data);
             return data as Profile;
         } catch (err) {
             console.error('[AuthProvider] Unexpected error fetching profile:', err);
@@ -95,11 +122,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     // Initialize auth state
     useEffect(() => {
-        // React Strict Modeで2回実行されるのを防ぐ
-        if (isInitialized.current) {
+        isMounted.current = true;
+
+        if (initializationStarted.current) {
             return;
         }
-        isInitialized.current = true;
+        initializationStarted.current = true;
+
+        console.log('[AuthProvider] useEffect initialization started');
+
+        // セーフティタイマー: 15秒経っても初期化が終わらない場合は強制的に完了させる
+        const safetyTimeout = setTimeout(() => {
+            resolveInitialization('Safety timeout');
+        }, 15000);
 
         // モックモードの場合は認証をスキップ
         if (isMockModeEnabled) {
@@ -118,49 +153,58 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
             });
-            setIsLoading(false);
+            resolveInitialization('Mock mode');
             return;
         }
 
         // 初期化関数
         const initializeAuth = async () => {
+            console.log('[AuthProvider] initializeAuth function called');
             try {
-                // セッション取得（タイムアウトなし - Supabase側で処理される）
+                // セッション取得
+                console.log('[AuthProvider] Calling getSession...');
                 const { data: { session: currentSession }, error } = await supabase.auth.getSession();
                 
                 if (error) {
                     console.warn('[AuthProvider] Session error:', error.message);
-                    // エラーがあってもそのまま続行（未認証状態として扱う）
                 }
                 
+                if (!isMounted.current) return;
+
+                console.log('[AuthProvider] getSession result:', { hasSession: !!currentSession });
                 setSession(currentSession);
                 setUser(currentSession?.user ?? null);
 
                 // プロフィールを取得
                 if (currentSession?.user) {
                     const userProfile = await fetchProfile(currentSession.user.id);
+                    if (!isMounted.current) return;
                     setProfile(userProfile);
                 }
             } catch (err) {
                 console.error('[AuthProvider] Failed to initialize auth:', err);
-                // 初期化失敗でも未認証状態として続行
             } finally {
-                setIsLoading(false);
+                resolveInitialization('initializeAuth finished');
             }
         };
 
         initializeAuth();
 
         // Listen for auth changes
+        console.log('[AuthProvider] Registering onAuthStateChange');
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, newSession) => {
-                console.log('[AuthProvider] Auth state changed:', event);
+                console.log('[AuthProvider] Auth state changed event:', event);
                 
+                if (!isMounted.current) return;
+
                 setSession(newSession);
                 setUser(newSession?.user ?? null);
 
                 if (newSession?.user) {
+                    // すでにプロフィールがある場合でも、最新情報を取得
                     const userProfile = await fetchProfile(newSession.user.id);
+                    if (!isMounted.current) return;
                     setProfile(userProfile);
                 } else {
                     setProfile(null);
@@ -170,10 +214,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 if (event === 'SIGNED_OUT') {
                     setProfile(null);
                 }
+
+                // イベントが発生した＝認証状態が確定したとみなして初期化完了
+                resolveInitialization(`onAuthStateChange: ${event}`);
             }
         );
 
         return () => {
+            console.log('[AuthProvider] useEffect cleanup');
+            isMounted.current = false;
+            clearTimeout(safetyTimeout);
             subscription.unsubscribe();
         };
     }, []);
