@@ -1,7 +1,7 @@
 // Survey型のDB ↔ フロントエンド変換
 // @see specs/features/survey.md
 
-import type { Survey, SurveyResponse, Question, Answer, SurveyStatus } from '@/shared/types';
+import type { Answer, Question, Survey, SurveyResponse, SurveyStatus } from '@/shared/types';
 
 // DBから取得する生のデータ型（snake_case）
 interface SurveyFromDB {

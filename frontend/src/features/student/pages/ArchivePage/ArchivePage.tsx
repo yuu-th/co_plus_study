@@ -1,15 +1,15 @@
 // ArchivePage - 実績ページ（カレンダー/スキルタブ）
 // @see specs/features/archive.md
 
-import { useState, useMemo } from 'react';
-import { 
-    useAuth, 
-    useBadgesWithProgress, 
-    useCalendarData,
+import {
     convertBadgeFromDB,
     convertCalendarDataFromDB,
-    generateMonthlyDataFromCalendar
+    generateMonthlyDataFromCalendar,
+    useAuth,
+    useBadgesWithProgress,
+    useCalendarData
 } from '@/lib';
+import { useMemo, useState } from 'react';
 import CalendarView from '../../components/archive/CalendarView';
 import SkillView from '../../components/archive/SkillView';
 import styles from './ArchivePage.module.css';

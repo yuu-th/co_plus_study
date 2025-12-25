@@ -1,7 +1,7 @@
 // Mentor data converters (DB ↔ Frontend)
 // @see specs/features/mentor.md
 
-import type { StudentSummary, StudentDetail } from '@/features/mentor/types';
+import type { StudentDetail, StudentSummary } from '@/features/mentor/types';
 
 // DBから取得する型
 interface StudentSummaryFromDB {

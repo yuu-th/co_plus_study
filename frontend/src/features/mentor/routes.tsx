@@ -1,25 +1,25 @@
 // Mentor feature routes
 // @see specs/features/mentor.md
 
+import ProtectedRoute from '@/shared/components/ProtectedRoute';
 import type { RouteObject } from 'react-router-dom';
 import MentorLayout from './components/layout/MentorLayout';
-import ProtectedRoute from '@/shared/components/ProtectedRoute';
+import ChatPage from './pages/ChatPage';
 import DashboardPage from './pages/DashboardPage';
-import StudentListPage from './pages/StudentListPage';
-import StudentDetailPage from './pages/StudentDetailPage';
-import NotificationManagePage from './pages/NotificationManagePage';
+import MentorProfileEditPage from './pages/MentorProfileEditPage';
 import NotificationListPage from './pages/NotificationListPage';
+import NotificationManagePage from './pages/NotificationManagePage';
+import StudentDetailPage from './pages/StudentDetailPage';
+import StudentListPage from './pages/StudentListPage';
 import SurveyCreatePage from './pages/SurveyCreatePage';
 import SurveyListPage from './pages/SurveyListPage';
 import SurveyResultsPage from './pages/SurveyResultsPage';
-import ChatPage from './pages/ChatPage';
-import MentorProfileEditPage from './pages/MentorProfileEditPage';
 
 export const mentorRoutes: RouteObject[] = [
     {
         path: '/mentor',
         element: (
-            <ProtectedRoute>
+            <ProtectedRoute requireRole="mentor">
                 <MentorLayout />
             </ProtectedRoute>
         ),

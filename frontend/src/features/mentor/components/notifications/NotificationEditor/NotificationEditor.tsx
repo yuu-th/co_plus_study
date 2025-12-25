@@ -1,9 +1,9 @@
 // NotificationEditor - お知らせ作成フォーム
 // @see specs/features/notification.md
 
-import { useState, useEffect } from 'react';
 import NotificationCard from '@/shared/components/NotificationCard';
 import type { Notification, NotificationCategory, NotificationPriority } from '@/shared/types';
+import { useEffect, useState } from 'react';
 import type { NotificationDraft } from '../../../types';
 import styles from './NotificationEditor.module.css';
 
@@ -31,8 +31,8 @@ const PRIORITY_LABELS: Record<NotificationPriority, string> = {
 const MAX_TITLE = 50;
 const MAX_CONTENT = 500;
 
-import Card from '@/shared/components/Card';
 import Button from '@/shared/components/Button';
+import Card from '@/shared/components/Card';
 
 const NotificationEditor = ({ onSubmit, initialData, mode = 'create', isSubmitting = false }: NotificationEditorProps) => {
     const [draft, setDraft] = useState<NotificationDraft>({

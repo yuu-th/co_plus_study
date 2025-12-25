@@ -1,17 +1,17 @@
 .page {
-    padding: var(--spacing-lg);
-    max-width: 800px;
-    margin: 0 auto;
+  padding: var(--spacing-lg);
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .title {
-    margin-bottom: var(--spacing-lg);
-    font-size: var(--font-size-xl);
-    color: var(--color-text-primary);
+  margin-bottom: var(--spacing-lg);
+  font-size: var(--font-size-xl);
+  color: var(--color-text-primary);
 }
 
 .loading {
-    text-align: center;
-    padding: var(--spacing-xl);
-    color: var(--color-text-secondary);
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--color-text-secondary);
 }

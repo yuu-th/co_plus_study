@@ -1,31 +1,45 @@
-import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useAuth, useMentorProfile, useUpdateMentorProfile } from '@/lib';
 import Button from '@/shared/components/Button';
-import { useAuth } from '@/lib';
-import styles from './MentorProfileEditPage.module.css';
 import Card from '@/shared/components/Card';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styles from './MentorProfileEditPage.module.css';
 
 const MentorProfileEditPage = () => {
     const navigate = useNavigate();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { profile, updateProfile } = useAuth();
+    const { data: mentorProfile } = useMentorProfile(profile?.id);
+    const updateMentorProfile = useUpdateMentorProfile(profile?.id ?? '');
 
     const [form, setForm] = useState({
         displayName: '',
         avatarUrl: '',
         introduction: '',
+        specialties: '',
     });
 
     // プロフィール読み込み時に初期値をセット
     useEffect(() => {
         if (profile) {
-            setForm({
+            setForm(prev => ({
+                ...prev,
                 displayName: profile.display_name ?? '',
                 avatarUrl: profile.avatar_url ?? '',
-                introduction: profile.introduction ?? '',
-            });
+            }));
         }
     }, [profile]);
+
+    // mentor_profile読み込み時に追加の初期値をセット
+    useEffect(() => {
+        if (mentorProfile) {
+            setForm(prev => ({
+                ...prev,
+                introduction: mentorProfile.introduction ?? '',
+                specialties: mentorProfile.specialties?.join(', ') ?? '',
+            }));
+        }
+    }, [mentorProfile]);
 
     const [errors, setErrors] = useState<string[]>([]);
     const [isSaving, setIsSaving] = useState(false);
@@ -52,15 +66,26 @@ const MentorProfileEditPage = () => {
         setIsSaving(true);
 
         try {
-            const { error } = await updateProfile({
+            // profiles テーブルを更新 (display_name, avatar_url)
+            const { error: profileError } = await updateProfile({
                 display_name: form.displayName,
                 avatar_url: form.avatarUrl || null,
-                introduction: form.introduction || null,
             });
 
-            if (error) {
-                throw error;
+            if (profileError) {
+                throw profileError;
             }
+
+            // mentor_profiles テーブルを更新 (introduction, specialties)
+            const specialtiesArray = form.specialties
+                .split(',')
+                .map(s => s.trim())
+                .filter(s => s.length > 0);
+
+            await updateMentorProfile.mutateAsync({
+                introduction: form.introduction || undefined,
+                specialties: specialtiesArray,
+            });
 
             alert('プロフィールを更新しました');
             navigate('/mentor/dashboard');
@@ -161,19 +186,18 @@ const MentorProfileEditPage = () => {
                                 </select>
                             </div>
 
-                            {/* 専門分野はDBにカラムがないため一時的に非表示
+                            {/* 専門分野 */}
                             <div className={styles.field}>
                                 <label className={styles.label}>専門分野 (カンマ区切り)</label>
                                 <input
                                     type="text"
                                     name="specialties"
-                                    value=""
+                                    value={form.specialties}
                                     onChange={handleChange}
                                     className={styles.input}
                                     placeholder="数学, 英語, 進路指導..."
                                 />
                             </div>
-                            */}
 
                             <div className={styles.field}>
                                 <label className={styles.label}>自己紹介 (500文字以内)</label>

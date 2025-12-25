@@ -1,13 +1,11 @@
 // Mentor auth routes
-// @see specs/features/home.md
+// @see specs/features/auth.md
 
 import type { RouteObject } from 'react-router-dom';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
+import MentorLoginPage from './pages/MentorLoginPage';
 
 export const mentorAuthRoutes: RouteObject[] = [
-    { path: '/mentor/login', element: <LoginPage /> },
-    { path: '/mentor/register', element: <RegisterPage /> },
+    { path: '/mentor/login', element: <MentorLoginPage /> },
 ];
 
 export default mentorAuthRoutes;

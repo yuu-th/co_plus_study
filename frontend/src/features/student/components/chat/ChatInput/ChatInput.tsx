@@ -1,7 +1,7 @@
-import { useState, useRef } from 'react';
-import { FaCamera } from 'react-icons/fa';
-import type { Message } from '@/shared/types';
 import { useAuth } from '@/lib';
+import type { Message } from '@/shared/types';
+import { useRef, useState } from 'react';
+import { FaCamera } from 'react-icons/fa';
 import styles from './ChatInput.module.css';
 
 interface ChatInputProps {

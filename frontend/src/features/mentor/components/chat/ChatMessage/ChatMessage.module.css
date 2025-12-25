@@ -1,178 +1,183 @@
 .container {
-    display: flex;
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-md);
-    align-items: flex-end;
-    /* 下揃え */
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  align-items: flex-end;
+  width: 100%;
 }
 
 .ownContainer {
-    flex-direction: row-reverse;
+  flex-direction: row-reverse;
 }
 
 .otherContainer {
-    flex-direction: row;
+  flex-direction: row;
 }
 
 .messageContentWrapper {
-    display: flex;
-    align-items: flex-end;
-    gap: var(--spacing-xs);
-    max-width: 85%;
-    position: relative;
+  flex: 1;
+  max-width: 80%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
 .ownContainer .messageContentWrapper {
-    flex-direction: row-reverse;
+  align-items: flex-end;
 }
 
-/* 順序はJSX側で制御するため row-reverse は不要 */
+.otherContainer .messageContentWrapper {
+  align-items: flex-start;
+}
 
 .avatarWrapper {
-    flex-shrink: 0;
+  flex-shrink: 0;
+  margin-bottom: 4px;
 }
 
 .avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    object-fit: cover;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--color-border);
 }
 
 .avatarPlaceholder {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-bold);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  border: 1px solid var(--color-border);
 }
 
 .messageGroup {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    position: relative;
-    max-width: 65%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
 }
 
 .ownContainer .messageGroup {
-    align-items: flex-end;
+  align-items: flex-end;
 }
 
 .otherContainer .messageGroup {
-    align-items: flex-start;
+  align-items: flex-start;
 }
 
 .meta {
-    display: flex;
-    gap: var(--spacing-sm);
-    font-size: var(--font-size-xs);
-    color: var(--color-text-secondary);
-    margin-bottom: 2px;
+  display: flex;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-bottom: 2px;
+  white-space: nowrap;
 }
 
 .senderName {
-    font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-semibold);
 }
 
 .timestamp {
-    opacity: 0.7;
+  opacity: 0.7;
 }
 
 .deleteButton {
-    background: none;
-    border: none;
-    color: var(--color-text-secondary);
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 0 4px;
-    opacity: 0.5;
-    transition: opacity 0.2s, color 0.2s;
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 4px;
+  opacity: 0.5;
+  transition: opacity 0.2s, color 0.2s;
 }
 
 .deleteButton:hover {
-    opacity: 1;
-    color: var(--color-danger, #ef4444);
+  opacity: 1;
+  color: var(--color-danger, #ef4444);
 }
 
 .ownMessage {
-    background-color: var(--color-accent-orange-light, #ffe0b2);
-    color: var(--color-text-primary);
-    border-radius: 16px 2px 16px 16px;
-    padding: var(--spacing-sm) var(--spacing-md);
-    word-wrap: break-word;
-    line-height: 1.5;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background-color: var(--color-accent-orange-light, #ffe0b2);
+  color: var(--color-text-primary);
+  border-radius: 16px 2px 16px 16px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  word-wrap: break-word;
+  line-height: 1.5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .otherMessage {
-    background-color: #fff;
-    color: var(--color-text-primary);
-    border: 1px solid var(--color-border);
-    border-radius: 2px 16px 16px 16px;
-    padding: var(--spacing-sm) var(--spacing-md);
-    word-wrap: break-word;
-    line-height: 1.5;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background-color: #fff;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 2px 16px 16px 16px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  word-wrap: break-word;
+  line-height: 1.5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .reactionsRow {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin-top: 4px;
-    align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+  align-items: center;
 }
 
 .addReactionWrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .addReactionBtn {
-    background: none;
-    border: none;
-    font-size: 1.1rem;
-    cursor: pointer;
-    opacity: 0.3;
-    transition: all 0.2s;
-    padding: 2px 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    filter: grayscale(1);
-    border-radius: 4px;
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  opacity: 0.3;
+  transition: all 0.2s;
+  padding: 2px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: grayscale(1);
+  border-radius: 4px;
 }
 
 .addReactionBtn:hover {
-    opacity: 1;
-    filter: grayscale(0);
-    background-color: var(--color-bg-secondary);
+  opacity: 1;
+  filter: grayscale(0);
+  background-color: var(--color-bg-secondary);
 }
 
 .container:hover .addReactionBtn {
-    opacity: 0.6;
+  opacity: 0.6;
 }
 
 .pickerWrapper {
-    position: absolute;
-    bottom: 100%;
-    margin-bottom: 8px;
-    z-index: 1000;
+  position: absolute;
+  bottom: 100%;
+  margin-bottom: 8px;
+  z-index: 1000;
 }
 
 .ownPicker {
-    right: 0;
-    /* 自分のメッセージは右端に寄せてボタンの上に */
+  right: 0;
+  /* 自分のメッセージは右端に寄せてボタンの上に */
 }
 
 .otherPicker {
-    left: 0;
-    /* 相手のメッセージは左端に寄せてボタンの上に */
+  left: 0;
+  /* 相手のメッセージは左端に寄せてボタンの上に */
 }

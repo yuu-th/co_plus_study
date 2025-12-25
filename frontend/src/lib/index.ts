@@ -1,9 +1,9 @@
 // Library exports
 // @see ADR-005: バックエンド連携アーキテクチャ
 
-export { supabase } from './supabase';
-export { queryClient } from './queryClient';
 export { AuthProvider, useAuth } from './auth';
+export { queryClient } from './queryClient';
+export { supabase } from './supabase';
 
 // Re-export all hooks
 export * from './hooks';
@@ -13,30 +13,11 @@ export * from './converters';
 
 // Re-export database types for convenience
 export type {
-    Database,
-    Tables,
-    InsertDTO,
-    UpdateDTO,
-    Profile,
-    MentorProfile,
-    DiaryPost,
-    DiaryReaction,
-    ChatRoom,
-    Message,
-    MessageReaction,
-    BadgeDefinition,
-    UserBadge,
-    Survey,
-    SurveyResponse,
-    Notification,
-    UserNotification,
-    UserRole,
-    SubjectType,
-    ReactionEmoji,
-    MessageType,
-    BadgeRank,
-    SurveyStatus,
-    NotificationCategory,
-    NotificationPriority,
-    MentorStatus,
+    BadgeDefinition, BadgeRank, ChatRoom, Database, DiaryPost,
+    DiaryReaction, InsertDTO, MentorProfile, MentorStatus, Message,
+    MessageReaction, MessageType, Notification, NotificationCategory,
+    NotificationPriority, Profile, ReactionEmoji, SubjectType, Survey,
+    SurveyResponse, SurveyStatus, Tables, UpdateDTO, UserBadge, UserNotification,
+    UserRole
 } from './database.types';
+

@@ -1,7 +1,7 @@
 // @see ADR-005: バックエンド連携アーキテクチャ
 // チャットデータ変換ユーティリティ
 
-import type { Message, MessageReaction, ChatRoom, ReactionEmoji } from '@/shared/types';
+import type { ChatRoom, Message, MessageReaction, ReactionEmoji } from '@/shared/types';
 
 /**
  * バックエンドから取得したMessage行データ

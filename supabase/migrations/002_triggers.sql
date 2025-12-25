@@ -30,8 +30,9 @@ CREATE TRIGGER mentor_profiles_updated_at
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
+    -- 空の display_name で作成し、RegisterPage で入力させる
     INSERT INTO public.profiles (id, display_name, role)
-    VALUES (NEW.id, 'ゲスト', 'student');
+    VALUES (NEW.id, '', 'student');
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

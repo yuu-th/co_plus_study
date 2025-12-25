@@ -1,20 +1,21 @@
 // ChatPage - 相談チャットページ
 // @see specs/features/chat.md
-import { useMemo } from 'react';
-import type { Message } from '@/shared/types';
-import { 
-    useAuth, 
-    useChatRooms, 
-    useMessages, 
-    useRealtimeMessages,
-    useSendMessage,
-    useAddMessageReaction,
-    useRemoveMessageReaction,
+import {
+    convertChatRoomFromDB,
     convertMessageFromDB,
-    convertChatRoomFromDB
+    useAddMessageReaction,
+    useAuth,
+    useChatRooms,
+    useMessages,
+    useRealtimeMessages,
+    useRemoveMessageReaction,
+    useSendMessage
 } from '@/lib';
+import type { Message } from '@/shared/types';
+import { useMemo } from 'react';
 import ChatHeader from '../../components/chat/ChatHeader';
 import ChatInput from '../../components/chat/ChatInput';
+import MentorSelectList from '../../components/chat/MentorSelectList';
 import MessageList from '../../components/chat/MessageList';
 import styles from './ChatPage.module.css';
 
@@ -23,7 +24,7 @@ const ChatPage = () => {
     const currentUserId = user?.id ?? '';
 
     // チャットルームを取得
-    const { data: chatRoomsData, isLoading: isLoadingRooms } = useChatRooms(currentUserId);
+    const { data: chatRoomsData, isLoading: isLoadingRooms, refetch: refetchRooms } = useChatRooms(currentUserId);
 
     // 最初のチャットルームを使用（生徒は通常1つのルームを持つ）
     const chatRoom = useMemo(() => {
@@ -132,10 +133,7 @@ const ChatPage = () => {
         return (
             <div className={styles.page}>
                 <h1 className={styles.title}>相談</h1>
-                <div className={styles.empty}>
-                    <p>チャットルームがまだ作成されていません。</p>
-                    <p>メンターが割り当てられるまでお待ちください。</p>
-                </div>
+                <MentorSelectList onChatRoomCreated={() => refetchRooms()} />
             </div>
         );
     }

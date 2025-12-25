@@ -1,39 +1,18 @@
 // @see specs/features/home.md
 // ProfilePage - プロフィール画面
 
-import { Link } from 'react-router-dom';
+import { useAuth } from '@/lib';
 import Button from '@/shared/components/Button';
-import type { User } from '@/shared/types';
+import { Link } from 'react-router-dom';
 import { useTutorialContext } from '../../components/tutorial/TutorialProvider';
 import styles from './ProfilePage.module.css';
 
-/**
- * プロフィール表示用の拡張型
- * @see shared/types/user.ts User
- */
-interface ProfileWithStats extends User {
-    /** 総学習時間（時間単位、クエリで集計） */
-    totalStudyHours: number;
-    /** 総投稿数（クエリで集計） */
-    totalPosts: number;
-}
-
 const ProfilePage = () => {
     const { state, startTutorial, resetTutorial } = useTutorialContext();
+    const { profile, isLoading } = useAuth();
 
-    const user: ProfileWithStats = {
-        id: '1',
-        displayName: '田中太郎',
-        nameKana: 'たなかたろう',
-        role: 'student',
-        avatarUrl: undefined,
-        createdAt: '2024-01-15',
-        grade: '中学2年',
-        totalStudyHours: 156,
-        totalPosts: 42,
-    };
-
-    const formatDate = (dateStr: string) => {
+    const formatDate = (dateStr: string | null | undefined) => {
+        if (!dateStr) return '-';
         return new Date(dateStr).toLocaleDateString('ja-JP', {
             year: 'numeric',
             month: 'long',
@@ -46,6 +25,22 @@ const ProfilePage = () => {
         startTutorial();
     };
 
+    if (isLoading) {
+        return (
+            <div className={styles.page}>
+                <div className={styles.loading}>読み込み中...</div>
+            </div>
+        );
+    }
+
+    if (!profile) {
+        return (
+            <div className={styles.page}>
+                <div className={styles.error}>プロフィールが見つかりません</div>
+            </div>
+        );
+    }
+
     return (
         <div className={styles.page}>
             <div className={styles.header}>
@@ -57,11 +52,11 @@ const ProfilePage = () => {
 
             <div className={styles.profileCard}>
                 <div className={styles.avatarWrapper}>
-                    {user.avatarUrl ? (
-                        <img src={user.avatarUrl} alt={user.displayName} className={styles.avatar} />
+                    {profile.avatar_url ? (
+                        <img src={profile.avatar_url} alt={profile.display_name} className={styles.avatar} />
                     ) : (
                         <div className={styles.avatarPlaceholder}>
-                            {user.displayName.charAt(0)}
+                            {profile.display_name?.charAt(0) || '?'}
                         </div>
                     )}
                 </div>
@@ -69,35 +64,38 @@ const ProfilePage = () => {
                 <div className={styles.info}>
                     <div className={styles.field}>
                         <label className={styles.label}>名前</label>
-                        <p className={styles.value}>{user.displayName}</p>
+                        <p className={styles.value}>{profile.display_name}</p>
                     </div>
-                    <div className={styles.field}>
-                        <label className={styles.label}>フリガナ</label>
-                        <p className={styles.value}>{user.nameKana}</p>
-                    </div>
-                    {user.grade && (
+                    {profile.name_kana && (
+                        <div className={styles.field}>
+                            <label className={styles.label}>フリガナ</label>
+                            <p className={styles.value}>{profile.name_kana}</p>
+                        </div>
+                    )}
+                    {profile.grade && (
                         <div className={styles.field}>
                             <label className={styles.label}>学年</label>
-                            <p className={styles.value}>{user.grade}</p>
+                            <p className={styles.value}>{profile.grade}</p>
                         </div>
                     )}
                     <div className={styles.field}>
                         <label className={styles.label}>参加日</label>
-                        <p className={styles.value}>{formatDate(user.createdAt!)}</p>
+                        <p className={styles.value}>{formatDate(profile.created_at)}</p>
                     </div>
                 </div>
             </div>
 
-            <div className={styles.stats}>
+            {/* TODO: 統計情報はDBから動的に取得する */}
+            {/* <div className={styles.stats}>
                 <div className={styles.stat}>
                     <h3 className={styles.statLabel}>総学習時間</h3>
-                    <p className={styles.statValue}>{user.totalStudyHours} <span className={styles.unit}>時間</span></p>
+                    <p className={styles.statValue}>- <span className={styles.unit}>時間</span></p>
                 </div>
                 <div className={styles.stat}>
                     <h3 className={styles.statLabel}>投稿数</h3>
-                    <p className={styles.statValue}>{user.totalPosts} <span className={styles.unit}>件</span></p>
+                    <p className={styles.statValue}>- <span className={styles.unit}>件</span></p>
                 </div>
-            </div>
+            </div> */}
 
             <div className={styles.settingsSection}>
                 <h2 className={styles.sectionTitle}>設定</h2>

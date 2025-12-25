@@ -105,16 +105,16 @@ export function useStudentDetail(studentId?: string) {
             // 日報統計を取得
             const { data: diaryStats, error: diaryError } = await supabase
                 .from('diary_posts')
-                .select('id, duration, created_at')
+                .select('id, duration_minutes, created_at')
                 .eq('user_id', studentId);
 
             if (diaryError) {
                 throw new Error(diaryError.message);
             }
 
-            const diaryList = diaryStats as { id: string; duration: number; created_at: string }[] || [];
-            const totalDuration = diaryList.reduce((sum, d) => sum + (d.duration || 0), 0);
-            const lastDiary = diaryList.length > 0 
+            const diaryList = diaryStats as { id: string; duration_minutes: number; created_at: string }[] || [];
+            const totalDuration = diaryList.reduce((sum, d) => sum + (d.duration_minutes || 0), 0);
+            const lastDiary = diaryList.length > 0
                 ? diaryList.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0]
                 : null;
 

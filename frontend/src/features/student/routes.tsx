@@ -1,23 +1,23 @@
 // Student feature routes
 // @see specs/features/*.md
 
+import ProtectedRoute from '@/shared/components/ProtectedRoute';
 import type { RouteObject } from 'react-router-dom';
 import Layout from './components/layout/Layout';
-import ProtectedRoute from '@/shared/components/ProtectedRoute';
-import HomePage from './pages/HomePage';
-import ProfilePage from './pages/ProfilePage';
-import ProfileEditPage from './pages/ProfileEditPage';
 import ArchivePage from './pages/ArchivePage';
-import DiaryPage from './pages/DiaryPage';
 import ChatPage from './pages/ChatPage';
-import SurveyPage from './pages/SurveyPage';
+import DiaryPage from './pages/DiaryPage';
+import HomePage from './pages/HomePage';
 import NotificationPage from './pages/NotificationPage';
+import ProfileEditPage from './pages/ProfileEditPage';
+import ProfilePage from './pages/ProfilePage';
+import SurveyPage from './pages/SurveyPage';
 import TutorialPage from './pages/TutorialPage';
 
 export const studentRoutes: RouteObject[] = [
     {
         element: (
-            <ProtectedRoute>
+            <ProtectedRoute requireRole="student">
                 <Layout />
             </ProtectedRoute>
         ),

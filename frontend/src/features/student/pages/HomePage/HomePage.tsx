@@ -1,11 +1,11 @@
 // HomePage - ホームページ
 
-import { Link } from 'react-router-dom';
+import { useAuth, useRecentActivities } from '@/lib';
 import Button from '@/shared/components/Button';
 import Card from '@/shared/components/Card';
-import { useAuth, useRecentActivities } from '@/lib';
-import { useTutorialContext } from '../../components/tutorial/TutorialProvider';
+import { Link } from 'react-router-dom';
 import RecentActivityTimeline from '../../components/home/RecentActivityTimeline';
+import { useTutorialContext } from '../../components/tutorial/TutorialProvider';
 import styles from './HomePage.module.css';
 
 const HomePage = () => {

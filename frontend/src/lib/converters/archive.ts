@@ -1,14 +1,14 @@
 // @see ADR-005: バックエンド連携アーキテクチャ
 // 実績（Archive）データ変換ユーティリティ
 
-import type { Badge, BadgeRank, BadgeStatus } from '@/shared/types';
-import type { 
-    CalendarData as FrontendCalendarData, 
-    MonthData, 
-    ActivityDay, 
-    DayActivity 
+import type {
+    ActivityDay,
+    DayActivity,
+    CalendarData as FrontendCalendarData,
+    MonthData
 } from '@/features/student/types/calendar';
-import type { CalendarData as DBCalendarData, CalendarDay } from '@/lib/hooks/useCalendar';
+import type { CalendarDay, CalendarData as DBCalendarData } from '@/lib/hooks/useCalendar';
+import type { Badge, BadgeRank, BadgeStatus } from '@/shared/types';
 
 /**
  * バックエンドから取得したBadge行データ
@@ -33,8 +33,8 @@ interface BadgeFromDB {
  */
 export function convertBadgeFromDB(dbBadge: BadgeFromDB): Badge {
     const validRanks: BadgeRank[] = ['platinum', 'gold', 'silver', 'bronze'];
-    const rank = validRanks.includes(dbBadge.rank as BadgeRank) 
-        ? (dbBadge.rank as BadgeRank) 
+    const rank = validRanks.includes(dbBadge.rank as BadgeRank)
+        ? (dbBadge.rank as BadgeRank)
         : 'bronze';
 
     return {

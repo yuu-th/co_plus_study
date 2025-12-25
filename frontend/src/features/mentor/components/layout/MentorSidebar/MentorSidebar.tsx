@@ -1,10 +1,10 @@
 // MentorSidebarコンポーネント
 // @see specs/features/mentor.md
 
+import { useAuth, useMentorProfile } from '@/lib';
 import type { MouseEventHandler } from 'react';
 import { FaBell, FaComments, FaHome, FaPoll, FaSignOutAlt, FaUsers } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth, useMentorProfile } from '@/lib';
 import styles from './MentorSidebar.module.css';
 
 interface NavItem {

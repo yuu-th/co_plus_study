@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react';
-import type { Answer, Survey, SurveyResponse } from '@/shared/types';
 import { useAuth } from '@/lib';
+import type { Answer, Survey, SurveyResponse } from '@/shared/types';
+import { useMemo, useState } from 'react';
 import SurveyQuestionCard from '../SurveyQuestionCard/SurveyQuestionCard';
 import styles from './SurveyForm.module.css';
 

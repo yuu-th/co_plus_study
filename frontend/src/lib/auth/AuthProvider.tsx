@@ -1,9 +1,9 @@
 // Authentication context and provider
 // @see ADR-005: 認証設計（段階的認証モデル）
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import type { User, Session, AuthError } from '@supabase/supabase-js';
-import { supabase } from '../supabase';
+import type { AuthError, Session, User } from '@supabase/supabase-js';
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
+import { isMockModeEnabled, supabase } from '../supabase';
 
 // Profile type (inline to avoid import issues during initial setup)
 interface Profile {
@@ -33,13 +33,21 @@ interface AuthState {
     isAuthenticated: boolean;
 }
 
+interface SignUpData {
+    email: string;
+    password: string;
+    displayName: string;
+    nameKana: string;
+    grade: string;
+}
+
 interface AuthActions {
-    /** Sign in anonymously (Phase 1) */
-    signInAnonymously: () => Promise<{ error: AuthError | null }>;
+    /** Sign up with email, password, and profile data */
+    signUp: (data: SignUpData) => Promise<{ error: Error | null }>;
+    /** Sign in with email and password */
+    signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
     /** Sign out */
     signOut: () => Promise<{ error: AuthError | null }>;
-    /** Link with Google OAuth (Phase 2) */
-    linkWithGoogle: () => Promise<{ error: AuthError | null }>;
     /** Update profile */
     updateProfile: (data: Partial<Profile>) => Promise<{ error: Error | null }>;
     /** Refresh profile data */
@@ -59,47 +67,100 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [session, setSession] = useState<Session | null>(null);
     const [profile, setProfile] = useState<Profile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    
+    // React Strict Mode対策: 初期化が1回だけ実行されるようにする
+    const isInitialized = useRef(false);
 
     const isAuthenticated = !!user;
 
     // Fetch profile from database
-    const fetchProfile = async (userId: string) => {
-        const { data, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', userId)
-            .single();
+    const fetchProfile = async (userId: string): Promise<Profile | null> => {
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', userId)
+                .single();
 
-        if (error) {
-            console.error('Error fetching profile:', error);
+            if (error) {
+                console.error('[AuthProvider] Error fetching profile:', error);
+                return null;
+            }
+            return data as Profile;
+        } catch (err) {
+            console.error('[AuthProvider] Unexpected error fetching profile:', err);
             return null;
         }
-        return data;
     };
 
     // Initialize auth state
     useEffect(() => {
-        // Get initial session
-        supabase.auth.getSession().then(async ({ data: { session } }) => {
-            setSession(session);
-            setUser(session?.user ?? null);
+        // React Strict Modeで2回実行されるのを防ぐ
+        if (isInitialized.current) {
+            return;
+        }
+        isInitialized.current = true;
 
-            if (session?.user) {
-                const userProfile = await fetchProfile(session.user.id);
-                setProfile(userProfile);
-            }
-
+        // モックモードの場合は認証をスキップ
+        if (isMockModeEnabled) {
+            console.warn('[AuthProvider] Mock mode enabled, skipping real auth');
+            setUser({ id: 'mock-user-id', email: 'mock@example.com' } as User);
+            setProfile({
+                id: 'mock-user-id',
+                role: 'student',
+                display_name: 'テストユーザー',
+                name_kana: null,
+                avatar_url: null,
+                grade: '中学1年生',
+                gender: null,
+                introduction: null,
+                last_seen_at: null,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+            });
             setIsLoading(false);
-        });
+            return;
+        }
+
+        // 初期化関数
+        const initializeAuth = async () => {
+            try {
+                // セッション取得（タイムアウトなし - Supabase側で処理される）
+                const { data: { session: currentSession }, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    console.warn('[AuthProvider] Session error:', error.message);
+                    // エラーがあってもそのまま続行（未認証状態として扱う）
+                }
+                
+                setSession(currentSession);
+                setUser(currentSession?.user ?? null);
+
+                // プロフィールを取得
+                if (currentSession?.user) {
+                    const userProfile = await fetchProfile(currentSession.user.id);
+                    setProfile(userProfile);
+                }
+            } catch (err) {
+                console.error('[AuthProvider] Failed to initialize auth:', err);
+                // 初期化失敗でも未認証状態として続行
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        initializeAuth();
 
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            async (event, session) => {
-                setSession(session);
-                setUser(session?.user ?? null);
+            async (event, newSession) => {
+                console.log('[AuthProvider] Auth state changed:', event);
+                
+                setSession(newSession);
+                setUser(newSession?.user ?? null);
 
-                if (session?.user) {
-                    const userProfile = await fetchProfile(session.user.id);
+                if (newSession?.user) {
+                    const userProfile = await fetchProfile(newSession.user.id);
                     setProfile(userProfile);
                 } else {
                     setProfile(null);
@@ -117,40 +178,94 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         };
     }, []);
 
-    // Sign in anonymously
-    const signInAnonymously = async () => {
-        const { error } = await supabase.auth.signInAnonymously();
+    // Sign up with email, password, and profile data
+    const signUp = async (data: SignUpData) => {
+        try {
+            // 1. アカウント作成
+            const { data: authData, error: authError } = await supabase.auth.signUp({
+                email: data.email,
+                password: data.password,
+            });
+
+            if (authError) {
+                return { error: authError };
+            }
+
+            if (!authData.user) {
+                return { error: new Error('アカウント作成に失敗しました') };
+            }
+
+            // 2. プロフィール更新（トリガーで作成済みのprofileを更新）
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .update({
+                    display_name: data.displayName,
+                    name_kana: data.nameKana,
+                    grade: data.grade,
+                })
+                .eq('id', authData.user.id);
+
+            if (profileError) {
+                console.error('[AuthProvider] Profile update failed:', profileError);
+                return { error: new Error('プロフィール設定に失敗しました') };
+            }
+
+            // 3. プロフィールを取得して状態を更新
+            const userProfile = await fetchProfile(authData.user.id);
+            setProfile(userProfile);
+
+            return { error: null };
+        } catch (err) {
+            console.error('[AuthProvider] SignUp error:', err);
+            return { error: err instanceof Error ? err : new Error('予期しないエラーが発生しました') };
+        }
+    };
+
+    // Sign in with email and password
+    const signIn = async (email: string, password: string) => {
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+
+        // ログイン成功時、プロフィールを取得して状態を更新
+        if (!error && data.user) {
+            const userProfile = await fetchProfile(data.user.id);
+            setProfile(userProfile);
+            setUser(data.user);
+            setSession(data.session);
+        }
+
         return { error };
     };
 
     // Sign out
     const signOut = async () => {
+        setProfile(null);
+        setUser(null);
+        setSession(null);
         const { error } = await supabase.auth.signOut();
-        return { error };
-    };
-
-    // Link with Google (for upgrading anonymous account)
-    const linkWithGoogle = async () => {
-        const { error } = await supabase.auth.linkIdentity({
-            provider: 'google',
-        });
         return { error };
     };
 
     // Update profile
     const updateProfile = async (data: Partial<Profile>) => {
-        if (!user) {
+        // セッションから直接ユーザーIDを取得（状態に依存しない）
+        const { data: sessionData } = await supabase.auth.getSession();
+        const currentUserId = sessionData?.session?.user?.id ?? user?.id;
+
+        if (!currentUserId) {
             return { error: new Error('Not authenticated') };
         }
 
         const { error } = await supabase
             .from('profiles')
             .update(data)
-            .eq('id', user.id);
+            .eq('id', currentUserId);
 
         if (!error) {
             // Refresh profile data
-            const userProfile = await fetchProfile(user.id);
+            const userProfile = await fetchProfile(currentUserId);
             setProfile(userProfile);
         }
 
@@ -171,9 +286,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         profile,
         isLoading,
         isAuthenticated,
-        signInAnonymously,
+        signUp,
+        signIn,
         signOut,
-        linkWithGoogle,
         updateProfile,
         refreshProfile,
     };

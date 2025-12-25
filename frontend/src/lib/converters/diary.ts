@@ -29,7 +29,7 @@ interface DiaryPostFromDB {
  */
 export function convertDiaryPostFromDB(dbPost: DiaryPostFromDB): DiaryPost {
     const validReactionTypes: ReactionType[] = ['👍', '❤️', '🎉', '👏', '🔥'];
-    
+
     const reactions: Reaction[] = (dbPost.reactions || [])
         .filter(r => validReactionTypes.includes(r.reaction_type as ReactionType))
         .map(r => ({

@@ -1,16 +1,15 @@
 // @see specs/features/notification.md
-import { useMemo, useCallback } from 'react';
-import { 
-    useAuth, 
-    useNotifications, 
+import {
+    convertNotificationFromDB,
+    useAuth,
     useMarkNotificationAsRead,
-    useRealtimeNotifications,
-    convertNotificationFromDB 
+    useNotifications,
+    useRealtimeNotifications
 } from '@/lib';
+import type { Notification, NotificationCategory } from '@/shared/types';
+import { useCallback, useMemo, useState } from 'react';
 import NotificationFilter from '../../components/notification/NotificationFilter';
 import NotificationList from '../../components/notification/NotificationList';
-import type { Notification, NotificationCategory } from '@/shared/types';
-import { useState } from 'react';
 import styles from './NotificationPage.module.css';
 
 const NotificationPage = () => {

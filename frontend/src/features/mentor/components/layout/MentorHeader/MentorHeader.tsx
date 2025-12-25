@@ -1,8 +1,8 @@
 // @see specs/features/mentor.md
 // MentorHeader for mentor layout - displays mentor profile info
 
-import { FaBars, FaSignOutAlt } from 'react-icons/fa';
 import { useAuth } from '@/lib';
+import { FaBars, FaSignOutAlt } from 'react-icons/fa';
 import styles from './MentorHeader.module.css';
 
 interface MentorHeaderProps {

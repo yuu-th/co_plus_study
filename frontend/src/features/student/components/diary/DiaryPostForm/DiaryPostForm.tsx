@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import type { DiaryFormData, DiaryPost, Reaction, Subject } from '@/shared/types';
 import { useAuth } from '@/lib';
 import DurationInput from '@/shared/components/DurationInput';
+import type { DiaryFormData, DiaryPost, Reaction, Subject } from '@/shared/types';
+import { useState } from 'react';
 import { mockSubjects } from '../../../mockData/diaries';
 import styles from './DiaryPostForm.module.css';
 

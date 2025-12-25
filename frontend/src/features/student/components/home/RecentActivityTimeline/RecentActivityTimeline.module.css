@@ -1,80 +1,80 @@
 .container {
-    background-color: var(--color-bg-primary);
-    border-radius: var(--border-radius-md);
-    padding: var(--spacing-md);
-    height: 100%;
+  background-color: var(--color-bg-primary);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  height: 100%;
 }
 
 .title {
-    margin: 0 0 var(--spacing-md) 0;
-    font-size: var(--font-size-lg);
-    color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-md) 0;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
 }
 
 .timeline {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .item {
-    display: flex;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm);
-    border-left: 2px solid var(--color-bg-secondary);
-    margin-bottom: var(--spacing-sm);
-    position: relative;
+  display: flex;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border-left: 2px solid var(--color-bg-secondary);
+  margin-bottom: var(--spacing-sm);
+  position: relative;
 }
 
 .item:last-child {
-    margin-bottom: 0;
-    border-left-color: transparent;
+  margin-bottom: 0;
+  border-left-color: transparent;
 }
 
 .icon {
-    font-size: 24px;
-    flex-shrink: 0;
+  font-size: 24px;
+  flex-shrink: 0;
 }
 
 .content {
-    flex: 1;
+  flex: 1;
 }
 
 .activityTitle {
-    margin: 0 0 var(--spacing-xs) 0;
-    font-weight: var(--font-weight-medium);
-    color: var(--color-text-primary);
-    font-size: var(--font-size-sm);
+  margin: 0 0 var(--spacing-xs) 0;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
 }
 
 .description {
-    margin: 0 0 var(--spacing-xs) 0;
-    color: var(--color-text-secondary);
-    font-size: var(--font-size-xs);
+  margin: 0 0 var(--spacing-xs) 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
 }
 
 .time {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-light);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-light);
 }
 
 .link {
-    color: var(--color-accent-blue);
-    font-size: var(--font-size-lg);
-    text-decoration: none;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
+  color: var(--color-accent-blue);
+  font-size: var(--font-size-lg);
+  text-decoration: none;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
 }
 
 .link:hover {
-    opacity: 0.7;
+  opacity: 0.7;
 }
 
 .loading,
 .empty {
-    text-align: center;
-    padding: var(--spacing-lg);
-    color: var(--color-text-secondary);
-    font-size: var(--font-size-sm);
+  text-align: center;
+  padding: var(--spacing-lg);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
 }

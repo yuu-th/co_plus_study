@@ -24,7 +24,8 @@ export const supabase: SupabaseClient = isMockMode
         auth: {
             autoRefreshToken: true,
             persistSession: true,
-            detectSessionInUrl: true,
+            detectSessionInUrl: false, // OAuth使わないのでfalse
+            storageKey: 'co-plus-study-auth', // カスタムキーで古いデータを無視
         },
     });
 

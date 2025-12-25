@@ -1,8 +1,8 @@
 // Chat data hooks with Realtime support
 // @see ADR-005: バックエンド連携アーキテクチャ
 
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '../supabase';
 
 // Query keys
@@ -307,6 +307,89 @@ export function useRemoveMessageReaction() {
             if (data.roomId) {
                 queryClient.invalidateQueries({ queryKey: CHAT_QUERY_KEYS.messages(data.roomId) });
             }
+        },
+    });
+}
+
+// Create a new chat room
+export function useCreateChatRoom() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async ({ studentId, mentorId }: { studentId: string; mentorId: string }) => {
+            const insertData = {
+                student_id: studentId,
+                mentor_id: mentorId,
+            } as unknown as Record<string, unknown>;
+
+            const { data, error } = await supabase
+                .from('chat_rooms')
+                .insert(insertData)
+                .select(`
+                    *,
+                    student:profiles!student_id(id, display_name, avatar_url),
+                    mentor:profiles!mentor_id(id, display_name, avatar_url, gender)
+                `)
+                .single();
+
+            if (error) {
+                throw new Error(error.message);
+            }
+
+            return data as unknown as ChatRoomWithParticipants;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: CHAT_QUERY_KEYS.rooms() });
+        },
+    });
+}
+
+// Get or create a chat room between student and mentor
+export function useGetOrCreateChatRoom() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async ({ studentId, mentorId }: { studentId: string; mentorId: string }) => {
+            // First, check if a room already exists
+            const { data: existingRoom } = await supabase
+                .from('chat_rooms')
+                .select(`
+                    *,
+                    student:profiles!student_id(id, display_name, avatar_url),
+                    mentor:profiles!mentor_id(id, display_name, avatar_url, gender)
+                `)
+                .eq('student_id', studentId)
+                .eq('mentor_id', mentorId)
+                .maybeSingle();
+
+            if (existingRoom) {
+                return existingRoom as unknown as ChatRoomWithParticipants;
+            }
+
+            // Create a new room
+            const insertData = {
+                student_id: studentId,
+                mentor_id: mentorId,
+            } as unknown as Record<string, unknown>;
+
+            const { data, error } = await supabase
+                .from('chat_rooms')
+                .insert(insertData)
+                .select(`
+                    *,
+                    student:profiles!student_id(id, display_name, avatar_url),
+                    mentor:profiles!mentor_id(id, display_name, avatar_url, gender)
+                `)
+                .single();
+
+            if (error) {
+                throw new Error(error.message);
+            }
+
+            return data as unknown as ChatRoomWithParticipants;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: CHAT_QUERY_KEYS.rooms() });
         },
     });
 }

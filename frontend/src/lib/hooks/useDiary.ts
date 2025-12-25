@@ -1,7 +1,7 @@
 // Diary data hooks
 // @see ADR-005: バックエンド連携アーキテクチャ
 
-import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../supabase';
 
 // Query keys

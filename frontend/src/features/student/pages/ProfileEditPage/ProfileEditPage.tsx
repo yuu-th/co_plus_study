@@ -1,24 +1,40 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import type { Grade } from '@/shared/types';
+import { useAuth } from '@/lib';
 import Button from '@/shared/components/Button';
+import type { Grade } from '@/shared/types';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './ProfileEditPage.module.css';
 
 const ProfileEditPage = () => {
     const navigate = useNavigate();
+    const { profile, updateProfile, isLoading } = useAuth();
 
-    // モックデータ（本来はContextやAPIから取得）
     const [form, setForm] = useState<{
         displayName: string;
+        nameKana: string;
         avatarUrl: string;
         grade: Grade | '';
     }>({
-        displayName: '田中太郎',
+        displayName: '',
+        nameKana: '',
         avatarUrl: '',
-        grade: '中学2年',
+        grade: '',
     });
 
     const [errors, setErrors] = useState<string[]>([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // プロフィールデータでフォームを初期化
+    useEffect(() => {
+        if (profile) {
+            setForm({
+                displayName: profile.display_name ?? '',
+                nameKana: profile.name_kana ?? '',
+                avatarUrl: profile.avatar_url ?? '',
+                grade: (profile.grade as Grade) ?? '',
+            });
+        }
+    }, [profile]);
 
     const grades: Grade[] = [
         '小学1年', '小学2年', '小学3年', '小学4年', '小学5年', '小学6年',
@@ -33,24 +49,54 @@ const ProfileEditPage = () => {
         if (form.displayName.length > 50) {
             errs.push('名前は50文字以内で入力してください');
         }
+        if (form.nameKana && !/^[ぁ-んァ-ヴー\s]*$/.test(form.nameKana)) {
+            errs.push('フリガナはひらがなまたはカタカナで入力してください');
+        }
         setErrors(errs);
         return errs.length === 0;
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validate()) return;
 
-        // ここで実際にはAPIに送信
-        console.log('プロフィール更新:', form);
-        alert('プロフィールを更新しました');
-        navigate('/profile');
+        setIsSubmitting(true);
+        setErrors([]);
+
+        try {
+            const { error } = await updateProfile({
+                display_name: form.displayName.trim(),
+                name_kana: form.nameKana.trim() || null,
+                avatar_url: form.avatarUrl.trim() || null,
+                grade: form.grade || null,
+            });
+
+            if (error) {
+                setErrors(['プロフィールの更新に失敗しました。']);
+                console.error('Profile update error:', error);
+            } else {
+                navigate('/profile');
+            }
+        } catch (err) {
+            setErrors(['予期しないエラーが発生しました。']);
+            console.error('Unexpected error:', err);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setForm(prev => ({ ...prev, [name]: value }));
     };
+
+    if (isLoading) {
+        return (
+            <div className={styles.page}>
+                <div className={styles.loading}>読み込み中...</div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.page}>
@@ -63,7 +109,7 @@ const ProfileEditPage = () => {
                             <img src={form.avatarUrl} alt="プロフィール画像" className={styles.avatar} />
                         ) : (
                             <div className={styles.avatarPlaceholder}>
-                                {form.displayName.charAt(0)}
+                                {form.displayName.charAt(0) || '?'}
                             </div>
                         )}
                     </div>
@@ -101,6 +147,22 @@ const ProfileEditPage = () => {
                 </div>
 
                 <div className={styles.field}>
+                    <label htmlFor="nameKana" className={styles.label}>
+                        フリガナ
+                    </label>
+                    <input
+                        type="text"
+                        id="nameKana"
+                        name="nameKana"
+                        value={form.nameKana}
+                        onChange={handleChange}
+                        maxLength={50}
+                        placeholder="ひらがなまたはカタカナ"
+                        className={styles.input}
+                    />
+                </div>
+
+                <div className={styles.field}>
                     <label htmlFor="grade" className={styles.label}>
                         学年
                     </label>
@@ -129,11 +191,12 @@ const ProfileEditPage = () => {
                         type="button"
                         variant="outline"
                         onClick={() => navigate('/profile')}
+                        disabled={isSubmitting}
                     >
                         キャンセル
                     </Button>
-                    <Button type="submit" variant="primary">
-                        保存
+                    <Button type="submit" variant="primary" disabled={isSubmitting}>
+                        {isSubmitting ? '保存中...' : '保存'}
                     </Button>
                 </div>
             </form>
