@@ -299,14 +299,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                     return;
                 }
 
-                // 同期処理を開始（await しないことでイベントループを止めない）
-                syncUserAndProfile(newSession?.user ?? null, `event_${event}`);
+                // プロフィール取得が完了するまで待つ
+                await syncUserAndProfile(newSession?.user ?? null, `event_${event}`);
 
                 if (event === 'SIGNED_OUT') {
                     setProfile(null);
                 }
 
-                // 認証イベントが発生した＝何らかの応答があったので初期化完了
+                // プロフィール取得が完了してから初期化完了とする
                 resolveInitialization(`auth_event_${event}`);
             }
         );
