@@ -142,12 +142,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 const elapsed = performance.now() - startTime;
                 console.error(`[AuthProvider] 💥 fetchProfile: failed or timed out after ${elapsed.toFixed(0)}ms for`, userId, err);
 
-                // Supabaseクライアントの状態を確認
-                console.log('[AuthProvider] Supabase client state:', {
-                    url: supabase.supabaseUrl,
-                    hasKey: !!supabase.supabaseKey,
-                });
-
                 return null;
             } finally {
                 profileFetchPromiseMap.current.delete(userId);

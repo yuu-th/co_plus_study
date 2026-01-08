@@ -234,5 +234,5 @@ export interface TutorialTooltipProps {
 // 後方互換性
 // ============================================
 
-// 既存の型をre-export（段階的移行用）
-export type { TutorialAction as LegacyTutorialAction } from '../../types/tutorial';
+// Note: Legacy types removed to avoid circular dependency
+// The TutorialAction type is already defined in this file (line 62)

@@ -29,7 +29,6 @@ export const useSpotlightPosition = (
     options: UseSpotlightPositionOptions = {}
 ): TargetPosition | null => {
     const {
-        padding = 8,
         scrollIntoView = true,
         visibilityThreshold = 0.8,
     } = options;
