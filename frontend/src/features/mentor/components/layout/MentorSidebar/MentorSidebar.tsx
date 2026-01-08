@@ -1,7 +1,7 @@
 // MentorSidebarコンポーネント
 // @see specs/features/mentor.md
 
-import { useAuth, useMentorProfile } from '@/lib';
+import { useAuth } from '@/lib';
 import type { MouseEventHandler } from 'react';
 import { FaBell, FaComments, FaHome, FaPoll, FaSignOutAlt, FaUsers } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
@@ -31,13 +31,10 @@ interface MentorSidebarProps {
 const MentorSidebar = ({ isOpen = false, onClose, onLogout }: MentorSidebarProps) => {
     const location = useLocation();
     const { profile } = useAuth();
-    const { data: mentorProfile } = useMentorProfile(profile?.id);
 
     const displayName = profile?.display_name ?? 'メンター';
     const avatarUrl = profile?.avatar_url;
     const gender = profile?.gender;
-    const introduction = mentorProfile?.introduction;
-    const specialties = mentorProfile?.specialties ?? [];
 
     const genderDisplayName = gender === 'male' ? 'おにいさん' : 'おねえさん';
 
@@ -69,23 +66,8 @@ const MentorSidebar = ({ isOpen = false, onClose, onLogout }: MentorSidebarProps
                         <span className={styles.profileName}>{displayName}</span>
                         <span className={styles.profileRole}>{genderDisplayName}</span>
                     </div>
-                    {introduction && (
-                        <div className={styles.introduction}>
-                            <h4>自己紹介</h4>
-                            <p>{introduction}</p>
-                        </div>
-                    )}
-                    {specialties.length > 0 && (
-                        <div className={styles.specialties}>
-                            <h4>得意分野</h4>
-                            <ul>
-                                {specialties.map((specialty) => (
-                                    <li key={specialty}>{specialty}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-                    <Link to="/mentor/profile/edit" className={styles.editProfileLink} onClick={onClose}>
+
+                    <Link to="/mentor/profile/edit" className={styles.editProfileButton} onClick={onClose}>
                         プロフィール編集
                     </Link>
                 </div>

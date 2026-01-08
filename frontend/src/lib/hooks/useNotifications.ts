@@ -167,7 +167,7 @@ export function useMarkNotificationAsRead() {
                 .select('id')
                 .eq('notification_id', notificationId)
                 .eq('user_id', userId)
-                .single();
+                .maybeSingle();
 
             const existingRow = existing as { id: string } | null;
 

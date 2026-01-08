@@ -1,0 +1,303 @@
+/* ツールチップコンポーネント スタイル */
+/* デバイスプロファイルに応じてレイアウトを変更 */
+
+/* 共通スタイル */
+.tooltip {
+    position: fixed;
+    z-index: 999;
+    background-color: var(--color-bg-primary);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    animation: tooltipEnter 0.3s ease-out;
+}
+
+@keyframes tooltipEnter {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.content {
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+/* ステップバッジ */
+.stepBadge {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    background-color: var(--color-accent-blue);
+    color: var(--color-bg-primary);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--border-radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+}
+
+/* タイトル */
+.title {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: 1.4;
+}
+
+/* 説明文 */
+.description {
+    margin: 0;
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+}
+
+/* ヒント */
+.hint {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    background-color: var(--color-bg-tertiary);
+    border: 1px solid var(--color-accent-orange);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    animation: hintPulse 2s ease-in-out infinite;
+}
+
+@keyframes hintPulse {
+
+    0%,
+    100% {
+        background-color: var(--color-bg-tertiary);
+    }
+
+    50% {
+        background-color: rgba(255, 159, 64, 0.1);
+    }
+}
+
+.hintIcon {
+    font-size: var(--font-size-lg);
+    flex-shrink: 0;
+}
+
+.hintText {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-accent-orange);
+}
+
+/* 進捗バー */
+.progress {
+    margin-top: auto;
+}
+
+.progressBar {
+    height: 4px;
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--border-radius-full);
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background-color: var(--color-accent-blue);
+    transition: width var(--transition-base);
+}
+
+/* アクション */
+.actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+}
+
+.prevButton,
+.skipButton {
+    flex: 1;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: transparent;
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-bg-secondary);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.prevButton:hover,
+.skipButton:hover {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+}
+
+.nextButton,
+.completeButton {
+    flex: 2;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: var(--color-accent-blue);
+    color: var(--color-bg-primary);
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.nextButton:hover,
+.completeButton:hover {
+    background-color: #3da8d8;
+    transform: translateY(-1px);
+}
+
+/* マスコット */
+.mascot {
+    position: absolute;
+    font-size: 32px;
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+/* ============================================
+   デスクトップ: サイドパネル
+   ============================================ */
+.sidePanel {
+    top: var(--header-height);
+    right: 0;
+    width: 320px;
+    height: calc(100vh - var(--header-height));
+    border-left: 1px solid var(--color-bg-secondary);
+    border-radius: 0;
+    animation: sidePanelEnter 0.3s ease-out;
+}
+
+@keyframes sidePanelEnter {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+.sidePanel .content {
+    height: 100%;
+    padding: var(--spacing-xl);
+}
+
+.sidePanel .mascot {
+    bottom: var(--spacing-xl);
+    right: var(--spacing-xl);
+}
+
+/* ============================================
+   タブレット: ボトムシート
+   ============================================ */
+.bottomSheet {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 50vh;
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+    border-top: 1px solid var(--color-bg-secondary);
+    animation: bottomSheetEnter 0.3s ease-out;
+}
+
+@keyframes bottomSheetEnter {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.bottomSheet .content {
+    padding: var(--spacing-lg);
+    max-height: calc(50vh - var(--spacing-lg) * 2);
+    overflow-y: auto;
+}
+
+.bottomSheet .mascot {
+    display: none;
+}
+
+/* ドラッグハンドル */
+.dragHandle {
+    width: 40px;
+    height: 4px;
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--border-radius-full);
+    margin: var(--spacing-sm) auto;
+}
+
+/* ============================================
+   モバイル: モーダル
+   ============================================ */
+.modal {
+    inset: 0;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    animation: modalEnter 0.3s ease-out;
+}
+
+@keyframes modalEnter {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal .content {
+    flex: 1;
+    padding: var(--spacing-lg);
+    overflow-y: auto;
+    justify-content: center;
+}
+
+.modal .title {
+    font-size: var(--font-size-2xl);
+    text-align: center;
+}
+
+.modal .description {
+    text-align: center;
+}
+
+.modal .stepBadge {
+    align-self: center;
+}
+
+.modal .actions {
+    flex-direction: column;
+    padding: var(--spacing-lg);
+    padding-top: 0;
+}
+
+.modal .prevButton,
+.modal .skipButton,
+.modal .nextButton,
+.modal .completeButton {
+    flex: none;
+    width: 100%;
+    padding: var(--spacing-md);
+}
+
+.modal .mascot {
+    display: none;
+}

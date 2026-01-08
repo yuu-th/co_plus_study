@@ -29,7 +29,7 @@ const StudentListPage = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
     const { data: studentsData, isLoading } = useMentorStudents(user?.id);
-    
+
     const [searchTerm, setSearchTerm] = useState('');
     const [sortKey, setSortKey] = useState<SortKey>('name');
 

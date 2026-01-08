@@ -10,7 +10,8 @@
   display: flex;
   flex-direction: column;
   transition: margin-left 0.3s ease-in-out;
-  margin-left: 240px; /* Sidebar width */
+  margin-left: 240px;
+  /* Sidebar width */
   width: calc(100% - 240px);
 }
 

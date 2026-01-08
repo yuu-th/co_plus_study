@@ -1,0 +1,124 @@
+/* スポットライトコンポーネント スタイル */
+/* CSS変数を使用して動的な穴あけを実現 */
+
+.spotlight {
+    position: fixed;
+    inset: 0;
+    z-index: 998;
+    pointer-events: none;
+    transition: opacity var(--transition-fast);
+}
+
+.spotlight[data-active="false"] {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* オーバーレイ（4つの矩形で穴を作成） */
+/* 上部のオーバーレイ */
+.overlayTop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: calc(var(--spotlight-top, 0px) - var(--spotlight-padding, 8px));
+    background: rgba(0, 0, 0, 0.6);
+    pointer-events: all;
+    transition: height var(--transition-base);
+}
+
+/* 右側のオーバーレイ */
+.overlayRight {
+    position: fixed;
+    top: calc(var(--spotlight-top, 0px) - var(--spotlight-padding, 8px));
+    left: calc(var(--spotlight-left, 0px) + var(--spotlight-width, 0px) + var(--spotlight-padding, 8px));
+    right: 0;
+    height: calc(var(--spotlight-height, 0px) + var(--spotlight-padding, 8px) * 2);
+    background: rgba(0, 0, 0, 0.6);
+    pointer-events: all;
+    transition: top var(--transition-base), left var(--transition-base), height var(--transition-base);
+}
+
+/* 下部のオーバーレイ */
+.overlayBottom {
+    position: fixed;
+    top: calc(var(--spotlight-top, 0px) + var(--spotlight-height, 0px) + var(--spotlight-padding, 8px));
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    pointer-events: all;
+    transition: top var(--transition-base);
+}
+
+/* 左側のオーバーレイ */
+.overlayLeft {
+    position: fixed;
+    top: calc(var(--spotlight-top, 0px) - var(--spotlight-padding, 8px));
+    left: 0;
+    width: calc(var(--spotlight-left, 0px) - var(--spotlight-padding, 8px));
+    height: calc(var(--spotlight-height, 0px) + var(--spotlight-padding, 8px) * 2);
+    background: rgba(0, 0, 0, 0.6);
+    pointer-events: all;
+    transition: top var(--transition-base), width var(--transition-base), height var(--transition-base);
+}
+
+/* ハイライト枠 */
+.highlight {
+    position: fixed;
+    top: calc(var(--spotlight-top, 0px) - var(--spotlight-padding, 8px));
+    left: calc(var(--spotlight-left, 0px) - var(--spotlight-padding, 8px));
+    width: calc(var(--spotlight-width, 0px) + var(--spotlight-padding, 8px) * 2);
+    height: calc(var(--spotlight-height, 0px) + var(--spotlight-padding, 8px) * 2);
+    border: 3px solid var(--color-accent-orange);
+    border-radius: var(--border-radius-md);
+    box-shadow:
+        0 0 0 4px rgba(255, 159, 64, 0.3),
+        0 0 20px rgba(255, 159, 64, 0.4);
+    animation: spotlightPulse 2s ease-in-out infinite;
+    pointer-events: none;
+    transition:
+        top var(--transition-base),
+        left var(--transition-base),
+        width var(--transition-base),
+        height var(--transition-base);
+}
+
+/* 非表示状態 */
+.highlightHidden {
+    opacity: 0;
+}
+
+@keyframes spotlightPulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 0 4px rgba(255, 159, 64, 0.3),
+            0 0 20px rgba(255, 159, 64, 0.4);
+    }
+
+    50% {
+        box-shadow:
+            0 0 0 8px rgba(255, 159, 64, 0.2),
+            0 0 30px rgba(255, 159, 64, 0.5);
+    }
+}
+
+/* モバイル対応: パディングを小さく */
+@media (max-width: 640px) {
+    .spotlight {
+        --spotlight-padding: 4px;
+    }
+
+    .highlight {
+        border-width: 2px;
+    }
+}
+
+/* タブレット対応 */
+@media (min-width: 641px) and (max-width: 1024px) {
+    .spotlight {
+        --spotlight-padding: 6px;
+    }
+}

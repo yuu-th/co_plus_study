@@ -3,6 +3,7 @@
 
 import { useAuth } from '@/lib';
 import { FaBars, FaSignOutAlt } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import styles from './MentorHeader.module.css';
 
 interface MentorHeaderProps {
@@ -11,6 +12,7 @@ interface MentorHeaderProps {
 
 const MentorHeader = ({ onMenuClick }: MentorHeaderProps) => {
     const { profile } = useAuth();
+    const navigate = useNavigate();
 
     const displayName = profile?.display_name ?? 'メンター';
     const avatarUrl = profile?.avatar_url;
@@ -18,6 +20,9 @@ const MentorHeader = ({ onMenuClick }: MentorHeaderProps) => {
 
     // Generate display name from gender (おにいさん/おねえさん)
     const genderDisplayName = gender === 'male' ? 'おにいさん' : 'おねえさん';
+
+    const handleLogoClick = () => navigate('/mentor/dashboard');
+
 
     return (
         <header className={styles.header}>
@@ -27,6 +32,9 @@ const MentorHeader = ({ onMenuClick }: MentorHeaderProps) => {
                 aria-label="メニューを開く"
             >
                 <FaBars />
+            </button>
+            <button className={styles.logoButton} onClick={handleLogoClick} aria-label="ダッシュボードへ戻る">
+                Co+ Study
             </button>
             <span className={styles.modeLabel}>メンターモード</span>
 

@@ -94,41 +94,60 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             return existingPromise;
         }
 
-        console.log('[AuthProvider] fetchProfile: starting new request for', userId);
+        console.log('[AuthProvider] 🔍 fetchProfile: starting new request for', userId);
 
         const fetchPromise = (async () => {
+            const startTime = performance.now();
             try {
-                // Promise.race で 5秒のタイムアウトを実装
-                const request = supabase
+                console.log('[AuthProvider] 📤 Sending Supabase request to profiles table...');
+
+                // Supabaseリクエストを作成
+                const requestPromise = supabase
                     .from('profiles')
                     .select('*')
                     .eq('id', userId)
                     .single();
 
-                const timeout = new Promise<null>((_, reject) =>
-                    setTimeout(() => reject(new Error('FetchProfile Timeout')), 5000)
+                console.log('[AuthProvider] ⏱️ Waiting for response (timeout: 10s)...');
+
+                const timeoutPromise = new Promise<null>((_, reject) =>
+                    setTimeout(() => {
+                        const elapsed = performance.now() - startTime;
+                        console.error(`[AuthProvider] ⏰ TIMEOUT after ${elapsed.toFixed(0)}ms`);
+                        reject(new Error('FetchProfile Timeout'));
+                    }, 10000)
                 );
 
-                const result = await Promise.race([request, timeout]) as any;
+                const result = await Promise.race([requestPromise, timeoutPromise]) as any;
+                const elapsed = performance.now() - startTime;
 
                 if (result instanceof Error) throw result;
                 const { data, error } = result;
 
                 if (error) {
-                    console.error('[AuthProvider] Error fetching profile:', error);
+                    console.error(`[AuthProvider] ❌ Error fetching profile (${elapsed.toFixed(0)}ms):`, error);
+                    console.error('[AuthProvider] Error details:', {
+                        message: error.message,
+                        code: error.code,
+                        hint: error.hint,
+                        details: error.details
+                    });
                     return null;
                 }
-                console.log('[AuthProvider] fetchProfile: success for', userId);
+
+                console.log(`[AuthProvider] ✅ fetchProfile: success in ${elapsed.toFixed(0)}ms for`, userId);
+                console.log('[AuthProvider] Profile data:', data);
                 return data as Profile;
             } catch (err) {
-                console.error('[AuthProvider] fetchProfile: failed or timed out for', userId, err);
+                const elapsed = performance.now() - startTime;
+                console.error(`[AuthProvider] 💥 fetchProfile: failed or timed out after ${elapsed.toFixed(0)}ms for`, userId, err);
 
-                // 【追加】タイムアウトや致命的エラー自、既存セッションがあるのにプロフィールが取れないと
-                // "認証済みだがプロフィールなし" -> Register画面へループ などの不整合が起きる。
-                // 安全のため、ここでの失敗は null を返すが、呼び出し元でこれ以上の不整合を防ぐため
-                // ログアウトを検討すべきケースもある。
-                // 現状は null を返し、UI側で "プロフィール取得失敗" を表示するか、
-                // あるいは useEffect で display_name が空の場合のハンドリングに委ねる。
+                // Supabaseクライアントの状態を確認
+                console.log('[AuthProvider] Supabase client state:', {
+                    url: supabase.supabaseUrl,
+                    hasKey: !!supabase.supabaseKey,
+                });
+
                 return null;
             } finally {
                 profileFetchPromiseMap.current.delete(userId);

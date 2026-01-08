@@ -102,76 +102,32 @@
   white-space: nowrap;
 }
 
-/* Introduction Section */
-.introduction {
+/* Edit Profile Button */
+.editProfileButton {
   margin-top: var(--spacing-md);
-  padding: var(--spacing-sm);
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: var(--border-radius-sm);
-  width: 100%;
-}
-
-.introduction h4 {
-  margin: 0 0 var(--spacing-xs) 0;
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.introduction p {
-  margin: 0;
-  font-size: 0.875rem;
-  line-height: 1.5;
+  padding: 8px 24px;
+  background-color: var(--color-bg-primary);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   color: var(--color-text-primary);
-}
-
-/* Specialties Section */
-.specialties {
-  margin-top: var(--spacing-md);
-  padding: var(--spacing-sm);
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: var(--border-radius-sm);
-  width: 100%;
-}
-
-.specialties h4 {
-  margin: 0 0 var(--spacing-xs) 0;
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.specialties ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-xs);
-}
-
-.specialties li {
-  font-size: var(--font-size-xs);
-  color: var(--color-accent-blue-dark);
-  background-color: var(--color-accent-blue-light);
-  padding: 4px 10px;
-  border-radius: var(--border-radius-full);
-  white-space: nowrap;
-}
-
-.editProfileLink {
-  margin-top: var(--spacing-md);
+  border-radius: var(--radius-full);
   font-size: var(--font-size-sm);
-  color: var(--color-accent-blue-dark);
+  font-weight: 500;
   text-decoration: none;
-  transition: color 0.2s;
+  transition: all 0.2s ease;
+  display: inline-block;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.editProfileLink:hover {
-  color: var(--color-primary);
-  text-decoration: underline;
+.editProfileButton:hover {
+  background-color: var(--color-primary, #3b82f6);
+  border-color: var(--color-primary, #3b82f6);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.25);
+}
+
+.editProfileButton:active {
+  transform: translateY(0);
 }
 
 /* Navigation */
@@ -185,13 +141,17 @@
   display: flex;
   align-items: center;
   padding: var(--spacing-md) var(--spacing-lg);
+  margin: 4px var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
   color: var(--color-text-secondary);
   text-decoration: none;
-  transition: background-color 0.2s, color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .navItem:hover {
   background-color: var(--color-bg-hover);
+  color: var(--color-text-primary);
+  transform: translateX(4px);
 }
 
 .navItem.active {

@@ -3,7 +3,7 @@
 
 import { Link } from 'react-router-dom';
 import Button from '@/shared/components/Button';
-import { useTutorialContext } from '../../components/tutorial/TutorialProvider';
+import { useTutorialContext } from '../../components/tutorial/v2';
 import styles from './TutorialPage.module.css';
 
 const TutorialPage = () => {

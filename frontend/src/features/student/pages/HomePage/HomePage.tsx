@@ -5,7 +5,7 @@ import Button from '@/shared/components/Button';
 import Card from '@/shared/components/Card';
 import { Link } from 'react-router-dom';
 import RecentActivityTimeline from '../../components/home/RecentActivityTimeline';
-import { useTutorialContext } from '../../components/tutorial/TutorialProvider';
+import { useTutorialContext } from '../../components/tutorial/v2';
 import styles from './HomePage.module.css';
 
 const HomePage = () => {
@@ -62,8 +62,8 @@ const HomePage = () => {
                 </div>
 
                 <div className={styles.side}>
-                    <RecentActivityTimeline 
-                        activities={activities || []} 
+                    <RecentActivityTimeline
+                        activities={activities || []}
                         maxItems={5}
                         isLoading={isLoadingActivities}
                     />

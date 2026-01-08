@@ -4,7 +4,7 @@
 import { useAuth } from '@/lib';
 import Button from '@/shared/components/Button';
 import { Link } from 'react-router-dom';
-import { useTutorialContext } from '../../components/tutorial/TutorialProvider';
+import { useTutorialContext } from '../../components/tutorial/v2';
 import styles from './ProfilePage.module.css';
 
 const ProfilePage = () => {

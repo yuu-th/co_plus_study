@@ -10,6 +10,7 @@ import type { Notification, NotificationCategory } from '@/shared/types';
 import { useCallback, useMemo, useState } from 'react';
 import NotificationFilter from '../../components/notification/NotificationFilter';
 import NotificationList from '../../components/notification/NotificationList';
+import NotificationModal from '../../components/notification/NotificationModal';
 import styles from './NotificationPage.module.css';
 
 const NotificationPage = () => {
@@ -17,6 +18,7 @@ const NotificationPage = () => {
     const { data: notificationsData, isLoading } = useNotifications(user?.id);
     const markAsReadMutation = useMarkNotificationAsRead();
     const [selectedCategory, setSelectedCategory] = useState<NotificationCategory | 'all'>('all');
+    const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
 
     // リアルタイム更新を購読
     useRealtimeNotifications();
@@ -35,8 +37,11 @@ const NotificationPage = () => {
     }, [notifications, selectedCategory]);
 
     const handleOpenNotification = useCallback(async (notification: Notification) => {
+        setSelectedNotification(notification);
+
+        // Mark as read if unread
         if (!user || notification.isRead) return;
-        
+
         try {
             await markAsReadMutation.mutateAsync({
                 notificationId: notification.id,
@@ -46,6 +51,24 @@ const NotificationPage = () => {
             console.error('既読にできませんでした:', error);
         }
     }, [user, markAsReadMutation]);
+
+    const handleCloseModal = () => {
+        setSelectedNotification(null);
+    };
+
+    const handleMarkReadFromModal = async (id: string) => {
+        if (!user) return;
+
+        try {
+            await markAsReadMutation.mutateAsync({
+                notificationId: id,
+                userId: user.id,
+            });
+            setSelectedNotification(null);
+        } catch (error) {
+            console.error('既読にできませんでした:', error);
+        }
+    };
 
     const handleDelete = useCallback((notificationId: string) => {
         // TODO: 削除機能（現在はバックエンドに実装なし）
@@ -80,6 +103,13 @@ const NotificationPage = () => {
                 onOpen={handleOpenNotification}
                 onDelete={handleDelete}
                 onArchive={handleArchive}
+            />
+
+            {/* Modal for notification details */}
+            <NotificationModal
+                notification={selectedNotification}
+                onClose={handleCloseModal}
+                onMarkRead={handleMarkReadFromModal}
             />
         </div>
     );

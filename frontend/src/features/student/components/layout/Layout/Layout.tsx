@@ -9,10 +9,17 @@ import {
 } from '@/lib';
 import { useCallback, useMemo, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { TutorialProvider } from '../../tutorial/TutorialProvider';
+// チュートリアルV2（新実装）
+import { TutorialProviderV2 } from '../../tutorial/v2';
+// 後方互換用（フィーチャーフラグで切り替え可能）
+import { TutorialProvider as TutorialProviderV1 } from '../../tutorial/TutorialProvider';
 import Header from '../Header';
 import Sidebar from '../Sidebar';
 import styles from './Layout.module.css';
+
+// フィーチャーフラグ: trueでV2を使用
+const USE_TUTORIAL_V2 = true;
+const TutorialProvider = USE_TUTORIAL_V2 ? TutorialProviderV2 : TutorialProviderV1;
 
 const Layout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -62,8 +69,8 @@ const Layout = () => {
             <div className={styles.layout}>
                 <Sidebar isOpen={isSidebarOpen} onClose={handleSidebarClose} onLogout={handleLogout} />
                 <div className={styles.mainWrapper}>
-                    <Header 
-                        onMenuClick={handleMenuClick} 
+                    <Header
+                        onMenuClick={handleMenuClick}
                         userName={userName}
                         unreadNotificationCount={unreadCount ?? 0}
                         notifications={notifications}

@@ -11,10 +11,10 @@ import styles from './DashboardPage.module.css';
 
 const DashboardPage = () => {
     const { user } = useAuth();
-    
+
     // 担当生徒を取得
     const { data: studentsData, isLoading: isLoadingStudents } = useMentorStudents(user?.id);
-    
+
     // 最近の日報を取得（全生徒分）
     const { data: diaryData, isLoading: isLoadingDiary } = useDiaryPosts({ limit: 5 });
 
