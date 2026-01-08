@@ -87,19 +87,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
 
     // Fetch profile from database (with deduplication and strict timeout)
-    const fetchProfile = async (userId: string): Promise<Profile | null> => {
+    const fetchProfile = async (userId: string, isRetry = false): Promise<Profile | null> => {
         const existingPromise = profileFetchPromiseMap.current.get(userId);
         if (existingPromise) {
             console.log('[AuthProvider] fetchProfile: using existing promise for', userId);
             return existingPromise;
         }
 
-        console.log('[AuthProvider] 🔍 fetchProfile: starting new request for', userId);
+        console.log(`[AuthProvider] 🔍 fetchProfile: starting ${isRetry ? 'RETRY' : 'new request'} for`, userId);
 
         const fetchPromise = (async () => {
             const startTime = performance.now();
+            const timeoutDuration = isRetry ? 3000 : 5000; // リトライ時は3秒、初回は5秒
+
             try {
-                console.log('[AuthProvider] 📤 Sending Supabase request to profiles table...');
+                console.log(`[AuthProvider] 📤 Sending Supabase request (timeout: ${timeoutDuration}ms)...`);
 
                 // Supabaseリクエストを作成
                 const requestPromise = supabase
@@ -108,14 +110,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                     .eq('id', userId)
                     .single();
 
-                console.log('[AuthProvider] ⏱️ Waiting for response (timeout: 10s)...');
+                console.log('[AuthProvider] ⏱️ Waiting for response...');
 
                 const timeoutPromise = new Promise<null>((_, reject) =>
                     setTimeout(() => {
                         const elapsed = performance.now() - startTime;
                         console.error(`[AuthProvider] ⏰ TIMEOUT after ${elapsed.toFixed(0)}ms`);
                         reject(new Error('FetchProfile Timeout'));
-                    }, 10000)
+                    }, timeoutDuration)
                 );
 
                 const result = await Promise.race([requestPromise, timeoutPromise]) as any;
@@ -140,7 +142,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 return data as Profile;
             } catch (err) {
                 const elapsed = performance.now() - startTime;
-                console.error(`[AuthProvider] 💥 fetchProfile: failed or timed out after ${elapsed.toFixed(0)}ms for`, userId, err);
+                console.error(`[AuthProvider] 💥 fetchProfile: failed after ${elapsed.toFixed(0)}ms for`, userId, err);
+
+                // タイムアウトの場合
+                if (err instanceof Error && err.message === 'FetchProfile Timeout') {
+                    if (!isRetry) {
+                        console.log('[AuthProvider] 🔄 Retrying profile fetch (timeout: 3s)...');
+                        // リトライを試みる
+                        profileFetchPromiseMap.current.delete(userId);
+                        return fetchProfile(userId, true);
+                    }
+
+                    // リトライも失敗 -> 自動ログアウト
+                    console.error('[AuthProvider] 🚨 Profile fetch failed after retry. Initiating auto-logout...');
+                    // 自動ログアウトは非同期で実行（この関数の戻り値には影響しない）
+                    handleAutoLogout().catch(e => console.error('[AuthProvider] Auto-logout failed:', e));
+                }
 
                 return null;
             } finally {
@@ -153,24 +170,55 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
 
     // ユーザーとプロフィールを同期する内部関数
-    const syncUserAndProfile = async (newUser: User | null, source: string) => {
+    const syncUserAndProfile = async (newUser: User | null, source: string): Promise<void> => {
         if (!isMounted.current) return;
 
         console.log(`[AuthProvider] syncUserAndProfile (Source: ${source}, User: ${newUser?.id ?? 'null'})`);
         setUser(newUser);
 
         if (newUser) {
-            // プロフィール取得を開始するが、この関数自体は完了を待たずに状態更新を行う
-            fetchProfile(newUser.id).then(userProfile => {
-                if (isMounted.current) {
-                    setProfile(userProfile);
-                    // プロフィールが取れたタイミングでも初期化完了を念押し
-                    resolveInitialization(`profile_fetched_${source}`);
+            // プロフィール取得が完了するまで待つ（awaitして完了を待機）
+            const userProfile = await fetchProfile(newUser.id);
+            if (isMounted.current) {
+                setProfile(userProfile);
+                // プロフィールが取れたタイミングでも初期化完了を念押し
+                // （ただし、initialize関数内でのみ使用される想定）
+                if (source === 'initial_get_session') {
+                    console.log('[AuthProvider] ✅ Profile fetch completed during initialization');
                 }
-            });
+            }
         } else {
             setProfile(null);
         }
+    };
+
+    // 自動ログアウト処理（プロフィール取得失敗時）
+    const handleAutoLogout = async (): Promise<void> => {
+        console.log('[AuthProvider] 🧹 Auto-logout: clearing auth state');
+
+        // 状態をクリア
+        setProfile(null);
+        setUser(null);
+        setSession(null);
+
+        // ローカルストレージをクリア
+        try {
+            localStorage.removeItem(AUTH_STORAGE_KEY);
+            console.log('[AuthProvider] ✅ Local storage cleared');
+        } catch (e) {
+            console.error('[AuthProvider] Failed to clear localStorage', e);
+        }
+
+        // Supabaseセッションを削除
+        try {
+            await supabase.auth.signOut();
+            console.log('[AuthProvider] ✅ Supabase session cleared');
+        } catch (e) {
+            console.error('[AuthProvider] Failed to sign out from Supabase', e);
+        }
+
+        // ローディングを解除してログインページを表示できるようにする
+        resolveInitialization('auto_logout_after_timeout');
     };
 
     // Initialize auth state
