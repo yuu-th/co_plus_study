@@ -78,3 +78,32 @@
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
 }
+
+/* スマホ対応 */
+@media (max-width: 480px) {
+  .container {
+    padding: var(--spacing-sm);
+  }
+
+  .title {
+    font-size: var(--font-size-base);
+  }
+
+  .item {
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs);
+  }
+
+  .icon {
+    font-size: 20px;
+  }
+
+  .activityTitle {
+    font-size: 0.75rem;
+  }
+
+  .description,
+  .time {
+    font-size: 0.65rem;
+  }
+}

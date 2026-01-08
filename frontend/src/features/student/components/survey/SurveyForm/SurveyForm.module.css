@@ -74,3 +74,34 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+/* スマホ対応 */
+@media (max-width: 640px) {
+    .header {
+        padding: var(--spacing-sm);
+    }
+
+    .header h2 {
+        font-size: var(--font-size-lg);
+    }
+
+    .actions {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .actions button {
+        width: 100%;
+    }
+}
+
+/* スマホ小対応 */
+@media (max-width: 480px) {
+    .form {
+        gap: var(--spacing-sm);
+    }
+
+    .header {
+        padding: var(--spacing-xs);
+    }
+}

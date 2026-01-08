@@ -55,7 +55,8 @@
 }
 
 .subjectName {
-    width: 60px;
+    min-width: 60px;
+    flex-shrink: 0;
     text-align: right;
     color: var(--color-text-secondary);
 }
@@ -75,8 +76,55 @@
 }
 
 .subjectHours {
-    width: 40px;
+    min-width: 40px;
+    flex-shrink: 0;
     text-align: left;
     font-weight: bold;
     color: var(--color-text-primary);
+}
+
+/* タブレット対応 */
+@media (max-width: 768px) {
+    .statsContainer {
+        flex-direction: column;
+        padding: var(--spacing-md);
+    }
+
+    .continuousDays {
+        width: 100%;
+        min-width: auto;
+    }
+}
+
+/* スマホ対応 */
+@media (max-width: 640px) {
+    .statsContainer {
+        padding: var(--spacing-sm);
+    }
+
+    .continuousDays {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .daysValue {
+        font-size: var(--font-size-3xl);
+    }
+
+    .breakdownTitle {
+        font-size: var(--font-size-sm);
+    }
+
+    .subjectItem {
+        font-size: var(--font-size-xs);
+    }
+
+    .subjectName {
+        min-width: 50px;
+        font-size: 0.7rem;
+    }
+
+    .subjectHours {
+        min-width: 35px;
+        font-size: 0.7rem;
+    }
 }

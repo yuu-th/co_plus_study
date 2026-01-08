@@ -49,3 +49,35 @@
     flex-direction: column;
     gap: var(--spacing-lg);
 }
+
+/* タブレット対応 */
+@media (max-width: 768px) {
+    .container {
+        padding: var(--spacing-md);
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+    }
+
+    .studentGrid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+}
+
+/* スマホ対応 */
+@media (max-width: 480px) {
+    .container {
+        padding: var(--spacing-sm);
+    }
+
+    .title {
+        font-size: var(--font-size-lg);
+    }
+
+    .studentGrid {
+        grid-template-columns: 1fr;
+    }
+}

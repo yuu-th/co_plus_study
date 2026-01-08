@@ -18,3 +18,18 @@
     font-size: var(--font-size-xs);
     color: var(--color-text-secondary);
 }
+
+/* スマホ対応 */
+@media (max-width: 480px) {
+    .header {
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+
+    .title {
+        font-size: var(--font-size-sm);
+    }
+
+    .status {
+        font-size: 0.65rem;
+    }
+}

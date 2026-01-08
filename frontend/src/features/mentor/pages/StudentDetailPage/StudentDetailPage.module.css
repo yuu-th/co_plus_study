@@ -6,9 +6,11 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: var(--spacing-md);
     margin-bottom: var(--spacing-lg);
     padding-bottom: var(--spacing-lg);
     border-bottom: 1px solid var(--color-border);
+    flex-wrap: wrap;
 }
 
 .profile {
@@ -27,6 +29,7 @@
     gap: var(--spacing-md);
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
+    flex-wrap: wrap;
 }
 
 .headerStats strong {
@@ -101,4 +104,63 @@
     width: 64px;
     height: 64px;
     font-size: var(--font-size-lg);
+}
+
+/* タブレット対応 */
+@media (max-width: 768px) {
+    .container {
+        padding: var(--spacing-md);
+    }
+
+    .header {
+        gap: var(--spacing-sm);
+    }
+}
+
+/* スマホ対応 */
+@media (max-width: 640px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .profile {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+        gap: var(--spacing-sm);
+    }
+
+    .studentName {
+        font-size: var(--font-size-lg);
+    }
+
+    .headerStats {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .backLink {
+        align-self: flex-start;
+    }
+}
+
+/* スマホ小対応 */
+@media (max-width: 480px) {
+    .container {
+        padding: var(--spacing-sm);
+    }
+
+    .headerStats {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+        align-items: center;
+    }
+
+    .large {
+        width: 56px;
+        height: 56px;
+        font-size: var(--font-size-base);
+    }
 }

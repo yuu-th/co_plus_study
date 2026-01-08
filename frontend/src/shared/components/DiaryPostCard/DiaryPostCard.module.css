@@ -99,3 +99,35 @@
     border-color: var(--color-danger, #ef4444);
     color: var(--color-danger, #ef4444);
 }
+
+/* スマホ対応 - カードレイアウトを縦積みに */
+@media (max-width: 480px) {
+    .card {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+    }
+
+    .left {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--spacing-xs);
+        background: var(--color-bg-secondary);
+        border-radius: var(--border-radius-sm);
+    }
+
+    .subject,
+    .time {
+        font-size: 0.7rem;
+    }
+
+    .reactions {
+        margin-top: var(--spacing-xs);
+    }
+
+    .actions {
+        flex-direction: row;
+        justify-content: flex-end;
+    }
+}

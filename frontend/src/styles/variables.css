@@ -50,7 +50,14 @@
   --sidebar-width: 240px;
   --header-height: 60px;
 
-  /* ブレークポイント（JS用） */
+  /* ブレークポイント（統一版） */
+  --breakpoint-xs: 480px;   /* スマホ小 (iPhone SE等) */
+  --breakpoint-sm: 640px;   /* スマホ大 (iPhone Plus等) */
+  --breakpoint-md: 768px;   /* タブレット縦 (iPad縦向き) */
+  --breakpoint-lg: 1024px;  /* タブレット横/デスクトップ小 */
+  --breakpoint-xl: 1280px;  /* デスクトップ */
+  
+  /* 後方互換性のため残す（非推奨） */
   --breakpoint-mobile: 640px;
   --breakpoint-tablet: 768px;
   --breakpoint-desktop: 1024px;

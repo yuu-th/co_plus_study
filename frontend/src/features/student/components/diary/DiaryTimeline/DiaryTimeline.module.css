@@ -56,3 +56,23 @@
     background-color: var(--color-accent-blue);
     color: white;
 }
+
+/* スマホ対応 */
+@media (max-width: 480px) {
+    .filters {
+        flex-direction: column;
+    }
+
+    .subjectFilter {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .groupTitle {
+        font-size: var(--font-size-base);
+    }
+
+    .loadMore button {
+        width: 100%;
+    }
+}

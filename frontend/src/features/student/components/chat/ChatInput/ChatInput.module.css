@@ -140,3 +140,27 @@
     cursor: not-allowed;
     background-color: var(--color-text-secondary);
 }
+
+/* スマホ対応 */
+@media (max-width: 480px) {
+    .inputRow {
+        gap: var(--spacing-xs);
+    }
+
+    .imageBtn {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+    }
+
+    .text {
+        min-height: 40px;
+        font-size: var(--font-size-sm);
+    }
+
+    .sendBtn {
+        padding: 0 var(--spacing-sm);
+        min-width: 50px;
+        height: 40px;
+    }
+}

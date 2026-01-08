@@ -17,6 +17,9 @@ if (isMockMode) {
     );
 }
 
+// Auth storage key
+export const AUTH_STORAGE_KEY = 'co-plus-study-auth';
+
 // Create client with fallback for development
 export const supabase: SupabaseClient = isMockMode
     ? createClient('https://placeholder.supabase.co', 'placeholder-key')
@@ -25,7 +28,7 @@ export const supabase: SupabaseClient = isMockMode
             autoRefreshToken: true,
             persistSession: true,
             detectSessionInUrl: false, // OAuth使わないのでfalse
-            storageKey: 'co-plus-study-auth', // カスタムキーで古いデータを無視
+            storageKey: AUTH_STORAGE_KEY, // カスタムキーで古いデータを無視
         },
     });
 

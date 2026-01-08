@@ -46,3 +46,24 @@
     background-color: var(--color-accent-orange);
     border-color: var(--color-accent-orange);
 }
+
+/* スマホ対応 */
+@media (max-width: 480px) {
+    .content {
+        gap: var(--spacing-sm);
+    }
+
+    .meta {
+        font-size: var(--font-size-xs);
+    }
+
+    .actions {
+        flex-direction: column-reverse;
+        gap: var(--spacing-xs);
+    }
+
+    .actions button {
+        width: 100%;
+        padding: var(--spacing-sm);
+    }
+}

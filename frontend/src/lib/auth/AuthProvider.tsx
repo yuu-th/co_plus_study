@@ -3,7 +3,7 @@
 
 import type { AuthError, Session, User } from '@supabase/supabase-js';
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
-import { isMockModeEnabled, supabase } from '../supabase';
+import { AUTH_STORAGE_KEY, isMockModeEnabled, supabase } from '../supabase';
 
 // Profile type (inline to avoid import issues during initial setup)
 interface Profile {
@@ -67,11 +67,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [session, setSession] = useState<Session | null>(null);
     const [profile, setProfile] = useState<Profile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    
+
     // 初期化フラグとリクエスト管理
     const isMounted = useRef(true);
     const initializationStarted = useRef(false);
     const initializationResolved = useRef(false);
+    const isSigningOut = useRef(false); // ログアウト処理中のガードフラグ
     const profileFetchPromiseMap = useRef<Map<string, Promise<Profile | null>>>(new Map());
 
     const isAuthenticated = !!user;
@@ -94,7 +95,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
 
         console.log('[AuthProvider] fetchProfile: starting new request for', userId);
-        
+
         const fetchPromise = (async () => {
             try {
                 // Promise.race で 5秒のタイムアウトを実装
@@ -103,13 +104,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                     .select('*')
                     .eq('id', userId)
                     .single();
-                
-                const timeout = new Promise<null>((_, reject) => 
+
+                const timeout = new Promise<null>((_, reject) =>
                     setTimeout(() => reject(new Error('FetchProfile Timeout')), 5000)
                 );
 
                 const result = await Promise.race([request, timeout]) as any;
-                
+
                 if (result instanceof Error) throw result;
                 const { data, error } = result;
 
@@ -121,6 +122,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 return data as Profile;
             } catch (err) {
                 console.error('[AuthProvider] fetchProfile: failed or timed out for', userId, err);
+
+                // 【追加】タイムアウトや致命的エラー自、既存セッションがあるのにプロフィールが取れないと
+                // "認証済みだがプロフィールなし" -> Register画面へループ などの不整合が起きる。
+                // 安全のため、ここでの失敗は null を返すが、呼び出し元でこれ以上の不整合を防ぐため
+                // ログアウトを検討すべきケースもある。
+                // 現状は null を返し、UI側で "プロフィール取得失敗" を表示するか、
+                // あるいは useEffect で display_name が空の場合のハンドリングに委ねる。
                 return null;
             } finally {
                 profileFetchPromiseMap.current.delete(userId);
@@ -134,7 +142,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // ユーザーとプロフィールを同期する内部関数
     const syncUserAndProfile = async (newUser: User | null, source: string) => {
         if (!isMounted.current) return;
-        
+
         console.log(`[AuthProvider] syncUserAndProfile (Source: ${source}, User: ${newUser?.id ?? 'null'})`);
         setUser(newUser);
 
@@ -193,13 +201,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 console.log('[AuthProvider] initialize: calling getSession');
                 // getSession にもタイムアウトを適用
                 const sessionRequest = supabase.auth.getSession();
-                const timeout = new Promise<any>((_, reject) => 
+                const timeout = new Promise<any>((_, reject) =>
                     setTimeout(() => reject(new Error('GetSession Timeout')), 5000)
                 );
-                
+
                 const result = await Promise.race([sessionRequest, timeout]);
                 const initialSession = result?.data?.session ?? result?.session ?? null;
-                
+
                 console.log('[AuthProvider] initialize: getSession returned', !!initialSession);
                 setSession(initialSession);
                 await syncUserAndProfile(initialSession?.user ?? null, 'initial_get_session');
@@ -216,10 +224,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         // 2. 状態変化を監視
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, newSession) => {
+                // ログアウト処理中はイベントを無視して再ログインを防ぐ
+                if (isSigningOut.current) {
+                    console.log(`[AuthProvider] ✋ Putting event '${event}' on hold (SignOut in progress)`);
+                    return;
+                }
+
                 console.log('[AuthProvider] 🔄 Auth event:', event);
-                
+
                 setSession(newSession);
-                
+
                 if (event === 'INITIAL_SESSION' && initializationResolved.current) {
                     return;
                 }
@@ -289,6 +303,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     // Sign in with email and password
     const signIn = async (email: string, password: string) => {
+        // 再ログインのためフラグを確実にリセット
+        isSigningOut.current = false;
+
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
             password,
@@ -307,11 +324,38 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     // Sign out
     const signOut = async () => {
-        setProfile(null);
-        setUser(null);
-        setSession(null);
-        const { error } = await supabase.auth.signOut();
-        return { error };
+        // ガードフラグを立てる
+        isSigningOut.current = true;
+        console.log('[AuthProvider] 🚪 Signing out... (Guard enabled)');
+
+        try {
+            // 先にReactの状態をクリア（楽観的UI更新）
+            setProfile(null);
+            setUser(null);
+            setSession(null);
+
+            // Supabaseのログアウト処理
+            const { error } = await supabase.auth.signOut();
+            return { error };
+        } finally {
+            // 【重要】成功・失敗・例外に関わらず、必ずローカルストレージを消す
+            try {
+                localStorage.removeItem(AUTH_STORAGE_KEY);
+                console.log('[AuthProvider] 🧹 Local storage cleared');
+            } catch (e) {
+                console.error('[AuthProvider] Failed to clear local storage', e);
+            }
+
+            // フラグは少し遅延させて解除するか、次回の操作まで残すかだが
+            // ここではページ遷移やリロードを想定しつつ、SPA内での再ログインも考慮して解除する
+            // ただし、onAuthStateChange の遅延イベントをやり過ごすため少し待つ
+            setTimeout(() => {
+                if (isMounted.current) {
+                    isSigningOut.current = false;
+                    console.log('[AuthProvider] 🔓 SignOut guard lifted');
+                }
+            }, 1000);
+        }
     };
 
     // Update profile
